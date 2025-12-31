@@ -15,7 +15,7 @@ The engine is designed to be "ESI-Light" by prioritizing local data over network
 * **Memory Efficiency**: Utilizes JavaScript `Map` objects for $O(1)$ lookup speeds during high-traffic events.
 * **Automatic Throttling**: Built-in 1-minute "Dirty Flag" save interval to minimize disk I/O on your hosting hardware.
 
-
+[![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/X7X21RDFR0)
 
 ## 🛠️ Tech Stack
 * **Language**: Node.js
