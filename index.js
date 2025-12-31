@@ -1,4 +1,17 @@
 const axios = require ('axios')
+const ESIClient = require ('./esi')
+const esi = new ESIClient("Contact Info");
+const path = require('path');
+
+(async () => {
+    console.log("Intializing Intel");
+    const cachePath = path.join(__dirname, 'esi_cache.json');
+    console.log(`📂 Looking for cache at: ${cachePath}`);
+    
+    await esi.loadCache(cachePath);
+    console.log("Engine Ready");
+    listeningStream();})();
+
 
 const QUEUE_ID = "Wingspan_Private_Intel_Bot_2025";
 const REDISQ_URL = `https://zkillredisq.stream/listen.php?queueID=${QUEUE_ID}`;
@@ -58,4 +71,3 @@ function handlePrivateIntel(kill, zkb) {
     console.log(`---------------------------\n`);
 }
 
-listeningStream();
