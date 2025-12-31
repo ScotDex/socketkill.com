@@ -7,6 +7,12 @@ const path = require('path');
     console.log("Intializing Intel");
     const cachePath = path.join(__dirname, 'esi_cache.json');
     console.log(`📂 Looking for cache at: ${cachePath}`);
+
+    const systemsLoaded = await esi.loadSystemCache('./data/systems.json');
+    
+    if (systemsLoaded) {
+        console.log("🌌 Universe Map Loaded.");
+    }
     
     await esi.loadCache(cachePath);
     console.log("Engine Ready");
