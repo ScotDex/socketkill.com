@@ -1,0 +1,23 @@
+services:
+  scout-bot:
+    build: .
+    container_name: thera-scout-bot
+    restart: always
+    # Automatically loads variables from your .env file
+    env_file:
+      - .env
+    # Maps the health check port to your Droplet's public port
+    ports:
+      - "8089:8089"
+    # Setting resource limits prevents the bot from eating all Droplet RAM
+    volumes:
+      - "./data:/usr/src/app/data"
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
