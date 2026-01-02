@@ -1,7 +1,7 @@
 services:
   scout-bot:
     build: .
-    container_name: thera-scout-bot
+    container_name: kill-stream-bot
     restart: always
     # Automatically loads variables from your .env file
     env_file:
