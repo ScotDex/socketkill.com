@@ -1,2 +1,16 @@
+# Dependencies
+node_modules/
+
+# Environment variables
 .env
-node_modules
+
+# Logs
+*.log
+npm-debug.log*
+
+# OS metadata
+.DS_Store
+Thumbs.db
+
+# Cache
+data/esi_cache.json

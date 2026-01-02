@@ -52,31 +52,34 @@ async function listeningStream() {
 
 async function handlePrivateIntel(kill, zkb) {
     try {
-        const killID = kill.killmail_id;
-        const victim = kill.victim;
+        // 1. Gather Names (Your existing ESI logic)
+        const names = {
+            shipName: await esi.getTypeName(kill.victim?.ship_type_id),
+            corpName: await esi.getCorporationName(kill.victim?.corporation_id),
+            charName: await esi.getCharacterName(kill.victim?.character_id),
+            systemName: esi.getSystemDetails(kill.solar_system_id)?.name || "Unknown System"
+        };
 
-        // Use the ESIClient to translate IDs to Names
-        // This leverages your RAM Map first, then ESI
-        const shipName = await esi.getTypeName(victim?.ship_type_id);
-        const corpName = await esi.getCorporationName(victim?.corporation_id);
-        const charName = await esi.getCharacterName(victim?.character_id);
+        // 2. Generate the payload via Factory
+        const payload = EmbedFactory.createKillEmbed(kill, zkb, names);
 
-        // Translate the System ID using your staticUniverseData
-        const system = esi.getSystemDetails(kill.solar_system_id);
-        const systemName = system ? system.name : `System ${kill.solar_system_id}`;
+        // 3. Determine which hook to use
+        const isBigKill = zkb.totalValue >= process.env.MIN_ISK_FOR_BIG_KILL;
+        const targetWebhook = isBigKill 
+            ? process.env.BIG_KILLS_WEBHOOK_URL 
+            : process.env.INTEL_WEBHOOK_URL;
 
-        const totalValue = zkb.totalValue ? (zkb.totalValue / 1000000).toFixed(2) : "0.00";
+        // 4. Fire the Webhook
+        if (targetWebhook) {
+            await axios.post(targetWebhook, payload);
+            console.log(`✅ ${isBigKill ? '[BIG KILL]' : '[INTEL]'} Sent to Discord.`);
+        }
 
-        console.log(`\n--- NEW KILL DETECTED ---`);
-        console.log(`Victim:  ${charName} (${corpName})`);
-        console.log(`Ship:    ${shipName}`);
-        console.log(`System:  ${systemName}`);
-        console.log(`Value:   ${totalValue} Million ISK`);
-        console.log(`URL:     https://zkillboard.com/kill/${killID}/`);
-        console.log(`---------------------------\n`);
-        
     } catch (err) {
-        console.error("❌ Error translating killmail:", err.message);
+        if (err.response?.status === 429) {
+            console.warn("⚠️ Discord Webhook Rate Limited. Skipping this kill.");
+        } else {
+            console.error("❌ Error in handlePrivateIntel:", err.message);
+        }
     }
 }
-
