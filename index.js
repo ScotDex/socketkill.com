@@ -90,7 +90,7 @@ async function handlePrivateIntel(kill, zkb) {
 
     try {
 
-        const metadata = mapper.getScoutName(kill.solar_system_id);
+        const metadata = mapper.getSystemMetadata(kill.solar_system_id);
         const names = {
             shipName: await esi.getTypeName(kill.victim?.ship_type_id),
             corpName: await esi.getCorporationName(kill.victim?.corporation_id),
