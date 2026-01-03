@@ -55,7 +55,7 @@ async function listeningStream() {
                 } else {
                     // Log every 100th discard so the console doesn't scroll too fast
                     // This proves the bot is alive and filtering.
-                    if (scanCount % 100 === 0) {
+                    if (scanCount % 1 === 0) {
                         console.log(`🛡️  Gatekeeper: ${scanCount} total kills scanned. Discarding irrelevant kill in system ${killmail.solar_system_id}...`);
                     }
                 }
