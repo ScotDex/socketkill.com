@@ -8,6 +8,10 @@ const EmbedFactory = require('./embedFactory');
 const esi = new ESIClient("Contact: @YourName");
 const mapper = new MapperService('http://api.deliverynetwork.space/data');
 
+const isWormholeSystem = (systemId) => {
+    return systemId >= 31000001 && systemId <= 32000000;
+};
+
 ;(async () => {
     console.log("🚀 Initializing Tripwire Kill Monitor...");
     await esi.loadSystemCache('./data/systems.json');
@@ -53,7 +57,7 @@ async function listeningStream() {
                 
                 scanCount++;
 
-                if (mapper.isInChain(killmail.solar_system_id)) {
+                if (isWormholeSystem(killmail.solar_system_id) && mapper.isInChain(killmail.solar_system_id)) {
                     console.log(`🎯 TARGET MATCH: Kill ${data.package.killID} in system ${killmail.solar_system_id}`);
                     await handlePrivateIntel(killmail, zkb);
                 } else {
@@ -72,6 +76,13 @@ async function listeningStream() {
     }
 }
 
+
+// Construct the Tripwire URL using the system name
+// Note: You may need to encode the name if it has spaces (e.g., Thera)
+const tripwireUrl = `https://tw.torpedodelivery.com/?system=${encodeURIComponent(names.systemName)}`;
+
+// Pass this to your EmbedFactory
+
 async function handlePrivateIntel(kill, zkb) {
     if (!mapper.isInChain(kill.solar_system_id)) {
         return; 
@@ -85,7 +96,7 @@ async function handlePrivateIntel(kill, zkb) {
             systemName: esi.getSystemDetails(kill.solar_system_id)?.name || "Unknown System"
         };
 
-        const payload = EmbedFactory.createKillEmbed(kill, zkb, names);
+        const payload = EmbedFactory.createKillEmbed(kill, zkb, names, tripwireUrl);
         const totalValue = (zkb.totalValue / 1000000).toFixed(2);
         const targetWebhook = process.env.INTEL_WEBHOOK_URL;
 

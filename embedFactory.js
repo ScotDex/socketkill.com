@@ -17,6 +17,7 @@ class EmbedFactory {
                 },
                 title: `Killboard Link`,
                 url: `https://zkillboard.com/kill/${kill.killmail_id}/`,
+                
                 thumbnail: { url: shipIcon }, 
                 // FIXED: Set a static blue color (0x3498db)
                 color: 0x3498db, 
