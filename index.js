@@ -18,6 +18,7 @@ const isWormholeSystem = (systemId) => {
     await esi.loadCache(path.join(__dirname, 'data', 'esi_cache.json'));
 
     await mapper.refreshChain(esi.getSystemDetails.bind(esi));
+    await triggerTestKill();
     console.log("🌌 Universe Map & Chain Loaded.");
 
     // 3. Background Sync (Every 1 minute)
@@ -77,12 +78,6 @@ async function listeningStream() {
 }
 
 
-// Construct the Tripwire URL using the system name
-// Note: You may need to encode the name if it has spaces (e.g., Thera)
-//const tripwireUrl = `https://tw.torpedodelivery.com/?system=${encodeURIComponent(names.systemName)}`;
-
-// Pass this to your EmbedFactory
-
 async function handlePrivateIntel(kill, zkb) {
     if (!mapper.isInChain(kill.solar_system_id)) {
         return; 
@@ -117,4 +112,27 @@ async function handlePrivateIntel(kill, zkb) {
             console.error("❌ Error in handlePrivateIntel:", err.message);
         }
     }
+}
+
+async function triggerTestKill() {
+    console.log("🧪 MANUALLY TRIGGERING TEST KILL...");
+    
+    // We'll use a real J-System ID from your logs
+    const testSystemID = 31001171; 
+
+    const mockZkb = {
+        totalValue: 750000000, // 750M ISK
+    };
+
+    const mockKillmail = {
+        killmail_id: 99999999,
+        solar_system_id: testSystemID,
+        victim: {
+            character_id: 2112041708,
+            ship_type_id: 29988 // Proteus
+        }
+    };
+
+    // This calls your real logic
+    await handlePrivateIntel(mockKillmail, mockZkb);
 }
