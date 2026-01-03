@@ -1,13 +1,14 @@
 class EmbedFactory {
     static createKillEmbed(kill, zkb, names) {
+        // 1. Calculate the ISK value in Millions
         const totalValue = zkb.totalValue ? (zkb.totalValue / 1000000).toFixed(2) : "0.00";
-        const isBigKill = zkb.totalValue >= (process.env.MIN_ISK_FOR_BIG_KILL || 1000000000);
 
-        // CCP Image Server URL for Ship Renders
+        // 2. CCP Image Server URL for Ship Renders
         const shipIcon = `https://images.evetech.net/types/${kill.victim.ship_type_id}/render?size=128`;
 
         return {
-            username: isBigKill ? "🚨 Big Kill" : "Intel Feed",
+            // FIXED: Removed isBigKill check
+            username: "Chain Intel Feed", 
             avatar_url: "https://images.evetech.net/types/605/icon",
             embeds: [{
                 author: {
@@ -16,8 +17,9 @@ class EmbedFactory {
                 },
                 title: `Killboard Link`,
                 url: `https://zkillboard.com/kill/${kill.killmail_id}/`,
-                thumbnail: { url: shipIcon }, // Adds the 3D ship render to the right side
-                color: isBigKill ? 0xe74c3c : 0x3498db, // Red for big kills, Blue for standard
+                thumbnail: { url: shipIcon }, 
+                // FIXED: Set a static blue color (0x3498db)
+                color: 0x3498db, 
                 fields: [
                     { name: "💰 Value", value: `**${totalValue}M ISK**`, inline: true },
                     { name: "📍 System", value: `**${names.systemName}**`, inline: true },

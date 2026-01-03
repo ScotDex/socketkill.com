@@ -137,6 +137,10 @@ class ESIClient{
     getSystemDetails(id) {
         return this.staticSystemData[id] || null;
     }
-}
 
+
+    // Add this to your ESIClient class in esi.js
+
+
+}
 module.exports = ESIClient;
