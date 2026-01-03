@@ -79,7 +79,7 @@ async function listeningStream() {
 
 // Construct the Tripwire URL using the system name
 // Note: You may need to encode the name if it has spaces (e.g., Thera)
-const tripwireUrl = `https://tw.torpedodelivery.com/?system=${encodeURIComponent(names.systemName)}`;
+//const tripwireUrl = `https://tw.torpedodelivery.com/?system=${encodeURIComponent(names.systemName)}`;
 
 // Pass this to your EmbedFactory
 
