@@ -96,7 +96,7 @@ async function handlePrivateIntel(kill, zkb) {
             systemName: esi.getSystemDetails(kill.solar_system_id)?.name || "Unknown System"
         };
 
-        const payload = EmbedFactory.createKillEmbed(kill, zkb, names, tripwireUrl);
+        const payload = EmbedFactory.createKillEmbed(kill, zkb, names);
         const totalValue = (zkb.totalValue / 1000000).toFixed(2);
         const targetWebhook = process.env.INTEL_WEBHOOK_URL;
 
