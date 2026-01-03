@@ -33,7 +33,12 @@ const mapper = new MapperService('http://api.deliverynetwork.space/data');
 const QUEUE_ID = process.env.ZKILL_QUEUE_ID || 'Default_Intel_Queue_2026';
 const REDISQ_URL = `https://zkillredisq.stream/listen.php?queueID=${QUEUE_ID}`;
 
+// Counter for peace of mind
+let scanCount = 0;
+
 async function listeningStream() {
+    console.log(`📡 Listening to zKillboard Queue: ${QUEUE_ID}`);
+    
     while (true) {
         try {
             const response = await axios.get(REDISQ_URL, { timeout: 15000 });
@@ -42,13 +47,27 @@ async function listeningStream() {
             if (data && data.package) {
                 const killmail = data.package.killmail;
                 const zkb = data.package.zkb;
+                scanCount++;
+
                 if (mapper.isInChain(killmail.solar_system_id)) {
-                    console.log(`🎯 TARGET in chain: Kill ${data.package.killID}`);
+                    console.log(`🎯 TARGET MATCH: Kill ${data.package.killID} in system ${killmail.solar_system_id}`);
                     await handlePrivateIntel(killmail, zkb);
+                } else {
+                    // Log every 100th discard so the console doesn't scroll too fast
+                    // This proves the bot is alive and filtering.
+                    if (scanCount % 100 === 0) {
+                        console.log(`🛡️  Gatekeeper: ${scanCount} total kills scanned. Discarding irrelevant kill in system ${killmail.solar_system_id}...`);
+                    }
                 }
+            } else {
+                // If package is null, RedisQ is just empty/waiting
+                // No need to log here unless you want to see "Waiting..."
             }
         } catch (err) {
             const delay = err.response?.status === 429 ? 2000 : 5000;
+            if (err.response?.status === 429) {
+                console.warn("⚠️ Rate limited by zKillboard. Backing off...");
+            }
             await new Promise(res => setTimeout(res, delay));
         }
     }
