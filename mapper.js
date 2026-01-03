@@ -6,12 +6,12 @@ class MapperService {
      */
     constructor(apiUrl) {
         this.apiUrl = apiUrl;
-        this.activeSystems = new Set();
+        // CHANGED: Use a Map instead of a Set to store [systemID -> metadataObject]
+        this.activeSystems = new Map();
     }
 
     /**
-     * Fetches the signature data and extracts unique system IDs.
-     * @param {Function} getSystemDetails - Optional ESI helper to resolve names for logging
+     * Fetches the signature data and extracts unique system IDs and scanner names.
      */
     async refreshChain(getSystemDetails) {
         try {
@@ -22,19 +22,22 @@ class MapperService {
                 return false;
             }
 
-            const newSet = new Set();
+            // CHANGED: New Map to replace the old one
+            const newMap = new Map();
             const namesFound = [];
             const sigs = data.signatures;
 
-            // Extract IDs from the signature objects
             Object.keys(sigs).forEach(key => {
-                const systemID = Number(sigs[key].systemID);
+                const sig = sigs[key];
+                const systemID = Number(sig.systemID);
                 
-                // Filter out placeholder IDs (0, 11, etc.)
                 if (systemID > 100) {
-                    newSet.add(systemID);
+                    // STORE METADATA: Map the ID to an object containing the scout's name
+                    newMap.set(systemID, {
+                        scannedBy: sig.modifiedByName || sig.createdByName || "Unknown Scout"
+                    });
 
-                    // Optional: resolve names for the console log
+                    // Resolve names for console logging if helper is provided
                     if (getSystemDetails) {
                         const details = getSystemDetails(systemID);
                         if (details && !namesFound.includes(details.name)) {
@@ -44,7 +47,7 @@ class MapperService {
                 }
             });
 
-            this.activeSystems = newSet;
+            this.activeSystems = newMap;
             
             if (namesFound.length > 0) {
                 console.log(`✅ Mapper Sync: Monitoring ${this.activeSystems.size} systems: [${namesFound.join(', ')}]`);
@@ -60,12 +63,18 @@ class MapperService {
     }
 
     /**
-     * Quick O(1) check to see if a system is in the chain.
+     * Checks if a system is in the chain.
      */
     isInChain(systemId) {
         return this.activeSystems.has(Number(systemId));
     }
+
+    /**
+     * NEW HELPER: Retrieves the metadata (like scout name) for a specific system.
+     */
+    getSystemMetadata(systemId) {
+        return this.activeSystems.get(Number(systemId));
+    }
 }
 
-// THE FORGOTTEN EXPORT
 module.exports = MapperService;

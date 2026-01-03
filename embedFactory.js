@@ -24,7 +24,8 @@ class EmbedFactory {
                 fields: [
                     { name: "💰 Value", value: `**${totalValue}M ISK**`, inline: true },
                     { name: "📍 System", value: `**${names.systemName}**`, inline: true },
-                    { name: "🏢 Corporation", value: names.corpName, inline: false }
+                    { name: "🏢 Corporation", value: names.corpName, inline: false },
+                    { name: "🕵️‍♂️ Mapping Agent", value: `**${names.scoutName}**`, inline: true }
                 ],
                 footer: { text: `Kill Stream Delivery • ${new Date().toLocaleTimeString()}` }
             }]

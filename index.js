@@ -89,11 +89,14 @@ async function handlePrivateIntel(kill, zkb) {
     }
 
     try {
+
+        const metadata = mapper.getScoutName(kill.solar_system_id);
         const names = {
             shipName: await esi.getTypeName(kill.victim?.ship_type_id),
             corpName: await esi.getCorporationName(kill.victim?.corporation_id),
             charName: await esi.getCharacterName(kill.victim?.character_id),
-            systemName: esi.getSystemDetails(kill.solar_system_id)?.name || "Unknown System"
+            systemName: esi.getSystemDetails(kill.solar_system_id)?.name || "Unknown System",
+            scoutName: metadata ? metadata.scannedBy : "Unknown Scout" // Added this
         };
 
         const payload = EmbedFactory.createKillEmbed(kill, zkb, names);
