@@ -13,12 +13,11 @@ const isWormholeSystem = (systemId) => {
 };
 
 ;(async () => {
-    console.log("🚀 Initializing Tripwire Kill Monitor...");
+    console.log("Initializing Tripwire Kill Monitor...");
     await esi.loadSystemCache('./data/systems.json');
     await esi.loadCache(path.join(__dirname, 'data', 'esi_cache.json'));
 
     await mapper.refreshChain(esi.getSystemDetails.bind(esi));
-    await triggerTestKill();
     console.log("🌌 Universe Map & Chain Loaded.");
 
     // 3. Background Sync (Every 1 minute)
@@ -27,7 +26,7 @@ const isWormholeSystem = (systemId) => {
     }, 1 * 60 * 1000);
 
     // 4. Start the Engine
-    axios.post(process.env.INTEL_WEBHOOK_URL, { content: "Intel Bot Online and Filtering Chain!" })
+    axios.post(process.env.INTEL_WEBHOOK_URL, { content: "Online" })
         .catch(err => console.error("Test Ping Failed:", err.message));
 
     listeningStream();
@@ -35,7 +34,7 @@ const isWormholeSystem = (systemId) => {
 
 
 
-const QUEUE_ID = process.env.ZKILL_QUEUE_ID || 'Wingspan-WH-Monitor';
+const QUEUE_ID = process.env.ZKILL_QUEUE_ID || 'Wingspan-TW-Monitor';
 const REDISQ_URL = `https://zkillredisq.stream/listen.php?queueID=${QUEUE_ID}`;
 
 
@@ -62,7 +61,7 @@ async function listeningStream() {
                     console.log(`🎯 TARGET MATCH: Kill ${data.package.killID} in system ${killmail.solar_system_id}`);
                     await handlePrivateIntel(killmail, zkb);
                 } else {
-                    if (scanCount % 100 === 0) {
+                    if (scanCount % 500 === 0) {
                         console.log(`🛡️  Gatekeeper: ${scanCount} total kills scanned. Discarding kill in system ${killmail.solar_system_id}...`);
                     }
                 }
@@ -114,25 +113,3 @@ async function handlePrivateIntel(kill, zkb) {
     }
 }
 
-async function triggerTestKill() {
-    console.log("🧪 MANUALLY TRIGGERING TEST KILL...");
-    
-    // We'll use a real J-System ID from your logs
-    const testSystemID = 31001171; 
-
-    const mockZkb = {
-        totalValue: 750000000, // 750M ISK
-    };
-
-    const mockKillmail = {
-        killmail_id: 99999999,
-        solar_system_id: testSystemID,
-        victim: {
-            character_id: 2112041708,
-            ship_type_id: 29988 // Proteus
-        }
-    };
-
-    // This calls your real logic
-    await handlePrivateIntel(mockKillmail, mockZkb);
-}
