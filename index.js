@@ -99,7 +99,9 @@ async function handlePrivateIntel(kill, zkb) {
             scoutName: metadata ? metadata.scannedBy : "Unknown Scout" // Added this
         };
 
-        const payload = EmbedFactory.createKillEmbed(kill, zkb, names);
+        const tripwireUrl = `https://tw.torpedodelivery.com/?system=${encodeURIComponent(names.systemName)}`;
+
+        const payload = EmbedFactory.createKillEmbed(kill, zkb, names, tripwireUrl);
         const totalValue = (zkb.totalValue / 1000000).toFixed(2);
         const targetWebhook = process.env.INTEL_WEBHOOK_URL;
 

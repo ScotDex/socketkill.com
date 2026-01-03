@@ -18,16 +18,20 @@ class EmbedFactory {
                 title: `Killboard Link`,
                 url: `https://zkillboard.com/kill/${kill.killmail_id}/`,
                 
+                description: `**[Open System in Tripwire](${tripwireUrl})**`,
+
                 thumbnail: { url: shipIcon }, 
                 // FIXED: Set a static blue color (0x3498db)
-                color: 0x3498db, 
+                color: 0xf39c12, 
+
+
                 fields: [
                     { name: "💰 Value", value: `**${totalValue}M ISK**`, inline: true },
                     { name: "📍 System", value: `**${names.systemName}**`, inline: true },
                     { name: "🏢 Corporation", value: names.corpName, inline: false },
                     { name: "🕵️‍♂️ Mapping Agent", value: `**${names.scoutName}**`, inline: true }
                 ],
-                footer: { text: `Kill Stream Delivery • ${new Date().toLocaleTimeString()}` }
+                footer: { text: `WiNGSPAN Delivery Service • ${new Date().toLocaleTimeString()}` }
             }]
         };
     }
