@@ -30,7 +30,7 @@ const mapper = new MapperService('http://api.deliverynetwork.space/data');
 
 
 
-const QUEUE_ID = process.env.ZKILL_QUEUE_ID || 'Default_Intel_Queue_2026';
+const QUEUE_ID = process.env.ZKILL_QUEUE_ID || 'Wingspan-WH-Monitor';
 const REDISQ_URL = `https://zkillredisq.stream/listen.php?queueID=${QUEUE_ID}`;
 
 
@@ -40,7 +40,6 @@ async function listeningStream() {
     
     while (true) {
         try {
-            // RedisQ now redirects to /object.php; Axios handles this by default
             const response = await axios.get(REDISQ_URL, { timeout: 15000 });
             const data = response.data;
 
@@ -58,7 +57,7 @@ async function listeningStream() {
                     console.log(`🎯 TARGET MATCH: Kill ${data.package.killID} in system ${killmail.solar_system_id}`);
                     await handlePrivateIntel(killmail, zkb);
                 } else {
-                    if (scanCount % 1 === 0) {
+                    if (scanCount % 100 === 0) {
                         console.log(`🛡️  Gatekeeper: ${scanCount} total kills scanned. Discarding kill in system ${killmail.solar_system_id}...`);
                     }
                 }
