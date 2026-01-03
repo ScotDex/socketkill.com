@@ -60,7 +60,7 @@ async function listeningStream() {
                     }
                 }
             } else {
-                // If package is null, RedisQ is just empty/waiting
+                console.log("⏳ RedisQ: No new kills in the last 10s. Polling again...");
                 // No need to log here unless you want to see "Waiting..."
             }
         } catch (err) {
