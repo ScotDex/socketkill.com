@@ -30,7 +30,8 @@ const mapper = new MapperService('http://api.deliverynetwork.space/data');
 
 
 
-const REDISQ_URL = `https://zkillredisq.stream/listen.php?queueID=Wingspan_Intel_2025`;
+const QUEUE_ID = process.env.ZKILL_QUEUE_ID || 'Default_Intel_Queue_2026';
+const REDISQ_URL = `https://zkillredisq.stream/listen.php?queueID=${QUEUE_ID}`;
 
 async function listeningStream() {
     while (true) {

@@ -1,38 +1,25 @@
-# 🛰️ EVE Online Intel Engine (2025)
-
-A high-performance, stateful intelligence engine built in Node.js for streaming and resolving EVE Online killmail data via zKillboard's RedisQ service.
-
-## ⚠️ Status: Development & Testing
-**This project is currently in a testing phase.**
-* **Experimental**: Features are being refined for performance and API efficiency.
-* **Not for General Hosting**: This codebase is intended for development environments and is not yet optimized for end-user deployment.
-
-## 📖 Features
-The engine is designed to be "ESI-Light" by prioritizing local data over network requests.
-
-* **Persistent Caching**: Uses a "Write-Behind" strategy to save Character, Corporation, and Type data to local JSON files.
-* **Static Universe Mapping**: Pre-loads a complete SDE-based system database to resolve solar system names and security statuses instantly.
-* **Memory Efficiency**: Utilizes JavaScript `Map` objects for $O(1)$ lookup speeds during high-traffic events.
-* **Automatic Throttling**: Built-in 1-minute "Dirty Flag" save interval to minimize disk I/O on your hosting hardware.
 
 [![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/X7X21RDFR0)
 
-## 🛠️ Tech Stack
-* **Language**: Node.js
-* **HTTP Layer**: Axios with custom User-Agent headers (CCP Compliance)
-* **Data Source**: zKillboard RedisQ (Long-polling)
-* **Database**: Flat-file JSON persistence
+# 🛰️ EVE Online Intel Engine: Wingspan Edition (2026)
+
+A high-performance, containerized intelligence engine built in Node.js that bridges **Tripwire mapper data** with **zKillboard's RedisQ**. This service dynamically monitors active wormhole chains and delivers real-time, filtered kill alerts to Discord.
+
+## 🛠️ Tactical Overview
+Unlike generic killmail listeners, this engine is **stateful and context-aware**. It prioritizes local data and dynamic filtering to provide a "Gatekeeper" service for specific wormhole operations.
+
+* **Dynamic Chain Filtering**: Automatically pulls active `systemID`s from a Tripwire-based API (deliverynetwork.space) every 60 seconds.
+* **The Gatekeeper Logic**: Uses $O(1)$ Set-lookup to filter the global zKillboard "firehose," instantly discarding any killmail not occurring within the monitored chain.
+* **ESI-Light Persistence**: Implements a "Write-Behind" strategy for Character, Corporation, and Ship data to stay within ESI rate limits while building a rich local database.
+* **Docker Optimized**: Designed for 24/7 deployment on low-resource environments (e.g., DigitalOcean Droplets) with a footprint of <256MB RAM.
 
 ## 🚀 Setup & Usage
 
 ### 1. Prerequisites
-Ensure you have Node.js installed and a `data/` folder in your root directory.
+* Docker and Docker Compose installed.
+* A `data/` directory in the root (for persistent JSON caches).
 
-### 2. Configuration
-The `ESIClient` requires a contact string for the User-Agent header to comply with CCP's ESI guidelines.
-* Populate `data/systems.json` with EVE Static Data.
-* Ensure a valid (or empty) `esi_cache.json` exists in the root or `data/` folder.
-
-### 3. Running the Engine
-```bash
-node index.js
+### 2. Configuration (`.env`)
+Create a `.env` file in the root directory:
+```env
+INTEL_WEBHOOK_URL=[https://discord.com/api/webhooks/](https://discord.com/api/webhooks/)...
