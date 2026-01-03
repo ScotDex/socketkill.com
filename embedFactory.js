@@ -1,5 +1,5 @@
 class EmbedFactory {
-    static createKillEmbed(kill, zkb, names) {
+    static createKillEmbed(kill, zkb, names, tripwireUrl) {
         // 1. Calculate the ISK value in Millions
         const totalValue = zkb.totalValue ? (zkb.totalValue / 1000000).toFixed(2) : "0.00";
 
