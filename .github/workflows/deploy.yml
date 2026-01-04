@@ -17,5 +17,8 @@ jobs:
           username: ${{ secrets.USERNAME }}
           password: ${{ secrets.PASSWORD }}
           script: |
-            
+            set -e
+            cd jeff
+            git pull
+            docker compose up -d --build
            
