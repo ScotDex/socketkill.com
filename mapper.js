@@ -95,14 +95,14 @@ class MapperService {
         let meta = this.activeSystems.get(id);
 
         if (meta){
-            return { ... meta, isAdjacent: false};
+            return { ...meta, isAdjacent: false};
         }
         const neighbors = this.adjacencies.get(id);
         if (neighbors) {
             for (let neighborId of neighbors) {
                 const neighborMeta = this.activeSystems.get(neighborId);
                     if (neighborMeta) {
-                        return { ...neighborMeta, isAdjacent : true};
+                        return { ...neighborMeta, isAdjacent: true};
                     }
                     
                 }
