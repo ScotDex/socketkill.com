@@ -18,6 +18,7 @@ const isWormholeSystem = (systemId) => {
     await esi.loadCache(path.join(__dirname, 'data', 'esi_cache.json'));
 
     await mapper.refreshChain(esi.getSystemDetails.bind(esi));
+    await triggerAdjacentTestKill();
     console.log("🌌 Universe Map & Chain Loaded.");
 
     // 3. Background Sync (Every 1 minute)
@@ -114,3 +115,30 @@ async function handlePrivateIntel(kill, zkb) {
     }
 }
 
+async function triggerAdjacentTestKill() {
+    console.log("🧪 TRIGGERING ADJACENT SYSTEM TEST...");
+
+    // 1. This system is J1151 (from your logs). 
+    // If you scanned this, it is in your 'activeSystems'.
+    const myScannedSystem = 31001151; 
+
+    // 2. This is the "Neighbor" (The system where the kill happens).
+    // The bot should 'see' this via the adjacency map even if you didn't scan it.
+    const adjacentSystemID = 31000822; 
+
+    const mockZkb = {
+        totalValue: 1200000000, // 1.2 Billion ISK
+    };
+
+    const mockKillmail = {
+        killmail_id: 88888888,
+        solar_system_id: adjacentSystemID, 
+        victim: {
+            character_id: 2112041708,
+            ship_type_id: 11987 // Kronos
+        }
+    };
+
+    console.log(`📡 Simulating kill in system ${adjacentSystemID} (Neighbor of ${myScannedSystem})`);
+    await handlePrivateIntel(mockKillmail, mockZkb);
+}
