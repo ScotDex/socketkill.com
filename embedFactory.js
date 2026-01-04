@@ -24,7 +24,7 @@ class EmbedFactory {
                     { name: "Value", value: `**${totalValue}M ISK**`, inline: true },
                     { name: "System", value: `**${names.systemName}**`, inline: true },
                     { name: "Corporation", value: names.corpName, inline: false },
-                    { name: "Delivery Agent", value: `**${names.scoutName}**`, inline: true }
+                    { name: "Chain Owner", value: `**${names.scoutName}**`, inline: true }
                 ],
                 footer: { text: `WiNGSPAN Delivery Service • ${new Date().toLocaleTimeString()}` }
             }]
