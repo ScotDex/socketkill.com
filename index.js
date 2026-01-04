@@ -7,6 +7,7 @@ const EmbedFactory = require('./embedFactory');
 
 const esi = new ESIClient("Contact: @YourName");
 const mapper = new MapperService('http://api.deliverynetwork.space/data');
+const THERA_ID = 31000005;
 
 const isWormholeSystem = (systemId) => {
     return systemId >= 31000001 && systemId <= 32000000;
@@ -49,6 +50,7 @@ async function listeningStream() {
 
             if (data && data.package) {
                 const zkb = data.package.zkb;
+
                 
                 console.log(`📥 Package received. Fetching killmail details from ESI...`);
                 
@@ -57,7 +59,7 @@ async function listeningStream() {
                 
                 scanCount++;
 
-                if (isWormholeSystem(killmail.solar_system_id) && mapper.isSystemRelevant(killmail.solar_system_id)) {
+                if (isWormholeSystem(killmail.solar_system_id) && killmail.solar_system_id !== THERA_ID && mapper.isSystemRelevant(killmail.solar_system_id)) {
                     console.log(`🎯 TARGET MATCH: Kill ${data.package.killID} in system ${killmail.solar_system_id}`);
                     await handlePrivateIntel(killmail, zkb);
                 } else {
