@@ -21,7 +21,7 @@ class MapperService {
             const namesFound = [];
             const sigs = data.signatures;
             const whs = data.wormholes || {}; // Declared once here
-
+            console.log(`🔗 API Check: Found ${Object.keys(sigs).length} sigs and ${Object.keys(whs).length} wormhole connections.`);
             // 1. SIGNATURE LOOP: Build the list of scanned systems
             Object.keys(sigs).forEach(key => {
                 const sig = sigs[key];
