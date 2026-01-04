@@ -116,29 +116,24 @@ async function handlePrivateIntel(kill, zkb) {
 }
 
 async function triggerAdjacentTestKill() {
-    console.log("🧪 TRIGGERING ADJACENT SYSTEM TEST...");
+    // 1. Pick a system you KNOW is scanned (e.g., J1151 / 31001151)
+    const knownScannedSystem = 31001151;
 
-    // 1. This system is J1151 (from your logs). 
-    // If you scanned this, it is in your 'activeSystems'.
-    const myScannedSystem = 31001151; 
+    // 2. Pick a "Ghost ID" that is definitely NOT scanned (e.g., 999999)
+    const ghostSystemID = 999999;
 
-    // 2. This is the "Neighbor" (The system where the kill happens).
-    // The bot should 'see' this via the adjacency map even if you didn't scan it.
-    const adjacentSystemID = 31000822; 
-
-    const mockZkb = {
-        totalValue: 1200000000, // 1.2 Billion ISK
-    };
+    // 3. MANUALLY tell the mapper they are connected for this test
+    // This bypasses the API data just to test the Embed Label
+    if (!mapper.adjacencies.has(ghostSystemID)) {
+        mapper.adjacencies.set(ghostSystemID, new Set([knownScannedSystem]));
+    }
 
     const mockKillmail = {
-        killmail_id: 88888888,
-        solar_system_id: adjacentSystemID, 
-        victim: {
-            character_id: 2112041708,
-            ship_type_id: 11987 // Kronos
-        }
+        killmail_id: 99999,
+        solar_system_id: ghostSystemID, // The Ghost ID
+        victim: { character_id: 1, ship_type_id: 11987 }
     };
 
-    console.log(`📡 Simulating kill in system ${adjacentSystemID} (Neighbor of ${myScannedSystem})`);
-    await handlePrivateIntel(mockKillmail, mockZkb);
+    console.log(`🧪 TESTING GHOST ADJACENCY: Kill in ${ghostSystemID} connected to ${knownScannedSystem}`);
+    await handlePrivateIntel(mockKillmail, { totalValue: 500000000 });
 }
