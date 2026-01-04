@@ -1,18 +1,12 @@
 const axios = require('axios');
 
 class MapperService {
-    /**
-     * @param {string} apiUrl - The URL for the DeliveryNetwork data
-     */
     constructor(apiUrl) {
         this.apiUrl = apiUrl;
-        // CHANGED: Use a Map instead of a Set to store [systemID -> metadataObject]
         this.activeSystems = new Map();
+        this.adjacencies = new Map();
     }
 
-    /**
-     * Fetches the signature data and extracts unique system IDs and scanner names.
-     */
     async refreshChain(getSystemDetails) {
         try {
             const { data } = await axios.get(this.apiUrl);
@@ -22,22 +16,22 @@ class MapperService {
                 return false;
             }
 
-            // CHANGED: New Map to replace the old one
             const newMap = new Map();
+            const newAdjacencies = new Map();
             const namesFound = [];
             const sigs = data.signatures;
+            const whs = data.wormholes || {}; // Declared once here
 
+            // 1. SIGNATURE LOOP: Build the list of scanned systems
             Object.keys(sigs).forEach(key => {
                 const sig = sigs[key];
                 const systemID = Number(sig.systemID);
                 
                 if (systemID > 100) {
-                    // STORE METADATA: Map the ID to an object containing the scout's name
                     newMap.set(systemID, {
                         scannedBy: sig.modifiedByName || sig.createdByName || "Unknown Scout"
                     });
 
-                    // Resolve names for console logging if helper is provided
                     if (getSystemDetails) {
                         const details = getSystemDetails(systemID);
                         if (details && !namesFound.includes(details.name)) {
@@ -47,14 +41,29 @@ class MapperService {
                 }
             });
 
+            // 2. WORMHOLE LOOP: Build the Adjacency Map (Calculation Layer)
+            Object.values(whs).forEach(wh => {
+                const sigA = sigs[wh.initialID];
+                const sigB = sigs[wh.secondaryID];
+
+                if (sigA && sigB && sigA.systemID && sigB.systemID){
+                    const sysA = Number(sigA.systemID);
+                    const sysB = Number(sigB.systemID);
+                    
+                    if (!newAdjacencies.has(sysA)) newAdjacencies.set(sysA, new Set());
+                    if (!newAdjacencies.has(sysB)) newAdjacencies.set(sysB, new Set());  
+
+                    newAdjacencies.get(sysA).add(sysB);
+                    newAdjacencies.get(sysB).add(sysA);
+                }
+            });
+
             this.activeSystems = newMap;
+            this.adjacencies = newAdjacencies; // Fixed typo: was 'adjacencie'
             
             if (namesFound.length > 0) {
                 console.log(`✅ Mapper Sync: Monitoring ${this.activeSystems.size} systems: [${namesFound.join(', ')}]`);
-            } else {
-                console.log(`✅ Mapper Sync: Monitoring ${this.activeSystems.size} unique system IDs.`);
             }
-
             return true;
         } catch (err) {
             console.error("❌ Mapper Sync Error:", err.message);
@@ -62,18 +71,43 @@ class MapperService {
         }
     }
 
-    /**
-     * Checks if a system is in the chain.
-     */
+    isSystemRelevant(systemId) {
+        const id = Number(systemId);
+        // Is it one of ours?
+        if (this.activeSystems.has(id)) return true;
+
+        // Is it touching one of ours?
+        const neighbors = this.adjacencies.get(id);
+        if (neighbors) {
+            for (let neighborId of neighbors) {
+                if (this.activeSystems.has(neighborId)) return true;
+            }
+        }
+        return false;
+    }
+
     isInChain(systemId) {
         return this.activeSystems.has(Number(systemId));
     }
 
-    /**
-     * NEW HELPER: Retrieves the metadata (like scout name) for a specific system.
-     */
     getSystemMetadata(systemId) {
-        return this.activeSystems.get(Number(systemId));
+        const id = Number(systemId);
+        let meta = this.activeSystems.get(id);
+
+        if (meta){
+            return { ... meta, isAdjacent: false};
+        }
+        const neighbors = this.adjacencies.get(id);
+        if (neighbors) {
+            for (let neighborId of neighbors) {
+                const neighborMeta = this.activeSystems.get(neighborId);
+                    if (neighborMeta) {
+                        return { ...neighborMeta, isAdjacent : true};
+                    }
+                    
+                }
+            }
+        return {scannedBy: "Unknown Scout", isAdjacent: false};
     }
 }
 

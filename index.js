@@ -57,7 +57,7 @@ async function listeningStream() {
                 
                 scanCount++;
 
-                if (isWormholeSystem(killmail.solar_system_id) && mapper.isInChain(killmail.solar_system_id)) {
+                if (isWormholeSystem(killmail.solar_system_id) && mapper.isSystemRelevant(killmail.solar_system_id)) {
                     console.log(`🎯 TARGET MATCH: Kill ${data.package.killID} in system ${killmail.solar_system_id}`);
                     await handlePrivateIntel(killmail, zkb);
                 } else {
@@ -78,7 +78,7 @@ async function listeningStream() {
 
 
 async function handlePrivateIntel(kill, zkb) {
-    if (!mapper.isInChain(kill.solar_system_id)) {
+    if (!mapper.isSystemRelevant(kill.solar_system_id)) {
         return; 
     }
 
@@ -90,7 +90,8 @@ async function handlePrivateIntel(kill, zkb) {
             corpName: await esi.getCorporationName(kill.victim?.corporation_id),
             charName: await esi.getCharacterName(kill.victim?.character_id),
             systemName: esi.getSystemDetails(kill.solar_system_id)?.name || "Unknown System",
-            scoutName: metadata ? metadata.scannedBy : "Unknown Scout" // Added this
+            scoutName: metadata ? metadata.scannedBy : "Unknown Scout", // Added this
+            isAdjacent: metadata ? metadata.isAdjacent : false
         };
 
         const tripwireUrl = `https://tw.torpedodelivery.com/?system=${encodeURIComponent(names.systemName)}`;
