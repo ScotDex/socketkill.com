@@ -18,7 +18,6 @@ const isWormholeSystem = (systemId) => {
     await esi.loadCache(path.join(__dirname, 'data', 'esi_cache.json'));
 
     await mapper.refreshChain(esi.getSystemDetails.bind(esi));
-    await triggerAdjacentTestKill();
     console.log("🌌 Universe Map & Chain Loaded.");
 
     // 3. Background Sync (Every 1 minute)
@@ -113,27 +112,4 @@ async function handlePrivateIntel(kill, zkb) {
             console.error("❌ Error in handlePrivateIntel:", err.message);
         }
     }
-}
-
-async function triggerAdjacentTestKill() {
-    // 1. Pick a system you KNOW is scanned (e.g., J1151 / 31001151)
-    const knownScannedSystem = 31001151;
-
-    // 2. Pick a "Ghost ID" that is definitely NOT scanned (e.g., 999999)
-    const ghostSystemID = 999999;
-
-    // 3. MANUALLY tell the mapper they are connected for this test
-    // This bypasses the API data just to test the Embed Label
-    if (!mapper.adjacencies.has(ghostSystemID)) {
-        mapper.adjacencies.set(ghostSystemID, new Set([knownScannedSystem]));
-    }
-
-    const mockKillmail = {
-        killmail_id: 99999,
-        solar_system_id: ghostSystemID, // The Ghost ID
-        victim: { character_id: 1, ship_type_id: 11987 }
-    };
-
-    console.log(`🧪 TESTING GHOST ADJACENCY: Kill in ${ghostSystemID} connected to ${knownScannedSystem}`);
-    await handlePrivateIntel(mockKillmail, { totalValue: 500000000 });
 }
