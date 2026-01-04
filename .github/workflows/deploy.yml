@@ -1,4 +1,4 @@
-name: Deploy ISK-O-Meter
+name: Deploy Intel-Engine
 on:
   push:
     branches: [ main ]
