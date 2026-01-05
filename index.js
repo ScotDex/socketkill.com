@@ -36,8 +36,6 @@ const isWormholeSystem = (systemId) => {
     listeningStream();
 })();
 
-
-
 const QUEUE_ID = process.env.ZKILL_QUEUE_ID || 'Wingspan-TW-Monitor';
 const REDISQ_URL = `https://zkillredisq.stream/listen.php?queueID=${QUEUE_ID}`;
 
@@ -114,8 +112,6 @@ async function handlePrivateIntel(kill, zkb) {
                 console.log(`✅ [DISCORD] Intel Posted: ${names.shipName} (${formattedValue})`);
             }
         }
-
-        // TRACK B: Twitter Whale (Universal - NO Mapper Gate!)
         if (rawValue >= WHALE_THRESHOLD) {
             console.log(`🐋 WHALE DETECTED: ${formattedValue}! Tweeting...`);
             TwitterService.postWhale(names, formattedValue, kill.killmail_id);
