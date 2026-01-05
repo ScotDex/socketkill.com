@@ -4,10 +4,13 @@ const path = require('path');
 const ESIClient = require('./esi');
 const MapperService = require('./mapper');
 const EmbedFactory = require('./embedFactory');
+const TwitterService = require('./twitterService');
+const helpers = require('./helpers')
 
 const esi = new ESIClient("Contact: @YourName");
 const mapper = new MapperService('http://api.deliverynetwork.space/data');
 const THERA_ID = 31000005;
+
 
 const isWormholeSystem = (systemId) => {
     return systemId >= 31000001 && systemId <= 32000000;
@@ -80,6 +83,9 @@ async function listeningStream() {
 
 
 async function handlePrivateIntel(kill, zkb) {
+    const WHALE_THRESHOLD = 10000000; // test amount
+    //20000000000; // 20B
+
     if (!mapper.isSystemRelevant(kill.solar_system_id)) {
         return; 
     }
@@ -87,6 +93,7 @@ async function handlePrivateIntel(kill, zkb) {
     try {
 
         const metadata = mapper.getSystemMetadata(kill.solar_system_id);
+        const formattedValue = helpers.formatIsk(zkb.totalValue);
         const names = {
             shipName: await esi.getTypeName(kill.victim?.ship_type_id),
             corpName: await esi.getCorporationName(kill.victim?.corporation_id),
@@ -106,6 +113,12 @@ async function handlePrivateIntel(kill, zkb) {
             await axios.post(targetWebhook, payload);
             console.log(`✅ [INTEL] Posted: ${names.shipName} kill in ${names.systemName} (${totalValue}M ISK)`);
         }
+
+        if (zkb.totalValue >= WHALE_THRESHOLD){
+            console.log(`🐋 20B+ WHALE DETECTED! alerting X/Twitter...`);
+            TwitterService.postWhale(names, formattedValue, kill.killmail_id);
+        }
+
 
     } catch (err) {
         if (err.response?.status === 404) {

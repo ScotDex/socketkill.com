@@ -1,12 +1,10 @@
+const helpers = require('./helpers')
+
+
 class EmbedFactory {
     static createKillEmbed(kill, zkb, names, tripwireUrl) {
-        let totalValue;
-        const rawValue = zkb.totalValue || 0;
-        if (rawValue >= 1000000000) {
-            totalValue = `${(rawValue / 1000000000).toFixed(2)}B`;
-        } else {
-            totalValue = `${(rawValue / 1000000).toFixed(2)}M`;
-        }
+
+        const totalValue = helpers.formatIsk(zkb.totalValue)
         const shipIcon = `https://images.evetech.net/types/${kill.victim.ship_type_id}/render?size=128`;
         return {
             username: "Chain Intel", 
