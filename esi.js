@@ -139,8 +139,6 @@ class ESIClient{
     }
 
 
-    // Add this to your ESIClient class in esi.js
-
 
 }
 module.exports = ESIClient;

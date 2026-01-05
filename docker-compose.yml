@@ -3,13 +3,10 @@ services:
     build: .
     container_name: kill-stream-bot
     restart: always
-    # Automatically loads variables from your .env file
     env_file:
       - .env
-    # Maps the health check port to your Droplet's public port
     ports:
       - "8099:8099"
-    # Setting resource limits prevents the bot from eating all Droplet RAM
     volumes:
       - "./data:/usr/src/app/data"
     deploy:

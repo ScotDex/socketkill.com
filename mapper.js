@@ -1,5 +1,4 @@
 const axios = require('axios');
-
 class MapperService {
     constructor(apiUrl) {
         this.apiUrl = apiUrl;
@@ -10,13 +9,12 @@ class MapperService {
     getSystemsCount() { 
     return this.activeSystems ? this.activeSystems.size : 0; 
 }
-
     async refreshChain(getSystemDetails) {
         try {
             const { data } = await axios.get(this.apiUrl);
             
             if (!data || !data.signatures) {
-                console.error("❌ Mapper Error: No signatures found in API response.");
+                console.error("Mapper Error: No signatures found in API response.");
                 return false;
             }
 
@@ -24,9 +22,8 @@ class MapperService {
             const newAdjacencies = new Map();
             const namesFound = [];
             const sigs = data.signatures;
-            const whs = data.wormholes || {}; // Declared once here
-            console.log(`🔗 API Check: Found ${Object.keys(sigs).length} sigs and ${Object.keys(whs).length} wormhole connections.`);
-            // 1. SIGNATURE LOOP: Build the list of scanned systems
+            const whs = data.wormholes || {}; 
+            console.log(`API Check: Found ${Object.keys(sigs).length} sigs and ${Object.keys(whs).length} wormhole connections.`);
             Object.keys(sigs).forEach(key => {
                 const sig = sigs[key];
                 const systemID = Number(sig.systemID);
@@ -63,7 +60,7 @@ class MapperService {
             });
 
             this.activeSystems = newMap;
-            this.adjacencies = newAdjacencies; // Fixed typo: was 'adjacencie'
+            this.adjacencies = newAdjacencies; 
             
             if (namesFound.length > 0) {
                 console.log(`✅ Mapper Sync: Monitoring ${this.activeSystems.size} systems: [${namesFound.join(', ')}]`);
@@ -74,13 +71,10 @@ class MapperService {
             return false;
         }
     }
-
     isSystemRelevant(systemId) {
         const id = Number(systemId);
-        // Is it one of ours?
+       
         if (this.activeSystems.has(id)) return true;
-
-        // Is it touching one of ours?
         const neighbors = this.adjacencies.get(id);
         if (neighbors) {
             for (let neighborId of neighbors) {

@@ -9,7 +9,7 @@ class HeartbeatService {
             username: "Chain Intel Status",
             avatar_url: "https://images.evetech.net/types/22430/icon",
             embeds: [{
-                title: "🛰️ Daily System Heartbeat",
+                title: "Daily System Heartbeat",
                 color: 0x2ecc71, 
                 fields: [
                     { name: "Uptime", value: `**${uptimeStr}**`, inline: true },
@@ -23,9 +23,9 @@ class HeartbeatService {
 
         try {
             await axios.post(webhookUrl, payload);
-            console.log("💚 Heartbeat report sent to Discord.");
+            console.log("Heartbeat report sent to Discord.");
         } catch (err) {
-            console.error("❌ Heartbeat report failed:", err.message);
+            console.error(" Heartbeat report failed:", err.message);
         }
     }
 }
