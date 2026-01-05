@@ -44,7 +44,7 @@ const REDISQ_URL = `https://zkillredisq.stream/listen.php?queueID=${QUEUE_ID}`;
 
 let scanCount = 0;
 async function listeningStream() {
-    const WHALE_THRESHOLD = 10000000;
+    const WHALE_THRESHOLD = 20000000000;
     console.log(`📡 Listening to zKillboard Queue: ${QUEUE_ID}`);
     
     while (true) {
@@ -86,7 +86,7 @@ async function listeningStream() {
 
 async function handlePrivateIntel(kill, zkb) {
     // 1. Setup our Threshold inside this function too
-    const WHALE_THRESHOLD = 10000000; 
+    const WHALE_THRESHOLD = 20000000000; 
     const rawValue = Number(zkb.totalValue) || 0;
     const formattedValue = helpers.formatIsk(rawValue);
 
