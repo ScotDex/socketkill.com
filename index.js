@@ -6,6 +6,12 @@ const MapperService = require('./mapper');
 const EmbedFactory = require('./embedFactory');
 const TwitterService = require('./twitterService');
 const helpers = require('./helpers')
+const HeartbeatService = require('./heartbeatService');
+
+const stats = {
+    startTime: new Date(),
+    scanCount: 0
+};
 
 const esi = new ESIClient("Contact: @YourName");
 const mapper = new MapperService('http://api.deliverynetwork.space/data');
@@ -51,6 +57,7 @@ async function listeningStream() {
             const data = response.data;
 
             if (data && data.package) {
+                stats.scanCount++;
                 const zkb = data.package.zkb;
                 const rawValue = Number(zkb.totalValue) || 0;
 
@@ -59,6 +66,7 @@ async function listeningStream() {
                 const killmail = esiResponse.data; 
                 
                 scanCount++;
+                
 
                 const isWhale = rawValue >= WHALE_THRESHOLD;
 
@@ -121,3 +129,11 @@ async function handlePrivateIntel(kill, zkb) {
         console.error("❌ Error in handlePrivateIntel:", err.message);
     }
 }
+
+// Send report every 24 hours
+setInterval(() => {
+    HeartbeatService.sendReport(process.env.INTEL_WEBHOOK_URL, stats, mapper, esi);
+    stats.scanCount = 0; // Reset counter for the new day
+},  60 * 1000);
+
+//24 * 60 *

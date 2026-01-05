@@ -7,6 +7,8 @@ class MapperService {
         this.adjacencies = new Map();
     }
 
+    getSystemsCount() { return Object.keys(this.chainData).length; }
+
     async refreshChain(getSystemDetails) {
         try {
             const { data } = await axios.get(this.apiUrl);
