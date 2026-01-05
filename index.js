@@ -86,6 +86,8 @@ async function handlePrivateIntel(kill, zkb) {
     const WHALE_THRESHOLD = 10000000; // test amount
     //20000000000; // 20B
 
+    console.log(`🔍 DEBUG: System: ${kill.solar_system_id} | Value: ${zkb.totalValue}`);
+
     if (!mapper.isSystemRelevant(kill.solar_system_id)) {
         return; 
     }
