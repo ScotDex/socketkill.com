@@ -44,6 +44,7 @@ const REDISQ_URL = `https://zkillredisq.stream/listen.php?queueID=${QUEUE_ID}`;
 
 let scanCount = 0;
 async function listeningStream() {
+    const WHALE_THRESHOLD = 10000000;
     console.log(`📡 Listening to zKillboard Queue: ${QUEUE_ID}`);
     
     while (true) {
@@ -53,16 +54,17 @@ async function listeningStream() {
 
             if (data && data.package) {
                 const zkb = data.package.zkb;
+                const rawValue = Number(zkb.totalValue) || 0;
 
-                
                 console.log(`📥 Package received. Fetching killmail details from ESI...`);
-                
                 const esiResponse = await axios.get(zkb.href);
                 const killmail = esiResponse.data; 
                 
                 scanCount++;
 
-                if (isWormholeSystem(killmail.solar_system_id) && killmail.solar_system_id !== THERA_ID && mapper.isSystemRelevant(killmail.solar_system_id)) {
+                const isWhale = rawValue >= WHALE_THRESHOLD;
+
+                if (isWhale || (isWormholeSystem(killmail.solar_system_id) && killmail.solar_system_id !== THERA_ID && mapper.isSystemRelevant(killmail.solar_system_id))) {
                     console.log(`🎯 TARGET MATCH: Kill ${data.package.killID} in system ${killmail.solar_system_id}`);
                     await handlePrivateIntel(killmail, zkb);
                 } else {
@@ -83,50 +85,43 @@ async function listeningStream() {
 
 
 async function handlePrivateIntel(kill, zkb) {
-    const WHALE_THRESHOLD = 10000000; // test amount
-    //20000000000; // 20B
+    // 1. Setup our Threshold inside this function too
+    const WHALE_THRESHOLD = 10000000; 
+    const rawValue = Number(zkb.totalValue) || 0;
+    const formattedValue = helpers.formatIsk(rawValue);
 
-    console.log(`🔍 DEBUG: System: ${kill.solar_system_id} | Value: ${zkb.totalValue}`);
-
-    if (!mapper.isSystemRelevant(kill.solar_system_id)) {
-        return; 
-    }
+    console.log(`🔍 DEBUG: System: ${kill.solar_system_id} | Value: ${formattedValue}`);
 
     try {
-
-        const metadata = mapper.getSystemMetadata(kill.solar_system_id);
-        const formattedValue = helpers.formatIsk(zkb.totalValue);
         const names = {
             shipName: await esi.getTypeName(kill.victim?.ship_type_id),
-            corpName: await esi.getCorporationName(kill.victim?.corporation_id),
-            charName: await esi.getCharacterName(kill.victim?.character_id),
-            systemName: esi.getSystemDetails(kill.solar_system_id)?.name || "Unknown System",
-            scoutName: metadata ? metadata.scannedBy : "Unknown Scout", // Added this
-            isAdjacent: metadata ? metadata.isAdjacent : false
+            systemName: esi.getSystemDetails(kill.solar_system_id)?.name || "Unknown System"
         };
 
-        const tripwireUrl = `https://tw.torpedodelivery.com/?system=${encodeURIComponent(names.systemName)}`;
+        // TRACK A: Discord Intel (Gated by Mapper)
+        if (mapper.isSystemRelevant(kill.solar_system_id)) {
+            const metadata = mapper.getSystemMetadata(kill.solar_system_id);
+            names.corpName = await esi.getCorporationName(kill.victim?.corporation_id);
+            names.charName = await esi.getCharacterName(kill.victim?.character_id);
+            names.scoutName = metadata ? metadata.scannedBy : "Unknown Scout";
+            names.isAdjacent = metadata ? metadata.isAdjacent : false;
 
-        const payload = EmbedFactory.createKillEmbed(kill, zkb, names, tripwireUrl);
-        const totalValue = (zkb.totalValue / 1000000).toFixed(2);
-        const targetWebhook = process.env.INTEL_WEBHOOK_URL;
-
-        if (targetWebhook) {
-            await axios.post(targetWebhook, payload);
-            console.log(`✅ [INTEL] Posted: ${names.shipName} kill in ${names.systemName} (${totalValue}M ISK)`);
+            const tripwireUrl = `https://tw.torpedodelivery.com/?system=${encodeURIComponent(names.systemName)}`;
+            const payload = EmbedFactory.createKillEmbed(kill, zkb, names, tripwireUrl);
+            
+            if (process.env.INTEL_WEBHOOK_URL) {
+                await axios.post(process.env.INTEL_WEBHOOK_URL, payload);
+                console.log(`✅ [DISCORD] Intel Posted: ${names.shipName} (${formattedValue})`);
+            }
         }
 
-        if (zkb.totalValue >= WHALE_THRESHOLD){
-            console.log(`🐋 20B+ WHALE DETECTED! alerting X/Twitter...`);
+        // TRACK B: Twitter Whale (Universal - NO Mapper Gate!)
+        if (rawValue >= WHALE_THRESHOLD) {
+            console.log(`🐋 WHALE DETECTED: ${formattedValue}! Tweeting...`);
             TwitterService.postWhale(names, formattedValue, kill.killmail_id);
         }
 
-
     } catch (err) {
-        if (err.response?.status === 404) {
-            console.error("❌ Webhook Error: Your INTEL_WEBHOOK_URL in .env returned a 404. Check the link!");
-        } else {
-            console.error("❌ Error in handlePrivateIntel:", err.message);
-        }
+        console.error("❌ Error in handlePrivateIntel:", err.message);
     }
 }
