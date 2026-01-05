@@ -7,7 +7,9 @@ class MapperService {
         this.adjacencies = new Map();
     }
 
-    getSystemsCount() { return Object.keys(this.chainData).length; }
+    getSystemsCount() { 
+    return this.activeSystems ? this.activeSystems.size : 0; 
+}
 
     async refreshChain(getSystemDetails) {
         try {
