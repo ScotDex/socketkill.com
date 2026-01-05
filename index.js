@@ -134,6 +134,5 @@ async function handlePrivateIntel(kill, zkb) {
 setInterval(() => {
     HeartbeatService.sendReport(process.env.INTEL_WEBHOOK_URL, stats, mapper, esi);
     stats.scanCount = 0; // Reset counter for the new day
-},  60 * 1000);
+},  24 * 60 * 60 * 1000);
 
-//24 * 60 *
