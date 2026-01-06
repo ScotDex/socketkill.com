@@ -1,3 +1,9 @@
+/**
+ * Project: WiNGSPAN Intel & Whale Hunter
+ * Author: Dexomus Viliana (scottishdex)
+ * Version: 1.0.0
+ */
+
 require('dotenv').config();
 const axios = require('axios');
 const path = require('path');
