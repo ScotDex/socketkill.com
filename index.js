@@ -79,8 +79,8 @@ async function listeningStream() {
 
 
 
-                const shipName = await esi.getTypeName(zkb.ship_type_id);
-                const systemDetails = esi.getSystemDetails(zkb.solar_system_id);
+                const shipName = await esi.getTypeName(killmail.victime.ship_type_id);
+                const systemDetails = esi.getSystemDetails(killmail.solar_system_id);
                 const systemName = systemDetails ? systemDetails.name : "Unknown System";
                 io.emit('raw-kill', {
                     id: data.package.killID,
@@ -88,12 +88,14 @@ async function listeningStream() {
                     ship: shipName,
                     system: systemName,
                     region: systemDetails ? systemDetails.regionName : "Unknown",
-                    shipId: zkb.ship_type_id,
+                    shipId: killmail.ship_type_id,
                     href: data.package.zkb.href
                 });
                 stats.scanCount++;
 
+                const [victimName, corpName] = await Promise.all([
 
+                ])
 
                 scanCount++;
                 
