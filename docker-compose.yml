@@ -7,12 +7,13 @@ services:
       - .env
     ports:
       - "8099:8099"
+      - "1098:1098"
     volumes:
       - "./data:/usr/src/app/data"
     deploy:
       resources:
         limits:
-          memory: 256M
+          memory: 128M
     logging:
       driver: "json-file"
       options:
