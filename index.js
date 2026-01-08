@@ -13,6 +13,7 @@ const EmbedFactory = require('./embedFactory');
 const TwitterService = require('./twitterService');
 const helpers = require('./helpers')
 const HeartbeatService = require('./heartbeatService');
+const startWebServer = require('./webServer');
 
 const stats = {
     startTime: new Date(),
@@ -44,7 +45,8 @@ const isWormholeSystem = (systemId) => {
     // 4. Start the Engine
     axios.post(process.env.INTEL_WEBHOOK_URL, { content: "Online" })
         .catch(err => console.error("Test Ping Failed:", err.message));
-
+    startWebServer(esi);
+    console.log("🚀 Web Server Module Ready.");
     listeningStream();
 })();
 
