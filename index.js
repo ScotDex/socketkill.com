@@ -75,23 +75,26 @@ async function listeningStream() {
 
                 console.log(`📥 Package received. Fetching killmail details from ESI...`);
                 const esiResponse = await axios.get(zkb.href);
-                const killmail = esiResponse.data; 
+                const killmail = esiResponse.data;
 
-    const shipName = await esi.getTypeName(killmail.victim.ship_type_id);
-    const systemDetails = esi.getSystemDetails(killmail.solar_system_id);
-    const systemName = systemDetails ? systemDetails.name : "Unknown System";
+
+
+                const shipName = await esi.getTypeName(zkb.ship_type_id);
+                const systemDetails = esi.getSystemDetails(zkb.solar_system_id);
+                const systemName = systemDetails ? systemDetails.name : "Unknown System";
                 io.emit('raw-kill', {
                     id: data.package.killID,
                     val: Number(data.package.zkb.totalValue),
                     ship: shipName,
                     system: systemName,
                     region: systemDetails ? systemDetails.regionName : "Unknown",
+                    shipId: zkb.ship_type_id,
                     href: data.package.zkb.href
                 });
                 stats.scanCount++;
-                
-                
-                
+
+
+
                 scanCount++;
                 
 

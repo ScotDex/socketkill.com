@@ -8,7 +8,7 @@ class ESIClient{
             baseURL: "https://esi.evetech.net/latest",
             timeout: 15000,
             headers: {
-                'User-Agent': `KillBot (${contactInfo})`,
+                'User-Agent': `KillStream (${contactInfo})`,
             }
         });
 
