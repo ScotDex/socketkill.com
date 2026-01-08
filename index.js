@@ -14,6 +14,7 @@ const TwitterService = require('./twitterService');
 const helpers = require('./helpers')
 const HeartbeatService = require('./heartbeatService');
 const startWebServer = require('./webServer');
+const { promiseHooks } = require('v8');
 
 const esi = new ESIClient("Contact: @YourName");
 const { app, io } = startWebServer(esi);
@@ -54,13 +55,13 @@ const isWormholeSystem = (systemId) => {
 })();
 
 const QUEUE_ID = process.env.ZKILL_QUEUE_ID || 'Wingspan-TW-Monitor';
-const REDISQ_URL = `https://zkillredisq.stream/listen.php?queueID=${QUEUE_ID}`;
+const REDISQ_URL = `https://zkillredisq.stream/listen.php?queueID=${QUEUE_ID}&ttw=1`;
 
 
 let scanCount = 0;
 async function listeningStream() {
     const WHALE_THRESHOLD = 20000000000;
-    console.log(`📡 Listening to zKillboard Queue: ${QUEUE_ID}`);
+    console.log(`📡 Listening to zKillboard Queue: ${QUEUE_ID}`)
     
     while (true) {
         try {
@@ -74,8 +75,11 @@ async function listeningStream() {
                 console.log(`📥 Package received. Fetching killmail details from ESI...`);
                 const esiResponse = await axios.get(zkb.href);
                 const killmail = esiResponse.data;
-                const shipName = await esi.getTypeName(killmail.victim.ship_type_id);
-                const systemDetails = esi.getSystemDetails(killmail.solar_system_id);
+
+                const[shipName, getSystemDetails] = await Promise.all([
+                    esi.getTypeName(killmail.victim.ship_type_id),
+                    esi.getSystemDetails(killmail.solar_system_id)
+                ])
                 const systemName = systemDetails ? systemDetails.name : "Unknown System";
                 io.emit('raw-kill', {
                     id: data.package.killID,
