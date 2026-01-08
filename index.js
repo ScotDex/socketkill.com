@@ -15,6 +15,7 @@ const helpers = require('./helpers')
 const HeartbeatService = require('./heartbeatService');
 const startWebServer = require('./webServer');
 
+const esi = new ESIClient("Contact: @YourName");
 const { app, io } = startWebServer(esi);
 
 const stats = {
@@ -22,7 +23,7 @@ const stats = {
     scanCount: 0
 };
 
-const esi = new ESIClient("Contact: @YourName");
+
 const mapper = new MapperService('http://api.deliverynetwork.space/data');
 const THERA_ID = 31000005;
 
