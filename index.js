@@ -71,6 +71,9 @@ async function listeningStream() {
                 io.emit('raw-kill', {
                     id: data.package.killID,
                     val: Number(data.package.zkb.totalValue),
+                    ship: shipName,
+                    system: systemName,
+                    region: systemDetails ? systemDetails.regionName : "Unknown",
                     href: data.package.zkb.href
                 });
                 stats.scanCount++;
