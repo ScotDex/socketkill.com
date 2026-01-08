@@ -68,6 +68,10 @@ async function listeningStream() {
             const data = response.data;
 
             if (data && data.package) {
+
+    const shipName = await esi.getTypeName(killmail.victim.ship_type_id);
+    const systemDetails = esi.getSystemDetails(killmail.solar_system_id);
+    const systemName = systemDetails ? systemDetails.name : "Unknown System";
                 io.emit('raw-kill', {
                     id: data.package.killID,
                     val: Number(data.package.zkb.totalValue),
