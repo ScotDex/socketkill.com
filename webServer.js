@@ -1,4 +1,5 @@
 const express = require('express');
+const cors = require('cors');
 const path = require('path');
 
 /**
@@ -6,6 +7,7 @@ const path = require('path');
  */
 function startWebServer(esi) {
     const app = express();
+    app.use(cors());
     const PORT = process.env.PORT || 1098;
 
     app.use(express.json());
