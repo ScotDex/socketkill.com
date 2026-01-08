@@ -71,14 +71,9 @@ async function listeningStream() {
 
                 const zkb = data.package.zkb;
                 const rawValue = Number(zkb.totalValue) || 0;
-
-
                 console.log(`📥 Package received. Fetching killmail details from ESI...`);
                 const esiResponse = await axios.get(zkb.href);
                 const killmail = esiResponse.data;
-
-
-
                 const shipName = await esi.getTypeName(killmail.victime.ship_type_id);
                 const systemDetails = esi.getSystemDetails(killmail.solar_system_id);
                 const systemName = systemDetails ? systemDetails.name : "Unknown System";
@@ -88,7 +83,7 @@ async function listeningStream() {
                     ship: shipName,
                     system: systemName,
                     region: systemDetails ? systemDetails.regionName : "Unknown",
-                    shipId: killmail.ship_type_id,
+                    shipId: killmail.victim.ship_type_id,
                     href: data.package.zkb.href
                 });
                 stats.scanCount++;
@@ -96,10 +91,7 @@ async function listeningStream() {
                 const [victimName, corpName] = await Promise.all([
 
                 ])
-
                 scanCount++;
-                
-
                 const isWhale = rawValue >= WHALE_THRESHOLD;
 
                 if (isWhale || (isWormholeSystem(killmail.solar_system_id) && killmail.solar_system_id !== THERA_ID && mapper.isSystemRelevant(killmail.solar_system_id))) {
