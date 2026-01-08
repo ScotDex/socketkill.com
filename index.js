@@ -76,19 +76,32 @@ async function listeningStream() {
                 const esiResponse = await axios.get(zkb.href);
                 const killmail = esiResponse.data;
 
-                const[shipName, systemDetails] = await Promise.all([
+                // Inside while(true) loop after const killmail = esiResponse.data;
+
+                // Find the attacker who got the "Final Blow"
+                const finalBlowAttacker = killmail.attackers.find(a => a.final_blow === true) || killmail.attackers[0];
+
+                const [shipName, systemDetails, victimName, victimCorp, attackerName, attackerCorp] = await Promise.all([
                     esi.getTypeName(killmail.victim.ship_type_id),
-                    esi.getSystemDetails(killmail.solar_system_id)
-                ])
-                const systemName = systemDetails ? systemDetails.name : "Unknown System";
+                    esi.getSystemDetails(killmail.solar_system_id),
+                    esi.getCharacterName(killmail.victim.character_id),
+                    esi.getCorporationName(killmail.victim.corporation_id),
+                    esi.getCharacterName(finalBlowAttacker?.character_id),
+                    esi.getCorporationName(finalBlowAttacker?.corporation_id)
+                ]);
+
                 io.emit('raw-kill', {
                     id: data.package.killID,
                     val: Number(data.package.zkb.totalValue),
                     ship: shipName,
-                    system: systemName,
-                    region: systemDetails ? systemDetails.regionName : "Unknown",
                     shipId: killmail.victim.ship_type_id,
-                    href: data.package.zkb.href
+                    system: systemDetails ? systemDetails.name : "Unknown",
+                    region: systemDetails ? systemDetails.regionName : "Unknown",
+                    // New fields for the table columns
+                    victimName: victimName || "Unknown Pilot",
+                    victimCorp: victimCorp || "Unknown Corp",
+                    attackerName: attackerName || "NPC / Unknown",
+                    attackerCorp: attackerCorp || ""
                 });
                 stats.scanCount++;
 
