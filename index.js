@@ -92,9 +92,6 @@ async function listeningStream() {
                 });
                 stats.scanCount++;
 
-                const [victimName, corpName] = await Promise.all([
-
-                ])
                 scanCount++;
                 const isWhale = rawValue >= WHALE_THRESHOLD;
 

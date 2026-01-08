@@ -15,11 +15,10 @@ const twitterClient = new TwitterApi({
   accessSecret: process.env.TWITTER_ACCESS_SECRET,
 });
 
-
 class TwitterService {
     static async postWhale (names, formattedValue, killId){
         try {
-            const status = `🚨 WHALE ALERT 🚨\n\nA ${names.shipName} worth ${formattedValue}ISK was destroyed - View: https://zkillboard.com/kill/${killId}/ \n\n#EveOnline`;
+            const status = ` Big Kill - A ${names.shipName} worth ${formattedValue}ISK was destroyed - Link: https://zkillboard.com/kill/${killId}/ \n\n #TweetFleet #EveOnline`;
             await twitterClient.v2.tweet(status);
             console.log(`Tweet posted for Kill #${killId}`);
         } catch (err) {
