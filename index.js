@@ -69,6 +69,10 @@ async function listeningStream() {
 
             if (data && data.package) {
 
+                console.log(`📥 Package received. Fetching killmail details from ESI...`);
+                const esiResponse = await axios.get(zkb.href);
+                const killmail = esiResponse.data; 
+
     const shipName = await esi.getTypeName(killmail.victim.ship_type_id);
     const systemDetails = esi.getSystemDetails(killmail.solar_system_id);
     const systemName = systemDetails ? systemDetails.name : "Unknown System";
@@ -84,9 +88,7 @@ async function listeningStream() {
                 const zkb = data.package.zkb;
                 const rawValue = Number(zkb.totalValue) || 0;
 
-                console.log(`📥 Package received. Fetching killmail details from ESI...`);
-                const esiResponse = await axios.get(zkb.href);
-                const killmail = esiResponse.data; 
+                
                 
                 scanCount++;
                 
