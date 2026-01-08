@@ -15,6 +15,8 @@ const helpers = require('./helpers')
 const HeartbeatService = require('./heartbeatService');
 const startWebServer = require('./webServer');
 
+const { app, io } = startWebServer(esi);
+
 const stats = {
     startTime: new Date(),
     scanCount: 0
@@ -45,7 +47,7 @@ const isWormholeSystem = (systemId) => {
     // 4. Start the Engine
     axios.post(process.env.INTEL_WEBHOOK_URL, { content: "Online" })
         .catch(err => console.error("Test Ping Failed:", err.message));
-    startWebServer(esi);
+    
     console.log("🚀 Web Server Module Ready.");
     listeningStream();
 })();
@@ -65,6 +67,11 @@ async function listeningStream() {
             const data = response.data;
 
             if (data && data.package) {
+                io.emit('raw-kill', {
+                    id: data.package.killID,
+                    val: Number(data.package.zkb.totalValue),
+                    href: data.package.zkb.href
+                });
                 stats.scanCount++;
                 const zkb = data.package.zkb;
                 const rawValue = Number(zkb.totalValue) || 0;
