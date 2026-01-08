@@ -101,7 +101,8 @@ async function listeningStream() {
                     victimName: victimName || "Unknown Pilot",
                     victimCorp: victimCorp || "Unknown Corp",
                     attackerName: attackerName || "NPC / Unknown",
-                    attackerCorp: attackerCorp || ""
+                    attackerCorp: attackerCorp || "",
+                    href: data.package.zkb.href
                 });
                 stats.scanCount++;
 
