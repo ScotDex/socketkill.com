@@ -76,7 +76,7 @@ async function listeningStream() {
                 const esiResponse = await axios.get(zkb.href);
                 const killmail = esiResponse.data;
 
-                const[shipName, getsystemDetails] = await Promise.all([
+                const[shipName, systemDetails] = await Promise.all([
                     esi.getTypeName(killmail.victim.ship_type_id),
                     esi.getSystemDetails(killmail.solar_system_id)
                 ])
