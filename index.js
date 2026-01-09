@@ -36,18 +36,13 @@ const isWormholeSystem = (systemId) => {
     console.log("Initializing Tripwire Kill Monitor...");
     await esi.loadSystemCache('./data/systems.json');
     await esi.loadCache(path.join(__dirname, 'data', 'esi_cache.json'));
-
     await mapper.refreshChain(esi.getSystemDetails.bind(esi));
     console.log("🌌 Universe Map & Chain Loaded.");
-
-    // 3. Background Sync (Every 1 minute)
     setInterval(() => {
         mapper.refreshChain(esi.getSystemDetails.bind(esi));
     }, 1 * 60 * 1000);
-
-    // 4. Start the Engine
-    axios.post(process.env.INTEL_WEBHOOK_URL, { content: "Online" })
-        .catch(err => console.error("Test Ping Failed:", err.message));
+   // axios.post(process.env.INTEL_WEBHOOK_URL, { content: "Online" })
+     //   .catch(err => console.error("Test Ping Failed:", err.message));
     
     console.log("🚀 Web Server Module Ready.");
     listeningStream();
@@ -55,7 +50,6 @@ const isWormholeSystem = (systemId) => {
 
 const QUEUE_ID = process.env.ZKILL_QUEUE_ID || 'Wingspan-TW-Monitor';
 const REDISQ_URL = `https://zkillredisq.stream/listen.php?queueID=${QUEUE_ID}&ttw=1`;
-
 
 let scanCount = 0;
 async function listeningStream() {
@@ -136,7 +130,6 @@ async function listeningStream() {
         }
     }
 }
-
 
 async function handlePrivateIntel(kill, zkb) {
     // 1. Setup our Threshold inside this function too
