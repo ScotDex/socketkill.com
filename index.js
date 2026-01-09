@@ -64,60 +64,64 @@ async function listeningStream() {
     
     while (true) {
         try {
-            // 1. Hit the listen endpoint (Axios will follow the redirect to /object.php)
+            // 1. Fetch from RedisQ (follows redirect to object.php automatically)
             const response = await axios.get(REDISQ_URL, { 
                 timeout: 20000,
-                maxRedirects: 5 // Ensure we handle the /object.php redirect
+                maxRedirects: 5 
             });
             
             const pack = response.data?.package;
-
-            // RedisQ returns {"package":null} if no kills for 10s
             if (!pack) {
                 console.log("⏳ RedisQ: Null package (10s window).");
                 continue; 
             }
 
-            // 2. Extract zkb metadata
             const zkb = pack.zkb;
             if (!zkb || !zkb.href) continue;
 
-            // 3. FETCH FULL KILLMAIL (Required as of Dec 1, 2025)
-            // The documentation states we MUST fetch from the provided href
+            // 2. Fetch Full Killmail from ESI
             const esiKillResponse = await axios.get(zkb.href);
             const killmail = esiKillResponse.data;
-            const victim = killmail.victim;
 
-            // 4. Resolve Names via your ESI Client
+            // 3. Centralized Name Resolution (Do it once!)
             const systemInfo = esi.getSystemDetails(killmail.solar_system_id);
-            const finalBlowAttacker = killmail.attackers.find(a => a.final_blow) || killmail.attackers[0];
+            const victim = killmail.victim;
+            const finalBlow = killmail.attackers.find(a => a.final_blow) || killmail.attackers[0];
 
             const [shipName, victimName, victimCorp, attackerName, attackerCorp] = await Promise.all([
                 esi.getTypeName(victim.ship_type_id),
                 esi.getCharacterName(victim.character_id),
                 esi.getCorporationName(victim.corporation_id),
-                esi.getCharacterName(finalBlowAttacker?.character_id),
-                esi.getCorporationName(finalBlowAttacker?.corporation_id)
+                esi.getCharacterName(finalBlow?.character_id),
+                esi.getCorporationName(finalBlow?.corporation_id)
             ]);
 
-            // 5. Emit to Socket
+            const resolvedNames = {
+                shipName,
+                victimName,
+                victimCorp,
+                attackerName,
+                attackerCorp,
+                systemName: systemInfo.name,
+                regionName: systemInfo.regionName
+            };
+
+            // 4. Emit to Socket
             io.emit('raw-kill', {
                 id: pack.killID,
                 val: Number(zkb.totalValue),
                 ship: shipName,
-                shipId: victim.ship_type_id,
                 system: systemInfo.name,
-                region: systemInfo.regionName,
                 victimName,
-                victimCorp,
-                attackerName,
-                attackerCorp
+                attackerName
             });
+
+            // 5. Pass to Intel Handler (Pass resolvedNames to avoid double-fetching)
+            await handlePrivateIntel(killmail, zkb, resolvedNames);
 
             stats.scanCount++;
 
         } catch (err) {
-            // Handle the 429 "Too Many Requests" from CloudFlare
             const delay = err.response?.status === 429 ? 5000 : 2000;
             console.error(`❌ Loop Error: ${err.message}`);
             await new Promise(res => setTimeout(res, delay));
