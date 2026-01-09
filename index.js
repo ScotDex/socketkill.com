@@ -54,7 +54,7 @@ const isWormholeSystem = (systemId) => {
     await esi.loadSystemCache('./data/systems.json');
     await esi.loadCache(path.join(__dirname, 'data', 'esi_cache.json'));
     await mapper.refreshChain(esi.getSystemDetails.bind(esi));
-    await refreshNasaBackground();
+    refreshNasaBackground();
     console.log("🌌 Universe Map, Background & Chain Loaded.");
     setInterval(() => {
         mapper.refreshChain(esi.getSystemDetails.bind(esi));
