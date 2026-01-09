@@ -80,7 +80,6 @@ async function listeningStream() {
                 const victim = killmail.victim;
                 // Find the attacker who got the "Final Blow"
                 const finalBlowAttacker = killmail.attackers.find(a => a.final_blow === true) || killmail.attackers[0];
-                const systemInfo = mapper.getSystem(killmail.solar_system_id) || { name: "Unknown", regionName: "Unknown" };
                 const [shipName, victimName, victimCorp, attackerName, attackerCorp] = await Promise.all([
                     esi.getTypeName(victim.ship_type_id),
                     esi.getCharacterName(victim.character_id),
