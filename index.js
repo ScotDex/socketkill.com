@@ -23,15 +23,11 @@ const stats = {
     startTime: new Date(),
     scanCount: 0
 };
-
 const mapper = new MapperService(process.env.WINGSPAN_API)
 const THERA_ID = 31000005;
-
-
 const isWormholeSystem = (systemId) => {
     return systemId >= 31000001 && systemId <= 32000000;
 };
-
 ;(async () => {
     console.log("Initializing Tripwire Kill Monitor...");
     await esi.loadSystemCache('./data/systems.json');
@@ -62,19 +58,15 @@ async function listeningStream() {
             const data = response.data;
 
             if (data && data.package) {
-
                 const zkb = data.package.zkb;
                 const rawValue = Number(zkb.totalValue) || 0;
-                
                 const esiResponse = await axios.get(zkb.href);
                 const killmail = esiResponse.data;
-
                 const [shipName, systemDetails] = await Promise.all([
                     esi.getTypeName(killmail.victim.ship_type_id),
                     esi.getSystemDetails(killmail.solar_system_id)
                 ])
                 const systemName = systemDetails ? systemDetails.name : "Unknown System";
-                // 1. Get the Constellation ID from your local cache (it's already loaded)
                 const constellationId = systemDetails ? systemDetails.constellation_id : null;
                 let regionName = "K-Space";
                 let realRegionId = "Unknown";
@@ -89,12 +81,9 @@ async function listeningStream() {
                         // 3. Resolve the name using your helper (saves to esi_cache.json)
                         regionName = await esi.getRegionName(constellationReq.data.region_id);
                     } catch (err) {
-                        console.error("Region bridge failed:", err.message);
+                        console.error("Resolving region failed:", err.message);
                     }
                 }
-
-                // 3. Log it so you can see it working in the console
-                console.log(`📍 System: ${systemName} | Real Region ID: ${realRegionId} | Name: ${regionName}`);
 
                 console.log(`Killmail recieved, processing...`);
                 const shipImageUrl = `https://images.evetech.net/types/${killmail.victim.ship_type_id}/render?size=64`;
@@ -113,7 +102,7 @@ async function listeningStream() {
                 const isWhale = rawValue >= WHALE_THRESHOLD;
 
                 if (isWhale || (isWormholeSystem(killmail.solar_system_id) && killmail.solar_system_id !== THERA_ID && mapper.isSystemRelevant(killmail.solar_system_id))) {
-                    console.log(`🎯 TARGET MATCH: Kill ${data.package.killID} in system ${killmail.solar_system_id}`);
+                    console.log(`Kill ${data.package.killID} in system ${killmail.solar_system_id}`);
                     await handlePrivateIntel(killmail, zkb);
                 } else {
                     if (scanCount % 500 === 0) {
@@ -136,9 +125,6 @@ async function handlePrivateIntel(kill, zkb) {
     const WHALE_THRESHOLD = 20000000000; 
     const rawValue = Number(zkb.totalValue) || 0;
     const formattedValue = helpers.formatIsk(rawValue);
-
-    console.log(`🔍 DEBUG: System: ${kill.solar_system_id} | Value: ${formattedValue}`);
-
     try {
         const names = {
             shipName: await esi.getTypeName(kill.victim?.ship_type_id),
@@ -152,7 +138,6 @@ async function handlePrivateIntel(kill, zkb) {
             names.charName = await esi.getCharacterName(kill.victim?.character_id);
             names.scoutName = metadata ? metadata.scannedBy : "Unknown Scout";
             names.isAdjacent = metadata ? metadata.isAdjacent : false;
-
             const tripwireUrl = `${process.env.TRIPWIRE_URL}?system=${encodeURIComponent(names.systemName)}`;
             const payload = EmbedFactory.createKillEmbed(kill, zkb, names, tripwireUrl);
             
@@ -165,15 +150,12 @@ async function handlePrivateIntel(kill, zkb) {
             console.log(`🐋 WHALE DETECTED: ${formattedValue}! Tweeting...`);
             TwitterService.postWhale(names, formattedValue, kill.killmail_id);
         }
-
     } catch (err) {
         console.error("❌ Error in handlePrivateIntel:", err.message);
     }
 }
-
-// Send report every 24 hours
 setInterval(() => {
     HeartbeatService.sendReport(process.env.INTEL_WEBHOOK_URL, stats, mapper, esi);
-    stats.scanCount = 0; // Reset counter for the new day
+    stats.scanCount = 0; 
 },  24 * 60 * 60 * 1000);
 
