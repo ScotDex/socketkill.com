@@ -84,6 +84,7 @@ async function listeningStream() {
                 // 1. Get the Constellation ID from your local cache (it's already loaded)
                 const constellationId = systemDetails ? systemDetails.constellation_id : null;
                 let regionName = "K-Space";
+                let realRegionId = "Unknown";
 
                 if (constellationId) {
                     try {
