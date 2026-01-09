@@ -1,11 +1,6 @@
 require(`dotenv`).config();
 const { TwitterApi } = require(`twitter-api-v2`)
 
-console.log("Checking Keys:", {
-    key: process.env.TWITTER_API_KEY ? "Loaded" : "MISSING",
-    secret: process.env.TWITTER_API_SECRET ? "Loaded" : "MISSING"
-});
-
 // Kick off twitter client
 
 const twitterClient = new TwitterApi({
