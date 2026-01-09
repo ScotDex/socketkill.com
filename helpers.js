@@ -1,3 +1,5 @@
+const { default: axios } = require("axios");
+
 class utils {
 
     static formatIsk (rawValue) {
@@ -12,6 +14,25 @@ class utils {
     static getZkillLink (killId){
         return `https://zkillboard.com/kill/${killId}/`;
     }
+
+    static async getNasaPhoto(apiKey){
+        try {
+            const url = `https://api.nasa.gov/planetary/apod?api_key=${apiKey}`;
+            const response = await axios.get(url)
+
+            return{
+                url: response.data.hdurl || response.data.url,
+                title: response.data.title,
+                media_type: response.data.media_type
+            };
+
+        } catch (error) {
+            console.error("NASA Pic Retrieval Issue", err.message);
+            return null;            
+        }
+    }
+
+
 
     static formatDuration(ms) {
         const days = Math.floor(ms / (1000 * 60 * 60 * 24));

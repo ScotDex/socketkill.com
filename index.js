@@ -15,14 +15,35 @@ const helpers = require('./helpers')
 const HeartbeatService = require('./heartbeatService');
 const startWebServer = require('./webServer');
 const { promiseHooks } = require('v8');
+const utils = require('./helpers');
+const { SocketAddress } = require('net');
 
 const esi = new ESIClient("Contact: @YourName");
 const { app, io } = startWebServer(esi);
+
+
 
 const stats = {
     startTime: new Date(),
     scanCount: 0
 };
+
+let currentSpaceBg = null;
+
+io.on('connection', (socket) => {
+    if (currentSpaceBg) {
+        socket.emit('nasa-update', currentSpaceBg);
+    }
+});
+
+
+async function refreshNasaBackground() {
+    console.log ("Fetching NASA Background");
+    const data = await utils.getNasaPhoto(process.env.NASA_API_KEY);
+    if (data)
+        currentSpaceBg = data;
+}
+
 const mapper = new MapperService(process.env.WINGSPAN_API)
 const THERA_ID = 31000005;
 const isWormholeSystem = (systemId) => {
@@ -33,7 +54,8 @@ const isWormholeSystem = (systemId) => {
     await esi.loadSystemCache('./data/systems.json');
     await esi.loadCache(path.join(__dirname, 'data', 'esi_cache.json'));
     await mapper.refreshChain(esi.getSystemDetails.bind(esi));
-    console.log("🌌 Universe Map & Chain Loaded.");
+    await refreshNasaBackground();
+    console.log("🌌 Universe Map, Background & Chain Loaded.");
     setInterval(() => {
         mapper.refreshChain(esi.getSystemDetails.bind(esi));
     }, 1 * 60 * 1000);
