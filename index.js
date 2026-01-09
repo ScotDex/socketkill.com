@@ -63,48 +63,53 @@ async function listeningStream() {
     const WHALE_THRESHOLD = 20000000000;
     console.log(`📡 Listening to zKillboard Queue: ${QUEUE_ID}`)
     
-    while (true) {
-        try {
-            const response = await axios.get(REDISQ_URL, { timeout: 15000 });
-            const data = response.data;
+while (true) {
+    try {
+        const response = await axios.get(REDISQ_URL, { timeout: 15000 });
+        const pack = response.data.package;
 
-            if (data && data.package) {
+        if (pack) {
+            const zkb = pack.zkb;
+            const killmail = pack.killmail; // IT'S ALREADY HERE! No extra fetch needed.
+            const victim = killmail.victim;
 
-                const zkb = data.package.zkb;
-                const rawValue = Number(zkb.totalValue) || 0;
-                console.log(`📥 Package received. Fetching killmail details from ESI...`);
-                const esiResponse = await axios.get(zkb.href);
-                const killmail = esiResponse.data;
+            // 1. FAST LOOKUP (Local Cache/Mapper)
+            // Use your local mapper for System/Region to save ESI calls
+            const systemInfo = mapper.getSystem(killmail.solar_system_id) || { name: "Unknown", regionName: "Unknown" };
 
-                // Inside while(true) loop after const killmail = esiResponse.data;
+            // 2. CACHED LOOKUPS (ESI Wrapper with Cache)
+            // Assuming your 'esi' service checks the JSON file before calling the API
+            const [shipName, victimName, victimCorp] = await Promise.all([
+                esi.getTypeName(victim.ship_type_id),
+                esi.getCharacterName(victim.character_id),
+                esi.getCorporationName(victim.corporation_id)
+            ]);
 
-                // Find the attacker who got the "Final Blow"
-                const finalBlowAttacker = killmail.attackers.find(a => a.final_blow === true) || killmail.attackers[0];
+            // 3. FINAL BLOW LOGIC (Minimalist)
+            const finalAttacker = killmail.attackers.find(a => a.final_blow) || {};
+            const attackerName = await esi.getCharacterName(finalAttacker.character_id);
 
-                const [shipName, systemDetails, victimName, victimCorp, attackerName, attackerCorp] = await Promise.all([
-                    esi.getTypeName(killmail.victim.ship_type_id),
-                    esi.getSystemDetails(killmail.solar_system_id),
-                    esi.getCharacterName(killmail.victim.character_id),
-                    esi.getCorporationName(killmail.victim.corporation_id),
-                    esi.getCharacterName(finalBlowAttacker?.character_id),
-                    esi.getCorporationName(finalBlowAttacker?.corporation_id)
-                ]);
+            // 4. CLEAN EMIT
+            io.emit('raw-kill', {
+                id: pack.killID,
+                val: Number(zkb.totalValue),
+                ship: shipName,
+                shipId: victim.ship_type_id,
+                system: systemInfo.name,
+                region: systemInfo.regionName, // Fixed the (undefined) issue
+                victimName: victimName || "Unknown Pilot",
+                victimCorp: victimCorp || "Unknown Corp",
+                attackerName: attackerName || "NPC / Unknown",
+                href: zkb.href
+            });
 
-                io.emit('raw-kill', {
-                    id: data.package.killID,
-                    val: Number(data.package.zkb.totalValue),
-                    ship: shipName,
-                    shipId: killmail.victim.ship_type_id,
-                    system: systemDetails ? systemDetails.name : "Unknown",
-                    region: systemDetails ? systemDetails.regionName : "Unknown",
-                    // New fields for the table columns
-                    victimName: victimName || "Unknown Pilot",
-                    victimCorp: victimCorp || "Unknown Corp",
-                    attackerName: attackerName || "NPC / Unknown",
-                    attackerCorp: attackerCorp || "",
-                    href: data.package.zkb.href
-                });
-                stats.scanCount++;
+            stats.scanCount++;
+        }
+    } catch (err) {
+        console.error("📡 RedisQ Loop Error:", err.message);
+        await new Promise(r => setTimeout(r, 2000)); // Cool down on error
+    }
+}
 
                 scanCount++;
                 const isWhale = rawValue >= WHALE_THRESHOLD;
