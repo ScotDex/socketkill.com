@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Kill Stream</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container-fluid py-3">
+        <div class="d-flex justify-content-between align-items-center border-bottom border-secondary pb-2 mb-3">
+            <h5 class="m-0 text-success fw-bold">Live Kill Stream</h5>
+            <div class="d-flex align-items-center">
+                <div class="me-3 text-secondary small">
+                    KILLMAILS PROCESSED <span id="kill-counter" class="text-white fw-bold">0</span>
+                </div>
+            </div>
+            <div id="status" class="badge bg-danger">CONNECTING...</div>
+        </div>
+        <div id="feed"></div>
+    </div>
+
+    <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+    <script src="stream.js" defer></script>
+</body>
+</html>
