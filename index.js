@@ -104,6 +104,7 @@ async function listeningStream() {
                 console.log(`📍 System: ${systemName} | Real Region ID: ${realRegionId} | Name: ${regionName}`);
 
                 console.log(`Killmail recieved, processing...`);
+                const shipImageUrl = `https://images.evetech.net/types/${killmail.victim.ship_type_id}/render?size=64`;
                 io.emit('raw-kill', {
                     id: data.package.killID,
                     val: Number(data.package.zkb.totalValue),
@@ -111,6 +112,7 @@ async function listeningStream() {
                     system: systemName,
                     region: regionName,
                     shipId: killmail.victim.ship_type_id,
+                    shipImageUrl: shipImageUrl,
                     href: data.package.zkb.href
                 });
                 stats.scanCount++;
