@@ -16,7 +16,8 @@ class ESIClient{
             characters: new Map(),
             corporations: new Map(),
             types: new Map(),
-            systems: new Map()
+            systems: new Map(),
+            regions: new Map()
         };
 
         this.staticSystemData = {};
@@ -54,7 +55,8 @@ class ESIClient{
             const persistData = {
                 characters: Object.fromEntries(this.cache.characters),
                 corporations: Object.fromEntries(this.cache.corporations),
-                types: Object.fromEntries(this.cache.types)
+                types: Object.fromEntries(this.cache.types),
+                regions: Object.fromEntries(this.cache.regions)
             };
             await fs.writeFile(filePath, JSON.stringify(persistData, null, 2));
             this.isDirty = false; // Reset flag after successful save
@@ -136,6 +138,11 @@ class ESIClient{
 
     getSystemDetails(id) {
         return this.staticSystemData[id] || null;
+    }
+
+    async getRegionName(id){
+        if (!id || id <= 0) return "K-Space";
+        return this.fetchAndCache(id, 'regions', '/universe/regions');
     }
 
 
