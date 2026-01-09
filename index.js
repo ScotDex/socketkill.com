@@ -75,19 +75,29 @@ async function listeningStream() {
                 
                 const esiResponse = await axios.get(zkb.href);
                 const killmail = esiResponse.data;
-                
-                const[shipName, systemDetails] = await Promise.all([
+
+                const [shipName, systemDetails] = await Promise.all([
                     esi.getTypeName(killmail.victim.ship_type_id),
                     esi.getSystemDetails(killmail.solar_system_id)
                 ])
                 const systemName = systemDetails ? systemDetails.name : "Unknown System";
-                const systemEsiReq = await axios.get(`https://esi.evetech.net/latest/universe/systems/${killmail.solar_system_id}/`, {
-                    headers: { 'X-Compatibility-Date': '2025-12-16' }
-                });
+                // 1. Get the Constellation ID from your local cache (it's already loaded)
+                const constellationId = systemDetails ? systemDetails.constellation_id : null;
+                let regionName = "K-Space";
 
-                // 2. Use the real ID from ESI to get the name
-                const realRegionId = systemEsiReq.data.region_id;
-                const regionName = await esi.getRegionName(realRegionId);
+                if (constellationId) {
+                    try {
+                        // 2. Fetch the constellation from ESI to get the actual region_id
+                        const constellationReq = await axios.get(`https://esi.evetech.net/latest/universe/constellations/${constellationId}/`, {
+                            headers: { 'X-Compatibility-Date': '2025-12-16' }
+                        });
+
+                        // 3. Resolve the name using your helper (saves to esi_cache.json)
+                        regionName = await esi.getRegionName(constellationReq.data.region_id);
+                    } catch (err) {
+                        console.error("Region bridge failed:", err.message);
+                    }
+                }
 
                 // 3. Log it so you can see it working in the console
                 console.log(`📍 System: ${systemName} | Real Region ID: ${realRegionId} | Name: ${regionName}`);
