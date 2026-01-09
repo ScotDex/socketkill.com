@@ -66,27 +66,23 @@ async function listeningStream() {
     while (true) {
         try {
             const response = await axios.get(REDISQ_URL, { timeout: 15000 });
-            // FIX 1: Correctly define 'pack' from response.data
-            const pack = response.data?.package; 
+            const pack = response.data?.package; // Fixed: Defines 'pack'
 
             if (pack && pack.zkb) {
                 const zkb = pack.zkb;
-
-                // FIX 2: REQUIRED FETCH for Dec 2025 RedisQ Change
-                // Package no longer contains 'killmail' object; must fetch from href
+                
+                // Fetch full killmail as required by Dec 2025 change
                 const esiResponse = await axios.get(zkb.href);
                 const killmail = esiResponse.data;
                 const victim = killmail.victim;
 
-                // FIX 3: Define systemInfo before using it in emit
-                // Uses your Mapper to get Name and Region (fixing the undefined error)
-                const systemInfo = mapper.getSystem(killmail.solar_system_id) || 
-                                   { name: "Unknown", regionName: "Unknown" };
+                // Use your static system data lookup
+                const systemInfo = esi.getSystemDetails(killmail.solar_system_id);
 
-                // Logic for Final Blow
+                // Find Final Blow
                 const finalBlowAttacker = killmail.attackers.find(a => a.final_blow === true) || killmail.attackers[0];
 
-                // Parallel lookups for all required display fields
+                // Parallel Lookups using your exact ESIClient methods
                 const [shipName, victimName, victimCorp, attackerName, attackerCorp] = await Promise.all([
                     esi.getTypeName(victim.ship_type_id),
                     esi.getCharacterName(victim.character_id),
@@ -95,44 +91,37 @@ async function listeningStream() {
                     esi.getCorporationName(finalBlowAttacker?.corporation_id)
                 ]);
 
-                // Emit the data the frontend expects
+                // Emit payload matching your frontend's needs
                 io.emit('raw-kill', {
                     id: pack.killID,
                     val: Number(zkb.totalValue),
                     ship: shipName,
                     shipId: victim.ship_type_id,
                     system: systemInfo.name,
-                    region: systemInfo.regionName, // Prevents (undefined) on UI
+                    region: systemInfo.regionName, // Fixed: No more (undefined)
                     victimName: victimName || "Unknown Pilot",
                     victimCorp: victimCorp || "Unknown Corp",
                     attackerName: attackerName || "NPC / Unknown",
                     attackerCorp: attackerCorp || ""
                 });
 
-                // Update counters and trigger hunt logic
                 stats.scanCount++;
-                scanCount++;
                 const rawValue = Number(zkb.totalValue);
-                const isWhale = rawValue >= WHALE_THRESHOLD;
 
-                if (isWhale || (isWormholeSystem(killmail.solar_system_id) && 
-                    killmail.solar_system_id !== THERA_ID && 
-                    mapper.isSystemRelevant(killmail.solar_system_id))) {
+                // Hunt Logic using your MapperService
+                if (rawValue >= WHALE_THRESHOLD || (isWormholeSystem(killmail.solar_system_id) && 
+                    killmail.solar_system_id !== THERA_ID && mapper.isSystemRelevant(killmail.solar_system_id))) {
                     
-                    console.log(`🎯 TARGET MATCH: Kill ${pack.killID}`);
+                    console.log(`🎯 TARGET MATCH: ${shipName} in ${systemInfo.name}`);
                     await handlePrivateIntel(killmail, zkb);
-                } else {
-                    if (scanCount % 500 === 0) {
-                        console.log(`🛡️ Gatekeeper: ${scanCount} total kills scanned.`);
-                    }
                 }
+
             } else {
-                console.log("⏳ RedisQ: No new kills (10s poll).");
+                console.log("⏳ RedisQ: Waiting for kills...");
             }
         } catch (err) {
-            // Error handling for 429 rate limits or network timeouts
             const delay = err.response?.status === 429 ? 5000 : 2000;
-            console.error(`❌ Error: ${err.message}`);
+            console.error(`❌ Loop Error: ${err.message}`);
             await new Promise(res => setTimeout(res, delay));
         }
     }
