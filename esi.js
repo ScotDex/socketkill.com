@@ -143,7 +143,7 @@ class ESIClient{
 
     async getRegionName(id){
         if (!id || id <= 0) return "K-Space";
-        return this.fetchAndCache(id, 'regions', '/universe/regions');
+        return await this.fetchAndCache(id, 'regions', '/universe/regions');
     }
 
 

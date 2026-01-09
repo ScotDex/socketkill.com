@@ -81,7 +81,7 @@ async function listeningStream() {
                     esi.getSystemDetails(killmail.solar_system_id)
                 ])
                 const systemName = systemDetails ? systemDetails.name : "Unknown System";
-                const regionName = await esi.getRegionName(systemDetails?.region_id);
+                let regionName = await esi.getRegionName(systemDetails?.region_id);
 
                 console.log(`Killmail recieved, processing...`);
                 io.emit('raw-kill', {
