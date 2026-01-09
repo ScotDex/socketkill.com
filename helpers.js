@@ -26,7 +26,7 @@ class utils {
                 media_type: response.data.media_type
             };
 
-        } catch (error) {
+        } catch (err) {
             console.error("NASA Pic Retrieval Issue", err.message);
             return null;            
         }
