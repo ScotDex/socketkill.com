@@ -60,66 +60,64 @@ const REDISQ_URL = `https://zkillredisq.stream/listen.php?queueID=${QUEUE_ID}&tt
 
 let scanCount = 0;
 async function listeningStream() {
-    const WHALE_THRESHOLD = 20000000000;
-    console.log(`📡 Listening to zKillboard Queue: ${QUEUE_ID}`);
+    console.log(`📡 RedisQ Active: ${QUEUE_ID} (Dec 2025 Mode)`);
     
     while (true) {
         try {
-            const response = await axios.get(REDISQ_URL, { timeout: 15000 });
-            const pack = response.data?.package; // Fixed: Defines 'pack'
+            // 1. Hit the listen endpoint (Axios will follow the redirect to /object.php)
+            const response = await axios.get(REDISQ_URL, { 
+                timeout: 20000,
+                maxRedirects: 5 // Ensure we handle the /object.php redirect
+            });
+            
+            const pack = response.data?.package;
 
-            if (pack && pack.zkb) {
-                const zkb = pack.zkb;
-                
-                // Fetch full killmail as required by Dec 2025 change
-                const esiResponse = await axios.get(zkb.href);
-                const killmail = esiResponse.data;
-                const victim = killmail.victim;
-
-                // Use your static system data lookup
-                const systemInfo = esi.getSystemDetails(killmail.solar_system_id);
-
-                // Find Final Blow
-                const finalBlowAttacker = killmail.attackers.find(a => a.final_blow === true) || killmail.attackers[0];
-
-                // Parallel Lookups using your exact ESIClient methods
-                const [shipName, victimName, victimCorp, attackerName, attackerCorp] = await Promise.all([
-                    esi.getTypeName(victim.ship_type_id),
-                    esi.getCharacterName(victim.character_id),
-                    esi.getCorporationName(victim.corporation_id),
-                    esi.getCharacterName(finalBlowAttacker?.character_id),
-                    esi.getCorporationName(finalBlowAttacker?.corporation_id)
-                ]);
-
-                // Emit payload matching your frontend's needs
-                io.emit('raw-kill', {
-                    id: pack.killID,
-                    val: Number(zkb.totalValue),
-                    ship: shipName,
-                    shipId: victim.ship_type_id,
-                    system: systemInfo.name,
-                    region: systemInfo.regionName, // Fixed: No more (undefined)
-                    victimName: victimName || "Unknown Pilot",
-                    victimCorp: victimCorp || "Unknown Corp",
-                    attackerName: attackerName || "NPC / Unknown",
-                    attackerCorp: attackerCorp || ""
-                });
-
-                stats.scanCount++;
-                const rawValue = Number(zkb.totalValue);
-
-                // Hunt Logic using your MapperService
-                if (rawValue >= WHALE_THRESHOLD || (isWormholeSystem(killmail.solar_system_id) && 
-                    killmail.solar_system_id !== THERA_ID && mapper.isSystemRelevant(killmail.solar_system_id))) {
-                    
-                    console.log(`🎯 TARGET MATCH: ${shipName} in ${systemInfo.name}`);
-                    await handlePrivateIntel(killmail, zkb);
-                }
-
-            } else {
-                console.log("⏳ RedisQ: Waiting for kills...");
+            // RedisQ returns {"package":null} if no kills for 10s
+            if (!pack) {
+                console.log("⏳ RedisQ: Null package (10s window).");
+                continue; 
             }
+
+            // 2. Extract zkb metadata
+            const zkb = pack.zkb;
+            if (!zkb || !zkb.href) continue;
+
+            // 3. FETCH FULL KILLMAIL (Required as of Dec 1, 2025)
+            // The documentation states we MUST fetch from the provided href
+            const esiKillResponse = await axios.get(zkb.href);
+            const killmail = esiKillResponse.data;
+            const victim = killmail.victim;
+
+            // 4. Resolve Names via your ESI Client
+            const systemInfo = esi.getSystemDetails(killmail.solar_system_id);
+            const finalBlowAttacker = killmail.attackers.find(a => a.final_blow) || killmail.attackers[0];
+
+            const [shipName, victimName, victimCorp, attackerName, attackerCorp] = await Promise.all([
+                esi.getTypeName(victim.ship_type_id),
+                esi.getCharacterName(victim.character_id),
+                esi.getCorporationName(victim.corporation_id),
+                esi.getCharacterName(finalBlowAttacker?.character_id),
+                esi.getCorporationName(finalBlowAttacker?.corporation_id)
+            ]);
+
+            // 5. Emit to Socket
+            io.emit('raw-kill', {
+                id: pack.killID,
+                val: Number(zkb.totalValue),
+                ship: shipName,
+                shipId: victim.ship_type_id,
+                system: systemInfo.name,
+                region: systemInfo.regionName,
+                victimName,
+                victimCorp,
+                attackerName,
+                attackerCorp
+            });
+
+            stats.scanCount++;
+
         } catch (err) {
+            // Handle the 429 "Too Many Requests" from CloudFlare
             const delay = err.response?.status === 429 ? 5000 : 2000;
             console.error(`❌ Loop Error: ${err.message}`);
             await new Promise(res => setTimeout(res, delay));
