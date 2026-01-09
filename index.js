@@ -24,8 +24,7 @@ const stats = {
     scanCount: 0
 };
 
-
-const mapper = new MapperService('http://api.deliverynetwork.space/data');
+const mapper = new MapperService(process.env.WINGSPAN_API)
 const THERA_ID = 31000005;
 
 
@@ -161,7 +160,7 @@ async function handlePrivateIntel(kill, zkb) {
             names.scoutName = metadata ? metadata.scannedBy : "Unknown Scout";
             names.isAdjacent = metadata ? metadata.isAdjacent : false;
 
-            const tripwireUrl = `https://tw.torpedodelivery.com/?system=${encodeURIComponent(names.systemName)}`;
+            const tripwireUrl = `${process.env.TRIPWIRE_URL}?system=${encodeURIComponent(names.systemName)}`;
             const payload = EmbedFactory.createKillEmbed(kill, zkb, names, tripwireUrl);
             
             if (process.env.INTEL_WEBHOOK_URL) {
