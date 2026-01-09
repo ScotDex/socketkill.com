@@ -70,7 +70,7 @@ async function listeningStream() {
 
             if (data && data.package) {
 
-                const zkb = data.package.zkb;
+                const zkb = pack.zkb;
                 const rawValue = Number(zkb.totalValue) || 0;
                 console.log(`📥 Package received. Fetching killmail details from ESI...`);
                 const esiResponse = await axios.get(zkb.href);
