@@ -77,32 +77,29 @@ async function listeningStream() {
                 const killmail = esiResponse.data;
 
                 // Inside while(true) loop after const killmail = esiResponse.data;
-
+                const victim = killmail.victim;
                 // Find the attacker who got the "Final Blow"
                 const finalBlowAttacker = killmail.attackers.find(a => a.final_blow === true) || killmail.attackers[0];
-
-                const [shipName, systemDetails, victimName, victimCorp, attackerName, attackerCorp] = await Promise.all([
-                    esi.getTypeName(killmail.victim.ship_type_id),
-                    esi.getSystemDetails(killmail.solar_system_id),
-                    esi.getCharacterName(killmail.victim.character_id),
-                    esi.getCorporationName(killmail.victim.corporation_id),
+                const systemInfo = mapper.getSystem(killmail.solar_system_id) || { name: "Unknown", regionName: "Unknown" };
+                const [shipName, victimName, victimCorp, attackerName, attackerCorp] = await Promise.all([
+                    esi.getTypeName(victim.ship_type_id),
+                    esi.getCharacterName(victim.character_id),
+                    esi.getCorporationName(victim.corporation_id),
                     esi.getCharacterName(finalBlowAttacker?.character_id),
                     esi.getCorporationName(finalBlowAttacker?.corporation_id)
                 ]);
 
                 io.emit('raw-kill', {
-                    id: data.package.killID,
-                    val: Number(data.package.zkb.totalValue),
+                    id: pack.killID,
+                    val: Number(zkb.totalValue),
                     ship: shipName,
-                    shipId: killmail.victim.ship_type_id,
-                    system: systemDetails ? systemDetails.name : "Unknown",
-                    region: systemDetails ? systemDetails.regionName : "Unknown",
-                    // New fields for the table columns
+                    shipId: victim.ship_type_id,
+                    system: systemInfo.name,
+                    region: systemInfo.regionName,
                     victimName: victimName || "Unknown Pilot",
                     victimCorp: victimCorp || "Unknown Corp",
                     attackerName: attackerName || "NPC / Unknown",
-                    attackerCorp: attackerCorp || "",
-                    href: data.package.zkb.href
+                    attackerCorp: attackerCorp || ""
                 });
                 stats.scanCount++;
 
