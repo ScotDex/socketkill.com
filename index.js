@@ -81,7 +81,16 @@ async function listeningStream() {
                     esi.getSystemDetails(killmail.solar_system_id)
                 ])
                 const systemName = systemDetails ? systemDetails.name : "Unknown System";
-                let regionName = await esi.getRegionName(systemDetails?.region_id);
+                const systemEsiReq = await axios.get(`https://esi.evetech.net/latest/universe/systems/${killmail.solar_system_id}/`, {
+                    headers: { 'X-Compatibility-Date': '2025-12-16' }
+                });
+
+                // 2. Use the real ID from ESI to get the name
+                const realRegionId = systemEsiReq.data.region_id;
+                const regionName = await esi.getRegionName(realRegionId);
+
+                // 3. Log it so you can see it working in the console
+                console.log(`📍 System: ${systemName} | Real Region ID: ${realRegionId} | Name: ${regionName}`);
 
                 console.log(`Killmail recieved, processing...`);
                 io.emit('raw-kill', {
