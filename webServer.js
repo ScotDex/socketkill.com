@@ -7,11 +7,7 @@ const path = require('path');
 function startWebServer(esi) {
     const app = express();
     const server = http.createServer(app);
-    
-    // Initialize Socket.io with CORS for local dev support
-    const io = new Server(server, {
-        cors: { origin: "*" }
-    });
+
 
     const PORT = process.env.PORT || 80;
 
