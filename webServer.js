@@ -13,7 +13,7 @@ function startWebServer(esi) {
         cors: { origin: "*" }
     });
 
-    const PORT = process.env.PORT || 1098;
+    const PORT = process.env.PORT || 8443;
 
     app.use(cors());
     app.use(express.json());
