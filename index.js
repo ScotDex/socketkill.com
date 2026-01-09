@@ -60,70 +60,58 @@ const REDISQ_URL = `https://zkillredisq.stream/listen.php?queueID=${QUEUE_ID}&tt
 
 let scanCount = 0;
 async function listeningStream() {
-    console.log(`📡 RedisQ Active: ${QUEUE_ID} (Dec 2025 Mode)`);
+    const WHALE_THRESHOLD = 20000000000;
+    console.log(`📡 Listening to zKillboard Queue: ${QUEUE_ID}`)
     
     while (true) {
         try {
-            // 1. Fetch from RedisQ (follows redirect to object.php automatically)
-            const response = await axios.get(REDISQ_URL, { 
-                timeout: 20000,
-                maxRedirects: 5 
-            });
-            
-            const pack = response.data?.package;
-            if (!pack) {
-                console.log("⏳ RedisQ: Null package (10s window).");
-                continue; 
+            const response = await axios.get(REDISQ_URL, { timeout: 15000 });
+            const data = response.data;
+
+            if (data && data.package) {
+
+                const zkb = data.package.zkb;
+                const rawValue = Number(zkb.totalValue) || 0;
+                console.log(`📥 Package received. Fetching killmail details from ESI...`);
+                const esiResponse = await axios.get(zkb.href);
+                const killmail = esiResponse.data;
+
+                const[shipName, systemDetails] = await Promise.all([
+                    esi.getTypeName(killmail.victim.ship_type_id),
+                    esi.getSystemDetails(killmail.solar_system_id)
+                ])
+                const systemName = systemDetails ? systemDetails.name : "Unknown System";
+                io.emit('raw-kill', {
+                    id: data.package.killID,
+                    val: Number(data.package.zkb.totalValue),
+                    ship: shipName,
+                    system: systemName,
+                    region: systemDetails ? systemDetails.regionName : "Unknown",
+                    shipId: killmail.victim.ship_type_id,
+                    href: data.package.zkb.href
+                });
+                stats.scanCount++;
+
+                const [victimName, corpName] = await Promise.all([
+
+                ])
+                scanCount++;
+                const isWhale = rawValue >= WHALE_THRESHOLD;
+
+                if (isWhale || (isWormholeSystem(killmail.solar_system_id) && killmail.solar_system_id !== THERA_ID && mapper.isSystemRelevant(killmail.solar_system_id))) {
+                    console.log(`🎯 TARGET MATCH: Kill ${data.package.killID} in system ${killmail.solar_system_id}`);
+                    await handlePrivateIntel(killmail, zkb);
+                } else {
+                    if (scanCount % 500 === 0) {
+                        console.log(`🛡️  Gatekeeper: ${scanCount} total kills scanned. Discarding kill in system ${killmail.solar_system_id}...`);
+                    }
+                }
+            } else {
+                console.log("⏳ RedisQ: No new kills (10s poll). Polling again...");
             }
-
-            const zkb = pack.zkb;
-            if (!zkb || !zkb.href) continue;
-
-            // 2. Fetch Full Killmail from ESI
-            const esiKillResponse = await axios.get(zkb.href);
-            const killmail = esiKillResponse.data;
-
-            // 3. Centralized Name Resolution (Do it once!)
-            const systemInfo = esi.getSystemDetails(killmail.solar_system_id);
-            const victim = killmail.victim;
-            const finalBlow = killmail.attackers.find(a => a.final_blow) || killmail.attackers[0];
-
-            const [shipName, victimName, victimCorp, attackerName, attackerCorp] = await Promise.all([
-                esi.getTypeName(victim.ship_type_id),
-                esi.getCharacterName(victim.character_id),
-                esi.getCorporationName(victim.corporation_id),
-                esi.getCharacterName(finalBlow?.character_id),
-                esi.getCorporationName(finalBlow?.corporation_id)
-            ]);
-
-            const resolvedNames = {
-                shipName,
-                victimName,
-                victimCorp,
-                attackerName,
-                attackerCorp,
-                systemName: systemInfo.name,
-                regionName: systemInfo.regionName
-            };
-
-            // 4. Emit to Socket
-            io.emit('raw-kill', {
-                id: pack.killID,
-                val: Number(zkb.totalValue),
-                ship: shipName,
-                system: systemInfo.name,
-                victimName,
-                attackerName
-            });
-
-            // 5. Pass to Intel Handler (Pass resolvedNames to avoid double-fetching)
-            await handlePrivateIntel(killmail, zkb, resolvedNames);
-
-            stats.scanCount++;
-
         } catch (err) {
-            const delay = err.response?.status === 429 ? 5000 : 2000;
-            console.error(`❌ Loop Error: ${err.message}`);
+            const delay = err.response?.status === 429 ? 2000 : 5000;
+            console.error(`❌ Error: ${err.message}`);
             await new Promise(res => setTimeout(res, delay));
         }
     }
