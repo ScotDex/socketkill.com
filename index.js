@@ -40,17 +40,17 @@ const isWormholeSystem = (systemId) => {
    // axios.post(process.env.INTEL_WEBHOOK_URL, { content: "Online" })
      //   .catch(err => console.error("Test Ping Failed:", err.message));
     
-    console.log("🚀 Web Server Module Ready.");
+    console.log("Web Server Module Ready.");
     listeningStream();
 })();
 
-const QUEUE_ID = process.env.ZKILL_QUEUE_ID || 'Wingspan-TW-Monitor';
+const QUEUE_ID = process.env.ZKILL_QUEUE_ID || 'Wingspan-Monitor';
 const REDISQ_URL = `https://zkillredisq.stream/listen.php?queueID=${QUEUE_ID}&ttw=1`;
 
 let scanCount = 0;
 async function listeningStream() {
     const WHALE_THRESHOLD = 20000000000;
-    console.log(`📡 Listening to zKillboard Queue: ${QUEUE_ID}`)
+    console.log(`Listening to zKillboard Queue: ${QUEUE_ID}`)
     
     while (true) {
         try {
@@ -95,7 +95,10 @@ async function listeningStream() {
                     region: regionName,
                     shipId: killmail.victim.ship_type_id,
                     shipImageUrl: shipImageUrl,
-                    href: data.package.zkb.href
+                    href: data.package.zkb.href,
+                    locationLabel: `System: ${systemName} | Region: ${regionName}`,
+                    zkillUrl: `https://zkillboard.com/kill/${data.package.killID}/`
+
                 });
                 stats.scanCount++;
                 scanCount++;
@@ -105,7 +108,7 @@ async function listeningStream() {
                     console.log(`Kill ${data.package.killID} in system ${killmail.solar_system_id}`);
                     await handlePrivateIntel(killmail, zkb);
                 } else {
-                    if (scanCount % 500 === 0) {
+                    if (scanCount % 1000 === 0) {
                         console.log(`🛡️  Gatekeeper: ${scanCount} total kills scanned. Discarding kill in system ${killmail.solar_system_id}...`);
                     }
                 }
@@ -147,7 +150,7 @@ async function handlePrivateIntel(kill, zkb) {
             }
         }
         if (rawValue >= WHALE_THRESHOLD) {
-            console.log(`🐋 WHALE DETECTED: ${formattedValue}! Tweeting...`);
+            console.log(`Big kill detected: ${formattedValue}! Tweeting...`);
             TwitterService.postWhale(names, formattedValue, kill.killmail_id);
         }
     } catch (err) {
