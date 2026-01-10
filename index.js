@@ -84,9 +84,10 @@ async function listeningStream() {
                 const rawValue = Number(zkb.totalValue) || 0;
                 const esiResponse = await axios.get(zkb.href);
                 const killmail = esiResponse.data;
-                const [shipName, systemDetails] = await Promise.all([
+                const [shipName, systemDetails, charName] = await Promise.all([
                     esi.getTypeName(killmail.victim.ship_type_id),
-                    esi.getSystemDetails(killmail.solar_system_id)
+                    esi.getSystemDetails(killmail.solar_system_id),
+                    esi.getCharacterName(killmail.victim?.character_id)
                 ])
                 const systemName = systemDetails ? systemDetails.name : "Unknown System";
                 const constellationId = systemDetails ? systemDetails.constellation_id : null;
@@ -119,7 +120,8 @@ async function listeningStream() {
                     shipImageUrl: shipImageUrl,
                     href: data.package.zkb.href,
                     locationLabel: `System: ${systemName} | Region: ${regionName}`,
-                    zkillUrl: `https://zkillboard.com/kill/${data.package.killID}/`
+                    zkillUrl: `https://zkillboard.com/kill/${data.package.killID}/`,
+                    victimName: charName
 
                 });
                 stats.scanCount++;

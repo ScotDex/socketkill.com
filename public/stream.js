@@ -61,7 +61,7 @@ socket.on('raw-kill', (kill) => {
             <div class="kill-info">
                 <div>
                     <span class="timestamp">[${new Date().toLocaleTimeString()}]</span>
-                    <strong class="ship-name">${kill.ship}</strong>
+                    <strong class="ship-name">${kill.victimName} lost a ${kill.ship}</strong>
                 </div>
                 <div class="small">
                     <span class="location-label">${kill.locationLabel}</span>
