@@ -29,6 +29,14 @@ function startWebServer(esi) {
 
     server.listen(PORT, () => {
         console.log(`🌐 zKill Light Stream active on port ${PORT}`);
+        }).on('error', (err) => {
+        if (err.code === 'EACCES') {
+            console.error(`❌ ERROR: Port ${PORT} requires root privileges! Try 'sudo node index.js'`);
+        } else if (err.code === 'EADDRINUSE') {
+            console.error(`❌ ERROR: Port ${PORT} is already in use by another app!`);
+        } else {
+            console.error(`❌ ERROR:`, err);
+        }
     });
 
     // We return BOTH so the main app can use 'io' to broadcast
