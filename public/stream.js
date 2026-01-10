@@ -50,7 +50,7 @@ socket.on('raw-kill', (kill) => {
     div.className = `kill-row justify-content-between ${isWhale ? 'whale' : ''}`;
     const valueFormatted = formatIskValue(val);
     const iskClass = isBillion ? 'isk-billion' : 'isk-million';
-    const victimText = kill.victimName
+    const victim = kill.victimName || "Unknown Pilot";
     totalKills++;
     counterElement.innerText = totalKills.toLocaleString();
 
@@ -62,7 +62,7 @@ socket.on('raw-kill', (kill) => {
             <div class="kill-info">
                 <div>
                     <span class="timestamp">[${new Date().toLocaleTimeString()}]</span>
-                    <strong class="ship-name">${victimText} lost a ${kill.ship}</strong>
+                    <strong class="ship-name">${victim} lost a ${kill.ship}</strong>
                 </div>
                 <div class="small">
                     <span class="location-label">${kill.locationLabel}</span>
