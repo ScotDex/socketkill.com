@@ -7,7 +7,7 @@ services:
       - .env
     ports:
       - "8099:8099"
-      - "443:443"
+      - "443:80"
     volumes:
       - "./data:/usr/src/app/data"
     deploy:
