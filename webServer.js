@@ -8,7 +8,8 @@ function startWebServer(esi) {
     const app = express();
     const server = http.createServer(app);
     const io = new Server(server, {
-        cors: { origin: "*" } // Keep this for now to ensure connectivity
+        cors: { origin: "*" }, // Keep this for now to ensure connectivity
+        transports: ['websocket', 'polling'],
     });
 
     const PORT = process.env.PORT || 80;
