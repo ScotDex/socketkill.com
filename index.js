@@ -17,6 +17,7 @@ const startWebServer = require('./webServer');
 const { promiseHooks } = require('v8');
 const utils = require('./helpers');
 const { SocketAddress } = require('net');
+const { stat } = require('fs');
 
 const esi = new ESIClient("Contact: @YourName");
 const { app, io } = startWebServer(esi);
@@ -93,6 +94,9 @@ async function listeningStream() {
                 const constellationId = systemDetails ? systemDetails.constellation_id : null;
                 let regionName = "K-Space";
                 let realRegionId = "Unknown";
+                stats.scanCount++;
+                scanCount++;
+
 
                 if (constellationId) {
                     try {
@@ -110,6 +114,10 @@ async function listeningStream() {
 
                 console.log(`Killmail recieved, processing...`);
                 const shipImageUrl = `https://images.evetech.net/types/${killmail.victim.ship_type_id}/render?size=64`;
+
+                io.emit('gatekeeper-stats', { 
+    totalScanned: scanCount 
+});
                 io.emit('raw-kill', {
                     id: data.package.killID,
                     val: Number(data.package.zkb.totalValue),
@@ -121,11 +129,10 @@ async function listeningStream() {
                     href: data.package.zkb.href,
                     locationLabel: `System: ${systemName} | Region: ${regionName}`,
                     zkillUrl: `https://zkillboard.com/kill/${data.package.killID}/`,
-                    victimName: charName
+                    victimName: charName,
+                    totalScanned: scanCount
 
                 });
-                stats.scanCount++;
-                scanCount++;
                 const isWhale = rawValue >= WHALE_THRESHOLD;
 
                 if (isWhale || (isWormholeSystem(killmail.solar_system_id) && killmail.solar_system_id !== THERA_ID && mapper.isSystemRelevant(killmail.solar_system_id))) {

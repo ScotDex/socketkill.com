@@ -39,10 +39,19 @@ const formatIskValue = (value) => {
     return (num / 1000000).toFixed(2) + "M";
 }
 
-let totalKills = 0;
 const counterElement = document.getElementById('kill-counter');
 
+socket.on('gatekeeper-stats', (data) => {
+    if (counterElement && data.totalScanned) {
+        counterElement.innerText = data.totalScanned.toLocaleString();
+    }
+});
+
 socket.on('raw-kill', (kill) => {
+
+    if (counterElement && kill.totalScanned) {
+        counterElement.innerText = kill.totalScanned.toLocaleString();
+    }
     const div = document.createElement('div');
     const val = Number(kill.val);
     const isWhale = val >= 10000000000; // 10B+
@@ -51,8 +60,6 @@ socket.on('raw-kill', (kill) => {
     const valueFormatted = formatIskValue(val);
     const iskClass = isBillion ? 'isk-billion' : 'isk-million';
     const victim = kill.victimName || "Unknown Pilot";
-    totalKills++;
-    counterElement.innerText = totalKills.toLocaleString();
 
     div.innerHTML = `
         <div class="d-flex align-items-center" style="flex: 1;">
