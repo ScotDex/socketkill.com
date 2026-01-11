@@ -33,9 +33,7 @@ io.on("connection", (socket) => {
   if (currentSpaceBg) {
     socket.emit("nasa-update", currentSpaceBg);
   }
-  socket.emit('gatekeeper-stats', { 
-        totalScanned: scanCount 
-    });
+ 
 });
 
 async function refreshNasaBackground() {
