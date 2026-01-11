@@ -29,6 +29,12 @@ body {
     background-color: #1c2128; 
 }
 
+.hover-opacity:hover {
+    opacity: 0.8;
+    color: #ffffff !important;
+    transition: 0.2s;
+}
+
 /* Ship Icons */
 .ship-icon-container {
     width: 64px;
