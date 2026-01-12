@@ -64,11 +64,13 @@ body {  /* Changed from blue to Deep Charcoal for maximum contrast */
 .typewriter {
     color: #3fb950; /* Your Success Green */
     font-family: 'Share Tech Mono', monospace;
-    overflow: hidden; /* Ensures the content is not revealed until the animation */
+    overflow: visible; /* Ensures the content is not revealed until the animation */
     border-right: .15em solid #3fb950; /* The typewriter cursor */
-    white-space: nowrap; /* Keeps the content on a single line */
-    margin: 0 auto; 
+    white-space: nowrap;
+    min-height: 1.2em;
+    display: inline-block;
     letter-spacing: .15em;
+    animation: blink-caret 0.75s step-end infinite;
 }
 
 /* The "in" and (Region) text - This was the hard-to-read part */
