@@ -31,7 +31,7 @@ let currentSpaceBg = null;
 
 io.on("connection", (socket) => {
   if (currentSpaceBg) {
-    socket.emit("nasa-update", currentSpaceBg);
+    socket.emit("nebula-update", currentSpaceBg);
   }
   socket.emit('gatekeeper-stats', { 
         totalScanned: scanCount 
@@ -44,7 +44,8 @@ async function refreshNebulaBackground() {
   const data = await utils.getBackPhoto();
   if (data) {
     currentSpaceBg = data;
-    applyBackground(data);
+    io.emit("nebula-update", data); 
+    console.log(`✅ Background Synced: ${data.name}`);
   }
 }
 

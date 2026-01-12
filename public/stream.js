@@ -12,21 +12,22 @@ socket.on('disconnect', () => {
     status.className = "badge bg-danger";
 });
 
-socket.on('nasa-update', (data) => {
-    if (data && data.media_type === 'image') {
-        // Use the URL provided by your server's cache
-        const imageUrl = data.url; 
-        
-        document.body.style.backgroundImage = `linear-gradient(rgba(13, 17, 23, 0.85), rgba(13, 17, 23, 0.85)), url('${imageUrl}')`;
+socket.on('nebula-update', (data) => {
+    if (data && data.url) {
+        // Apply the Rixx Javix background with a subtle overlay for readability
+        document.body.style.backgroundImage = `linear-gradient(rgba(13, 17, 23, 0.8), rgba(13, 17, 23, 0.8)), url('${data.url}')`;
         document.body.style.backgroundSize = 'cover';
         document.body.style.backgroundAttachment = 'fixed';
         document.body.style.backgroundPosition = 'center';
         
-        const credit = document.getElementById('nasa-credit');
+        // Update the Credit to Rixx Javix
+        const credit = document.getElementById('image-credit'); // Updated ID
         if (credit) {
-            credit.innerText = `NASA APOD: ${data.title}`;
+            // Cleans the filename for the display (e.g., 'Cloud_Ring.jpg' -> 'CLOUD RING')
+            const displayName = data.name.split('.')[0].replace(/_/g, ' ');
+            credit.innerHTML = `LOCATION: <span class="text-success">${displayName.toUpperCase()}</span> | ART: <span class="text-white">RIXX JAVIX</span>`;
         }
-        console.log("🌌 Background updated via Server Cache");
+        console.log("🌌 Background updated via Nebula Service");
     }
 });
 
