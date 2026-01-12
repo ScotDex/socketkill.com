@@ -63,13 +63,14 @@ body {  /* Changed from blue to Deep Charcoal for maximum contrast */
 
 .typewriter {
     color: #3fb950; /* Your Success Green */
+    text-transform: uppercase;
     font-family: 'Share Tech Mono', monospace;
     overflow: visible; /* Ensures the content is not revealed until the animation */
     border-right: .15em solid #3fb950; /* The typewriter cursor */
     white-space: nowrap;
     min-height: 1.2em;
     display: inline-block;
-    letter-spacing: .15em;
+    letter-spacing: 1px;
     animation: blink-caret 0.75s step-end infinite;
 }
 

@@ -31,7 +31,8 @@ socket.on('nebula-update', (data) => {
     }
 });
 
-const typeTitle = (elementId, text, speed = 100) => {
+
+const typeTitle = (elementId, text, speed = 150) => {
     let i = 0;
     const element = document.getElementById(elementId);
     element.innerHTML = ""; // Clear existing text
@@ -53,11 +54,6 @@ const typeTitle = (elementId, text, speed = 100) => {
 window.addEventListener('DOMContentLoaded', () => {
     typeTitle('socket-title', 'Socket.Kill', 150);
 });
-
-// Start typing when the page is ready
-const initTitle = () => {
-    typeTitle('socket-title', 'Socket.Kill', 150);
-};
 
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', initTitle);
