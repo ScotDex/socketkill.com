@@ -17,7 +17,7 @@ class utils {
 
     static async getBackPhoto(){
         try {
-            const url = `http://localhost:8080/random`;
+            const url = `http://188.166.153.213:8080/random`;
             const response = await axios.get(url)
 
             return{
