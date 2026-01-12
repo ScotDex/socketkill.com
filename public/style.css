@@ -1,6 +1,6 @@
 /* Core Layout */
 body {  /* Changed from blue to Deep Charcoal for maximum contrast */
-    color: #c9d1d9; 
+    color: #142536; 
     font-family: 'Exo 2', 'Segoe UI', sans-serif;
     margin: 0;
     background-attachment: fixed;
@@ -104,7 +104,7 @@ body {  /* Changed from blue to Deep Charcoal for maximum contrast */
 }
 
 .isk-billion { 
-    color: #1144cf; /* "EVE Gold" for big kills */
+    color: #ff0000; /* "EVE Gold" for big kills */
     font-weight: 800; 
     font-family: 'Roboto Mono', monospace;
     font-size: 1.2rem;
