@@ -61,6 +61,16 @@ body {  /* Changed from blue to Deep Charcoal for maximum contrast */
     animation: textFlicker 1s infinite secondary;
 }
 
+.typewriter {
+    color: #3fb950; /* Your Success Green */
+    font-family: 'Share Tech Mono', monospace;
+    overflow: hidden; /* Ensures the content is not revealed until the animation */
+    border-right: .15em solid #3fb950; /* The typewriter cursor */
+    white-space: nowrap; /* Keeps the content on a single line */
+    margin: 0 auto; 
+    letter-spacing: .15em;
+}
+
 /* The "in" and (Region) text - This was the hard-to-read part */
 .location-info {
     color: #ce5007d7; /* Soft gray that stands out on dark backgrounds */
@@ -146,6 +156,10 @@ body {  /* Changed from blue to Deep Charcoal for maximum contrast */
     100% { transform: translate(0) }
 }
 
+@keyframes blink-caret {
+    from, to { border-color: transparent }
+    50% { border-color: #3fb950; }
+}
 
 body::before {
     content: " ";

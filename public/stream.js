@@ -31,6 +31,29 @@ socket.on('nebula-update', (data) => {
     }
 });
 
+const typeTitle = (elementId, text, speed = 100) => {
+    let i = 0;
+    const element = document.getElementById(elementId);
+    element.innerHTML = ""; // Clear existing text
+    
+    function type() {
+        if (i < text.length) {
+            element.innerHTML += text.charAt(i);
+            i++;
+            setTimeout(type, speed);
+        } else {
+            // Stop the cursor blinking after typing is done (optional)
+            element.style.borderRight = "none";
+        }
+    }
+    type();
+};
+
+// Trigger the animation when the page loads
+window.addEventListener('DOMContentLoaded', () => {
+    typeTitle('socket-title', 'Socket.Kill', 150);
+});
+
 
 const formatIskValue = (value) => {
     const num = Number(value);
