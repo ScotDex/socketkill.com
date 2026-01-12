@@ -56,7 +56,6 @@ socket.on('gatekeeper-stats', (data) => {
     }
 });
 
-// Refined Nebula Update with Image Pre-loading to prevent flicker
 socket.on('nebula-update', (data) => {
     if (data && data.url) {
         const tempImg = new Image();
@@ -73,7 +72,7 @@ socket.on('nebula-update', (data) => {
                 credit.innerHTML = `LOCATION: <span class="text-success">${displayName}</span> | ART: <span class="text-white">RIXX JAVIX</span>`;
             }
         };
-        console.log("🌌 Background updated via Nebula Service");
+        console.log("Background updated via API");
     }
 });
 

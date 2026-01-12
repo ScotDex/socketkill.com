@@ -39,8 +39,6 @@ function startWebServer(esi) {
             console.error(`❌ ERROR:`, err);
         }
     });
-
-    // We return BOTH so the main app can use 'io' to broadcast
     return { app, io };
 }
 

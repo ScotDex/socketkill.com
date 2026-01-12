@@ -1,3 +1,4 @@
+require("dotenv").config();
 const { default: axios } = require("axios");
 
 class utils {
@@ -17,7 +18,7 @@ class utils {
 
     static async getBackPhoto(){
         try {
-            const url = `https://api.voidspark.org:2053/random`;
+            const url = (process.env.BACKGROUND_API_URL);
             const response = await axios.get(url)
 
             return{
