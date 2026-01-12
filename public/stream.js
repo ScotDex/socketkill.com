@@ -110,3 +110,14 @@ socket.on('raw-kill', (kill) => {
     if (feed.children.length > 50) feed.lastChild.remove();
 
 });
+
+// Start typing when the page is ready
+const initTitle = () => {
+    typeTitle('socket-title', 'Socket.Kill', 150);
+};
+
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initTitle);
+} else {
+    initTitle();
+}
