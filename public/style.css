@@ -5,6 +5,8 @@ body {  /* Changed from blue to Deep Charcoal for maximum contrast */
     margin: 0;
     background-attachment: fixed;
     background-size: cover;
+    background-position: center;
+    transition: background 2.0 ease-in-out;
 }
 
 .container-fluid {
