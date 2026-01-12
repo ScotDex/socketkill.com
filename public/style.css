@@ -9,7 +9,7 @@ body {  /* Changed from blue to Deep Charcoal for maximum contrast */
 
 .container-fluid {
     max-width: 1000px;
-    background-color: transparent;
+    background-color: transparent !important;
 }
 
 /* Feed Rows - High Density */

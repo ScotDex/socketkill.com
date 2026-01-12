@@ -17,7 +17,7 @@ class utils {
 
     static async getBackPhoto(){
         try {
-            const url = `https://api.voidspark.org:2053/random`;
+            const url = `http://188.166.153.213:2053/random`;
             const response = await axios.get(url)
 
             return{
