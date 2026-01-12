@@ -1,6 +1,44 @@
+/* --- Configuration & State --- */
 const socket = io();
 const feed = document.getElementById('feed');
 const status = document.getElementById('status');
+const counterElement = document.getElementById('kill-counter');
+const MAX_FEED_SIZE = 50;
+let isTyping = false; // Safety flag to prevent double-typing
+
+/* --- Utility Functions --- */
+
+// Types text character-by-character into a target element
+const typeTitle = (elementId, text, speed = 150) => {
+    if (isTyping) return;
+    isTyping = true;
+    
+    const element = document.getElementById(elementId);
+    if (!element) return;
+    
+    element.innerHTML = ""; 
+    let i = 0;
+    
+    function type() {
+        if (i < text.length) {
+            element.innerHTML += text.charAt(i);
+            i++;
+            setTimeout(type, speed);
+        } else {
+            element.style.borderRight = "none"; // Hide cursor on completion
+        }
+    }
+    type();
+};
+
+// Converts raw ISK values to readable shorthand
+const formatIskValue = (value) => {
+    const num = Number(value);
+    if (num >= 1000000000) return (num / 1000000000).toFixed(2) + "B";
+    return (num / 1000000).toFixed(2) + "M";
+};
+
+/* --- Socket Handlers --- */
 
 socket.on('connect', () => {
     status.innerText = "ONLINE";
@@ -12,83 +50,52 @@ socket.on('disconnect', () => {
     status.className = "badge bg-danger";
 });
 
-socket.on('nebula-update', (data) => {
-    if (data && data.url) {
-        // Apply the Rixx Javix background with a subtle overlay for readability
-        document.body.style.backgroundImage = `linear-gradient(rgba(13, 17, 23, 0.8), rgba(13, 17, 23, 0.8)), url('${data.url}')`;
-        document.body.style.backgroundSize = 'cover';
-        document.body.style.backgroundAttachment = 'fixed';
-        document.body.style.backgroundPosition = 'center';
-        
-        // Update the Credit to Rixx Javix
-        const credit = document.getElementById('image-credit'); // Updated ID
-        if (credit) {
-            // Cleans the filename for the display (e.g., 'Cloud_Ring.jpg' -> 'CLOUD RING')
-            const displayName = data.name.split('.')[0].replace(/_/g, ' ');
-            credit.innerHTML = `LOCATION: <span class="text-success">${displayName.toUpperCase()}</span> | ART: <span class="text-white">RIXX JAVIX</span>`;
-        }
-        console.log("🌌 Background updated via Nebula Service");
-    }
-});
-
-
-const typeTitle = (elementId, text, speed = 150) => {
-    let i = 0;
-    const element = document.getElementById(elementId);
-    element.innerHTML = ""; // Clear existing text
-    
-    function type() {
-        if (i < text.length) {
-            element.innerHTML += text.charAt(i);
-            i++;
-            setTimeout(type, speed);
-        } else {
-            // Stop the cursor blinking after typing is done (optional)
-            element.style.borderRight = "none";
-        }
-    }
-    type();
-};
-
-// Trigger the animation when the page loads
-window.addEventListener('DOMContentLoaded', () => {
-    typeTitle('socket-title', 'Socket.Kill', 150);
-});
-
-if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', initTitle);
-} 
-
-
-const formatIskValue = (value) => {
-    const num = Number(value);
-    if (num >= 1000000000) {
-        return (num / 1000000000).toFixed(2) + "B";
-    }
-    return (num / 1000000).toFixed(2) + "M";
-}
-
-const counterElement = document.getElementById('kill-counter');
-
 socket.on('gatekeeper-stats', (data) => {
     if (counterElement && data.totalScanned) {
         counterElement.innerText = data.totalScanned.toLocaleString();
     }
 });
 
-socket.on('raw-kill', (kill) => {
+// Refined Nebula Update with Image Pre-loading to prevent flicker
+socket.on('nebula-update', (data) => {
+    if (data && data.url) {
+        const tempImg = new Image();
+        tempImg.src = data.url;
+        tempImg.onload = () => {
+            document.body.style.backgroundImage = `linear-gradient(rgba(13, 17, 23, 0.8), rgba(13, 17, 23, 0.8)), url('${data.url}')`;
+            document.body.style.backgroundSize = 'cover';
+            document.body.style.backgroundAttachment = 'fixed';
+            document.body.style.backgroundPosition = 'center';
 
+            const credit = document.getElementById('image-credit');
+            if (credit) {
+                const displayName = data.name.split('.')[0].replace(/_/g, ' ').toUpperCase();
+                credit.innerHTML = `LOCATION: <span class="text-success">${displayName}</span> | ART: <span class="text-white">RIXX JAVIX</span>`;
+            }
+        };
+        console.log("🌌 Background updated via Nebula Service");
+    }
+});
+
+socket.on('raw-kill', (kill) => {
     if (counterElement && kill.totalScanned) {
         counterElement.innerText = kill.totalScanned.toLocaleString();
     }
-    const div = document.createElement('div');
+
     const val = Number(kill.val);
     const isWhale = val >= 10000000000; // 10B+
     const isBillion = val >= 1000000000; // 1B+
+    
+    const div = document.createElement('div');
     div.className = `kill-row justify-content-between ${isWhale ? 'whale' : ''}`;
+    
     const valueFormatted = formatIskValue(val);
     const iskClass = isBillion ? 'isk-billion' : 'isk-million';
     const victim = kill.victimName || "Unknown Pilot";
+    
+    // EVE Time (UTC) refinement
+    const now = new Date();
+    const timestamp = `[${now.getUTCHours().toString().padStart(2, '0')}:${now.getUTCMinutes().toString().padStart(2, '0')}]`;
 
     div.innerHTML = `
         <div class="d-flex align-items-center" style="flex: 1;">
@@ -97,7 +104,7 @@ socket.on('raw-kill', (kill) => {
             </div>
             <div class="kill-info">
                 <div>
-                    <span class="timestamp">[${new Date().toLocaleTimeString()}]</span>
+                    <span class="timestamp">${timestamp}</span>
                     <strong class="ship-name">${victim} lost a ${kill.ship}</strong>
                 </div>
                 <div class="small">
@@ -112,7 +119,18 @@ socket.on('raw-kill', (kill) => {
     `;
 
     feed.prepend(div);
-    if (feed.children.length > 50) feed.lastChild.remove();
-
+    if (feed.children.length > MAX_FEED_SIZE) feed.lastChild.remove();
 });
 
+/* --- Unified Bootloader --- */
+
+const initApp = () => {
+    typeTitle('socket-title', 'Socket.Kill', 150);
+};
+
+// Ensures one single execution trigger
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initApp);
+} else {
+    initApp();
+}
