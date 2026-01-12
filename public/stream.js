@@ -54,6 +54,17 @@ window.addEventListener('DOMContentLoaded', () => {
     typeTitle('socket-title', 'Socket.Kill', 150);
 });
 
+// Start typing when the page is ready
+const initTitle = () => {
+    typeTitle('socket-title', 'Socket.Kill', 150);
+};
+
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initTitle);
+} else {
+    initTitle();
+}
+
 
 const formatIskValue = (value) => {
     const num = Number(value);
@@ -111,13 +122,3 @@ socket.on('raw-kill', (kill) => {
 
 });
 
-// Start typing when the page is ready
-const initTitle = () => {
-    typeTitle('socket-title', 'Socket.Kill', 150);
-};
-
-if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', initTitle);
-} else {
-    initTitle();
-}
