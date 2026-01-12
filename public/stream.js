@@ -118,6 +118,10 @@ socket.on('raw-kill', (kill) => {
         </div>
     `;
 
+    const overlay = document.querySelector('body');
+    overlay.style.opacity = '0.9';
+    setTimeout(() => overlay.style.opacity = '1', 50);
+
     feed.prepend(div);
     if (feed.children.length > MAX_FEED_SIZE) feed.lastChild.remove();
 });
