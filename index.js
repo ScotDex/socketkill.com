@@ -231,3 +231,10 @@ setInterval(() => {
   );
   stats.scanCount = 0;
 }, 24 * 60 * 60 * 1000);
+
+const ROTATION_SPEED = 10 * 60 * 1000;
+
+setInterval(() => {
+  console.log("Changing background");
+  refreshNebulaBackground();
+}, ROTATION_SPEED);
