@@ -23,7 +23,7 @@ class utils {
             return{
                 url: response.data.url,
                 title: response.data.name.split('.')[0].replace(/_/g, ' '),
-                media_type: image
+                media_type: 'image'
             };
 
         } catch (err) {
