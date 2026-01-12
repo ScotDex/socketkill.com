@@ -1,14 +1,15 @@
 /* Core Layout */
-body { 
-    background-color: #0d1117; /* Changed from blue to Deep Charcoal for maximum contrast */
+body {  /* Changed from blue to Deep Charcoal for maximum contrast */
     color: #c9d1d9; 
     font-family: 'Exo 2', 'Segoe UI', sans-serif;
     margin: 0;
+    background-attachment: fixed;
+    background-size: cover;
 }
 
 .container-fluid {
     max-width: 1000px;
-    background-color: #0d1117;
+    background-color: transparent;
 }
 
 /* Feed Rows - High Density */
