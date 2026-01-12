@@ -39,10 +39,13 @@ io.on("connection", (socket) => {
  
 });
 
-async function refreshNasaBackground() {
-  console.log("Fetching NASA Background");
-  const data = await utils.getNasaPhoto(process.env.NASA_API_KEY);
-  if (data) currentSpaceBg = data;
+async function refreshNebulaBackground() {
+  console.log ("Fetching Background Image")
+  const data = await utils.getBackPhoto();
+  if (data) {
+    currentSpaceBg = data;
+    applyBackground(data);
+  }
 }
 
 const mapper = new MapperService(process.env.WINGSPAN_API);
@@ -55,7 +58,7 @@ const isWormholeSystem = (systemId) => {
   await esi.loadSystemCache("./data/systems.json");
   await esi.loadCache(path.join(__dirname, "data", "esi_cache.json"));
   await mapper.refreshChain(esi.getSystemDetails.bind(esi));
-  refreshNasaBackground();
+  refreshNebulaBackground();
   console.log("🌌 Universe Map, Background & Chain Loaded.");
   setInterval(() => {
     mapper.refreshChain(esi.getSystemDetails.bind(esi));

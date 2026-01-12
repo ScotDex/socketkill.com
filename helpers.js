@@ -15,19 +15,19 @@ class utils {
         return `https://zkillboard.com/kill/${killId}/`;
     }
 
-    static async getNasaPhoto(apiKey){
+    static async getBackPhoto(){
         try {
-            const url = `https://api.nasa.gov/planetary/apod?api_key=${apiKey}`;
+            const url = `http://localhost:8080/random`;
             const response = await axios.get(url)
 
             return{
-                url: response.data.hdurl || response.data.url,
-                title: response.data.title,
-                media_type: response.data.media_type
+                url: response.data.url,
+                title: response.data.name.split('.')[0].replace(/_/g, ' '),
+                media_type: image
             };
 
         } catch (err) {
-            console.error("NASA Pic Retrieval Issue", err.message);
+            console.error("Background Pic Retrieval Issue", err.message);
             return null;            
         }
     }
