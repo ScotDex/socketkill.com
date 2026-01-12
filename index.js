@@ -32,6 +32,8 @@ let currentSpaceBg = null;
 io.on("connection", (socket) => {
   if (currentSpaceBg) {
     socket.emit("nebula-update", currentSpaceBg);
+  } else {
+    refreshNebulaBackground();
   }
   socket.emit('gatekeeper-stats', { 
         totalScanned: scanCount 
