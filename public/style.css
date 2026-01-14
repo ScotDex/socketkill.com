@@ -187,7 +187,6 @@ body::after {
     box-shadow: 0 0 8px rgba(63, 185, 80, 0.08);
     pointer-events: none;
     z-index: 10000;
-    animation: scanline-travel 10s linear infinite;
 }
 
 /* 2. Phosphor Glow - Adds a subtle aura to the counter and branding */
