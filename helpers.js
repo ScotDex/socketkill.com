@@ -91,5 +91,15 @@ static loadPersistentStats() {
     }
 }
 
+static savePersistentStats(count) {
+        try {
+            // Force save as an object with totalKills key
+            const payload = JSON.stringify({ totalKills: Math.floor(count) });
+            fs.writeFileSync(DATA_PATH, payload);
+        } catch (err) {
+            console.error("❌ [STORAGE] Error saving stats count:", err.message);
+        }
+    }
+
 }
 module.exports = utils;
