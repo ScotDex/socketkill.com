@@ -5,7 +5,8 @@ const fs = require ("fs");
 const path = require ("path");
 const { json } = require("stream/consumers");
 
-const DATA_PATH = path.join(__dirname, "../data/stats.json");
+// Use process.cwd() to stay inside the /usr/src/app folder
+const DATA_PATH = path.join(process.cwd(), "data", "stats.json");
 
 class utils {
 
