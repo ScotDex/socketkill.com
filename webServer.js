@@ -29,7 +29,7 @@ function startWebServer(esi) {
     });
 
     server.listen(PORT, () => {
-        console.log(`🌐 zKill Light Stream active on port ${PORT}`);
+        console.log(`Web Module Loaded on ${PORT}`);
         }).on('error', (err) => {
         if (err.code === 'EACCES') {
             console.error(`❌ ERROR: Port ${PORT} requires root privileges! Try 'sudo node index.js'`);
