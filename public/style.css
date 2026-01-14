@@ -177,11 +177,6 @@ body::before {
     pointer-events: none;
     z-index: 9999;
 }
-/* 1. Traveling Refresh Beam - Adds global movement to the background */
-@keyframes scanline-travel {
-    0% { transform: translateY(-100%); }
-    100% { transform: translateY(100vh); }
-}
 
 body::after {
     content: "";
