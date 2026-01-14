@@ -54,29 +54,42 @@ class utils {
         return parts.join(' ');
     }
 
-    static loadPersistentStats() {
-        try { 
-        if (!fs.existsSync(path.dirname(DATA_PATH))){
-            fs.mkdirSync(path.dirname(DATA_PATH), {recursive: true});
+    // helpers.js
+
+static loadPersistentStats() {
+    try {
+        const directory = path.dirname(DATA_PATH);
+        
+        // Ensure directory exists
+        if (!fs.existsSync(directory)) {
+            console.log(`[STORAGE] Creating missing directory: ${directory}`);
+            fs.mkdirSync(directory, { recursive: true });
         }
-        if (fs.existsSync(DATA_PATH)) {
-            const data = JSON.parse(fs.readFileSync(DATA_PATH, "utf8"));
-            return data.totalKills || 0;
+
+        // Check if file exists
+        if (!fs.existsSync(DATA_PATH)) {
+            console.log("[STORAGE] No stats file found. Starting fresh.");
+            return 0;
         }
+
+        // Read and parse
+        const rawData = fs.readFileSync(DATA_PATH, "utf8");
+        
+        // Check if file is empty string
+        if (!rawData || rawData.trim() === "") {
+            console.log("[STORAGE] Stats file is empty. Initializing with 0.");
+            return 0;
+        }
+
+        const data = JSON.parse(rawData);
+        console.log(`[STORAGE] Successfully loaded ${data.totalKills} kills from disk.`);
+        return Number(data.totalKills) || 0;
+
     } catch (err) {
-        console.log("error loading stats counter", err.message);
+        console.error("❌ [STORAGE] Critical error loading stats:", err.message);
+        return 0;
     }
-    return 0;
 }
-
-
-    static savePersistentStats(count) {
-        try {
-            fs.writeFileSync(DATA_PATH, JSON.stringify({ totalKills: count}));
-        } catch (err) {
-            console.error ("Error saving stats count", err.message);
-        }
-    }
 
 }
 module.exports = utils;
