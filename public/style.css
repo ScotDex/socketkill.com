@@ -177,4 +177,39 @@ body::before {
     pointer-events: none;
     z-index: 9999;
 }
+/* 1. Traveling Refresh Beam - Adds global movement to the background */
+@keyframes scanline-travel {
+    0% { transform: translateY(-100%); }
+    100% { transform: translateY(100vh); }
+}
 
+body::after {
+    content: "";
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 15px;
+    background: rgba(63, 185, 80, 0.03); /* Faint tint of your Success Green */
+    box-shadow: 0 0 8px rgba(63, 185, 80, 0.08);
+    pointer-events: none;
+    z-index: 10000;
+    animation: scanline-travel 10s linear infinite;
+}
+
+/* 2. Phosphor Glow - Adds a subtle aura to the counter and branding */
+.ship-name, .isk-million, .isk-billion, #status {
+    text-shadow: 0 0 3px rgba(63, 185, 80, 0.2);
+}
+
+/* 3. Signal Snap - Upgrading your existing slideIn to include a digital blur focus */
+@keyframes slideIn {
+    0% { 
+        opacity: 0; 
+        transform: translate(-20px); 
+        filter: blur(4px) brightness(2); /* Snap-into-focus effect */
+    }
+    100% { 
+        opacity: 1; 
+        transform: translateY(0); 
+        filter: blur(0) brightness(1);
+    }
+}
