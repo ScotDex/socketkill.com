@@ -22,6 +22,8 @@ const { stat } = require("fs");
 const esi = new ESIClient("Contact: @YourName");
 const { app, io } = startWebServer(esi);
 
+let scanCount = utils.loadPersistentStats();
+
 const stats = {
   startTime: new Date(),
   scanCount: 0,
@@ -76,7 +78,7 @@ const isWormholeSystem = (systemId) => {
 const QUEUE_ID = process.env.ZKILL_QUEUE_ID || "Wingspan-Monitor";
 const REDISQ_URL = `https://zkillredisq.stream/listen.php?queueID=${QUEUE_ID}&ttw=1`;
 
-let scanCount = 0;
+
 async function listeningStream() {
   const WHALE_THRESHOLD = 20000000000;
   console.log(`Listening to zKillboard Queue: ${QUEUE_ID}`);
@@ -106,6 +108,7 @@ async function listeningStream() {
         let realRegionId = "Unknown";
         stats.scanCount++;
         scanCount++;
+        utils.savePersistentStats(scanCount);
 
         if (constellationId) {
           try {

@@ -1,5 +1,11 @@
 require("dotenv").config();
 const { default: axios } = require("axios");
+const { error } = require("console");
+const fs = require ("fs");
+const path = require ("path");
+const { json } = require("stream/consumers");
+
+const DATA_PATH = path.join(__dirname, "../data/stats.json");
 
 class utils {
 
@@ -47,6 +53,30 @@ class utils {
 
         return parts.join(' ');
     }
+
+    static loadPersistentStats() {
+        try { 
+        if (!fs.existsSync(path.dirname(DATA_PATH))){
+            fs.mkdirSync(path.dirname(DATA_PATH), {recursive: true});
+        }
+        if (fs.existsSync(DATA_PATH)) {
+            const data = JSON.parse(fs.readFileSync(DATA_PATH, "utf8"));
+            return data.totalKills || 0;
+        }
+    } catch (err) {
+        console.log("error loading stats counter", err.message);
+    }
+    return 0;
 }
 
+
+    static savePersistentStats(count) {
+        try {
+            fs.writeFileSync(DATA_PATH, JSON.stringify({ totalKills: count}));
+        } catch (err) {
+            console.error ("Error saving stats count", err.message);
+        }
+    }
+
+}
 module.exports = utils;
