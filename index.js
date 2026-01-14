@@ -23,6 +23,7 @@ const esi = new ESIClient("Contact: @YourName");
 const { app, io } = startWebServer(esi);
 
 let scanCount = utils.loadPersistentStats();
+console.log(`[BOOT] Lifetime scans loaded; ${scanCount}`)
 
 const stats = {
   startTime: new Date(),
