@@ -1,7 +1,7 @@
 require("dotenv").config();
 const { default: axios } = require("axios");
 const { error } = require("console");
-const fs = require ("fs").promises;
+const fs = require ("fs");
 const path = require ("path");
 const { json } = require("stream/consumers");
 
