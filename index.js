@@ -109,7 +109,11 @@ async function listeningStream() {
         let realRegionId = "Unknown";
         stats.scanCount++;
         scanCount++;
-        utils.savePersistentStats(scanCount);
+        
+        if (scanCount % 100 == 0){
+            utils.savePersistentStats(scanCount);
+            console.log(`Disk Milestone Reached ${scanCount}. Save triggered`);
+        }
 
         if (constellationId) {
           try {

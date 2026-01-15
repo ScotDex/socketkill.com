@@ -1,7 +1,7 @@
 require("dotenv").config();
 const { default: axios } = require("axios");
 const { error } = require("console");
-const fs = require ("fs");
+const fs = require ("fs").promises;
 const path = require ("path");
 const { json } = require("stream/consumers");
 
@@ -92,11 +92,11 @@ static loadPersistentStats() {
     }
 }
 
-static savePersistentStats(count) {
+static async savePersistentStats(count) {
         try {
             // Force save as an object with totalKills key
             const payload = JSON.stringify({ totalKills: Math.floor(count) });
-            fs.writeFileSync(DATA_PATH, payload);
+            await fs.promises.writeFile(DATA_PATH, payload);
         } catch (err) {
             console.error("❌ [STORAGE] Error saving stats count:", err.message);
         }
