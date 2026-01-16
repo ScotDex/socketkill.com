@@ -3,10 +3,11 @@ body {  /* Changed from blue to Deep Charcoal for maximum contrast */
     color: #142536; 
     font-family: 'Exo 2', 'Segoe UI', sans-serif;
     margin: 0;
-    background-attachment: fixed;
-    background-size: cover;
-    background-position: center;
-    transition: background 2.0 ease-in-out;
+    /* VISUAL 1: Enabled scrolling for depth/parallax feel vs fixed */
+    background-attachment: scroll; 
+    background-size: 110% auto; 
+    background-position: top center;
+    transition: background 2.0s ease-in-out;
 }
 
 .container-fluid {
@@ -134,11 +135,52 @@ body {  /* Changed from blue to Deep Charcoal for maximum contrast */
     color: #58a6ff;
 }
 
+/* VISUAL 2: Optimized CRT Scanlines (Performance-First implementation) */
+body::before {
+    content: " ";
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    /* Simplified 4px pattern reduces GPU paint load vs multiple gradients */
+    background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.15) 50%);
+    background-size: 100% 4px;
+    pointer-events: none;
+    z-index: 9999;
+}
 
+body::after {
+    content: "";
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 15px;
+    background: rgba(63, 185, 80, 0.03); /* Faint tint of your Success Green */
+    box-shadow: 0 0 8px rgba(63, 185, 80, 0.08);
+    pointer-events: none;
+    z-index: 10000;
+}
 
+/* 2. Phosphor Glow - Adds a subtle aura to the counter and branding */
+.ship-name, .isk-million, .isk-billion, #status {
+    text-shadow: 0 0 3px rgba(63, 185, 80, 0.2);
+}
+
+/* VISUAL 3: Phosphor Strike Entry - Vertical scale mimics CRT electron beam strike */
 @keyframes slideIn {
-    from { opacity: 0; transform: translate(-20px);}
-    to { opacity: 1; transform: translateY(0);}
+    0% { 
+        opacity: 0; 
+        transform: scaleY(0.01) translateX(-20px); 
+        filter: blur(4px) brightness(3) saturate(0);
+    }
+    60% {
+        opacity: 1;
+        transform: scaleY(1.05) translateX(2px);
+        filter: blur(2px) brightness(1.5) saturate(0.5);
+    }
+    100% { 
+        opacity: 1; 
+        transform: translateY(0) scaleY(1); 
+        filter: blur(0) brightness(1) saturate(1);
+    }
 }
 
 @keyframes borderPulse {
@@ -164,46 +206,4 @@ body {  /* Changed from blue to Deep Charcoal for maximum contrast */
 @keyframes blink-caret {
     from, to { border-color: transparent }
     50% { border-color: #3fb950; }
-}
-
-body::before {
-    content: " ";
-    position: fixed;
-    top: 0; left: 0;
-    width: 100%; height: 100%;
-    background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.1) 50%), 
-                linear-gradient(90deg, rgba(255, 0, 0, 0.03), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.03));
-    background-size: 100% 3px, 3px 100%;
-    pointer-events: none;
-    z-index: 9999;
-}
-
-body::after {
-    content: "";
-    position: fixed;
-    top: 0; left: 0;
-    width: 100%; height: 15px;
-    background: rgba(63, 185, 80, 0.03); /* Faint tint of your Success Green */
-    box-shadow: 0 0 8px rgba(63, 185, 80, 0.08);
-    pointer-events: none;
-    z-index: 10000;
-}
-
-/* 2. Phosphor Glow - Adds a subtle aura to the counter and branding */
-.ship-name, .isk-million, .isk-billion, #status {
-    text-shadow: 0 0 3px rgba(63, 185, 80, 0.2);
-}
-
-/* 3. Signal Snap - Upgrading your existing slideIn to include a digital blur focus */
-@keyframes slideIn {
-    0% { 
-        opacity: 0; 
-        transform: translate(-20px); 
-        filter: blur(4px) brightness(2); /* Snap-into-focus effect */
-    }
-    100% { 
-        opacity: 1; 
-        transform: translateY(0); 
-        filter: blur(0) brightness(1);
-    }
 }
