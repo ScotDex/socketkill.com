@@ -135,7 +135,7 @@ async function listeningStream() {
         }
 
         console.log(`Killmail recieved, processing...`);
-        const shipImageUrl = `https://images.evetech.net/types/${killmail.victim.ship_type_id}/render?size=64`;
+        const shipImageUrl = `https://api.voidspark.org:2053/render/ship/${killmail.victim.ship_type_id}`;
 
         io.emit("gatekeeper-stats", {
           totalScanned: scanCount,
