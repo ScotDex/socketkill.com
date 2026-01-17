@@ -17,7 +17,7 @@ function startSocketStream() {
             const rawKill = JSON.parse(data);
 
             console.log("--- WSS RAW DATA RECEIVED ---");
-            console.dir(killmail, { depth: null });
+            console.dir(rawKill, { depth: null });
             if(rawKill.killmail_id) {
 
             }
