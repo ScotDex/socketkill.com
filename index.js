@@ -92,7 +92,14 @@ async function listeningStream() {
 
       // --- DRY RUN TEST START ---
 // We fire this WITHOUT 'await' so it doesn't slow down the live loop
-resolveKillData(killmail, esi, axios).then(enriched => {
+
+      if (data && data.package) {
+        const zkb = data.package.zkb;
+        const rawValue = Number(zkb.totalValue) || 0;
+        const esiResponse = await axios.get(zkb.href);
+        const killmail = esiResponse.data;
+
+        resolveKillData(killmail, esi, axios).then(enriched => {
     if (enriched) {
         console.log(`[RESOLVER TEST] ID: ${data.package.killID} | Resolved: ${enriched.shipName} in ${enriched.systemName}`);
         
@@ -104,11 +111,6 @@ resolveKillData(killmail, esi, axios).then(enriched => {
 }).catch(err => console.error("[RESOLVER TEST FAIL]", err.message));
 // --- DRY RUN TEST END ---
 
-      if (data && data.package) {
-        const zkb = data.package.zkb;
-        const rawValue = Number(zkb.totalValue) || 0;
-        const esiResponse = await axios.get(zkb.href);
-        const killmail = esiResponse.data;
         const [shipName, systemDetails, charName] = await Promise.all([
           esi.getTypeName(killmail.victim.ship_type_id),
           esi.getSystemDetails(killmail.solar_system_id),
