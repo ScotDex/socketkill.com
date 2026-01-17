@@ -1,4 +1,4 @@
-const axios = require(`axios`);
+const axios = require("./src/network/agent");
 const fs = require(`fs`).promises;
 
 

@@ -5,7 +5,7 @@
  */
 
 require("dotenv").config();
-const axios = require("axios");
+const axios = require("./src/network/agent");
 const path = require("path");
 const ESIClient = require("./esi");
 const MapperService = require("./mapper");
