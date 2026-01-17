@@ -90,27 +90,11 @@ async function listeningStream() {
       const response = await axios.get(REDISQ_URL, { timeout: 15000 });
       const data = response.data;
 
-      // --- DRY RUN TEST START ---
-// We fire this WITHOUT 'await' so it doesn't slow down the live loop
-
       if (data && data.package) {
         const zkb = data.package.zkb;
         const rawValue = Number(zkb.totalValue) || 0;
         const esiResponse = await axios.get(zkb.href);
         const killmail = esiResponse.data;
-        data.package.killmail = killmail;
-
-        resolveKillData(killmail, esi, axios).then(enriched => {
-    if (enriched) {
-        console.log(`[RESOLVER TEST] ID: ${data.package.killID} | Resolved: ${enriched.shipName} in ${enriched.systemName}`);
-        
-        // Safety Check: Compare with the live loop's variables
-        if (enriched.shipName !== shipName) {
-            console.error(`Mismatch! Resolver: ${enriched.shipName} vs Live: ${shipName}`);
-        }
-    }
-}).catch(err => console.error("[RESOLVER TEST FAIL]", err.message));
-// --- DRY RUN TEST END ---
 
         const [shipName, systemDetails, charName] = await Promise.all([
           esi.getTypeName(killmail.victim.ship_type_id),
@@ -135,7 +119,6 @@ async function listeningStream() {
 
         if (constellationId) {
           try {
-            // 2. Fetch the constellation from ESI to get the actual region_id
             const constellationReq = await axios.get(
               `https://esi.evetech.net/latest/universe/constellations/${constellationId}/`,
               {
