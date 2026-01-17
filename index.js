@@ -18,6 +18,7 @@ const { promiseHooks } = require("v8");
 const utils = require("./helpers");
 const { SocketAddress } = require("net");
 const { stat } = require("fs");
+const resolveKillData = require("./src/network/resolver");
 
 const esi = new ESIClient("Contact: @YourName");
 const { app, io } = startWebServer(esi);
@@ -88,6 +89,20 @@ async function listeningStream() {
     try {
       const response = await axios.get(REDISQ_URL, { timeout: 15000 });
       const data = response.data;
+
+      // --- DRY RUN TEST START ---
+// We fire this WITHOUT 'await' so it doesn't slow down the live loop
+resolveKillData(killmail, esi, axios).then(enriched => {
+    if (enriched) {
+        console.log(`[RESOLVER TEST] ID: ${data.package.killID} | Resolved: ${enriched.shipName} in ${enriched.systemName}`);
+        
+        // Safety Check: Compare with the live loop's variables
+        if (enriched.shipName !== shipName) {
+            console.error(`Mismatch! Resolver: ${enriched.shipName} vs Live: ${shipName}`);
+        }
+    }
+}).catch(err => console.error("[RESOLVER TEST FAIL]", err.message));
+// --- DRY RUN TEST END ---
 
       if (data && data.package) {
         const zkb = data.package.zkb;
