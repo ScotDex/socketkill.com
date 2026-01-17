@@ -1,10 +1,15 @@
-
-// src/network/resolver.js
-const axios = require("./agent"); // This MUST point to your persistent agent file
-
-module.exports = async function resolveKillData(killmail, esi, axios) {
+/**
+ * src/network/resolver.js
+ */
+module.exports = async function resolveKillData(pkg, esi, axios) {
     try {
-        // 1. Parallel Resolution
+        // The package from zKill contains 'killmail' and 'zkb'
+        const killmail = pkg.killmail; 
+        const killID = pkg.killID;
+
+        if (!killmail) throw new Error("Killmail data missing in package");
+
+        // Now killmail is defined for the rest of the function
         const [shipName, systemDetails, charName] = await Promise.all([
             esi.getTypeName(killmail.victim.ship_type_id),
             esi.getSystemDetails(killmail.solar_system_id),
@@ -15,28 +20,16 @@ module.exports = async function resolveKillData(killmail, esi, axios) {
         const constellationId = systemDetails ? systemDetails.constellation_id : null;
         let regionName = "K-Space";
 
-        // 2. Region Resolution
         if (constellationId) {
-            try {
-                const constellationReq = await axios.get(
-                    `https://esi.evetech.net/latest/universe/constellations/${constellationId}/`
-                );
-                regionName = await esi.getRegionName(constellationReq.data.region_id);
-            } catch (err) {
-                console.error(`[RESOLVER] Region lookup failed`);
-            }
+            const constellationReq = await axios.get(
+                `https://esi.evetech.net/latest/universe/constellations/${constellationId}/`
+            );
+            regionName = await esi.getRegionName(constellationReq.data.region_id);
         }
 
-        // Return the enriched data back to the loop
-        return {
-            shipName,
-            systemName,
-            regionName,
-            charName,
-            systemDetails
-        };
+        return { shipName, systemName, regionName, charName, systemDetails, killID };
     } catch (err) {
-        console.error(`[RESOLVER ERROR]: ${err.message}`);
+        console.error(`[RESOLVER INTERNAL ERROR]: ${err.message}`);
         return null;
     }
 };
