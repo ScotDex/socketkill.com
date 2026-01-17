@@ -70,6 +70,8 @@ const isWormholeSystem = (systemId) => {
   setInterval(() => {
     mapper.refreshChain(esi.getSystemDetails.bind(esi));
   }, 1 * 60 * 1000);
+
+  startSocketStream();
   // axios.post(process.env.INTEL_WEBHOOK_URL, { content: "Online" })
   //   .catch(err => console.error("Test Ping Failed:", err.message));
 
