@@ -18,7 +18,7 @@ const { promiseHooks } = require("v8");
 const utils = require("./helpers");
 const { SocketAddress } = require("net");
 const { stat } = require("fs");
-const resolveKillData = require("./src/network/resolver");
+
 
 const esi = new ESIClient("Contact: @YourName");
 const { app, io } = startWebServer(esi);
