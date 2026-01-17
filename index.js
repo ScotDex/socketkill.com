@@ -248,3 +248,18 @@ setInterval(() => {
   console.log("Changing background");
   refreshNebulaBackground();
 }, ROTATION_SPEED);
+
+function benchmarkKill(killID, startTime) {
+    const endTime = process.hrtime.bigint();
+    const durationNs = endTime - startTime;
+    const durationMs = Number(durationNs) / 1_000_000; // Convert to ms
+
+    // Log the "Processing Tax"
+    console.log(`[PERF] Kill ${killID} | Processing Latency: ${durationMs.toFixed(3)}ms`);
+    
+    // Broadcast to UI for a "Dev Mode" dashboard
+    io.emit('perf-stats', {
+        killID,
+        latency: durationMs.toFixed(3)
+    });
+}
