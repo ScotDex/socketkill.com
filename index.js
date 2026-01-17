@@ -18,6 +18,7 @@ const { promiseHooks } = require("v8");
 const utils = require("./helpers");
 const { SocketAddress } = require("net");
 const { stat } = require("fs");
+const startSocketStream = require("./src/network/socketListener");
 
 
 const esi = new ESIClient("Contact: @YourName");
