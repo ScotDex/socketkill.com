@@ -10,7 +10,7 @@ const path = require("path");
 const ESIClient = require("./esi");
 const MapperService = require("./mapper");
 const EmbedFactory = require("./embedFactory");
-const TwitterService = require("./twitterService");
+const TwitterService = require("./src/network/twitterService");
 const helpers = require("./helpers");
 const HeartbeatService = require("./heartbeatService");
 const startWebServer = require("./webServer");
@@ -91,6 +91,7 @@ async function listeningStream() {
       const data = response.data;
 
       if (data && data.package) {
+        const startProcessing = process.hrtime.bigint();
         const zkb = data.package.zkb;
         const rawValue = Number(zkb.totalValue) || 0;
         const esiResponse = await axios.get(zkb.href);
@@ -156,7 +157,7 @@ async function listeningStream() {
           totalScanned: scanCount,
         });
         const isWhale = rawValue >= WHALE_THRESHOLD;
-
+        benchmarkKill(data.package.killID, startProcessing);
         if (
           isWhale ||
           (isWormholeSystem(killmail.solar_system_id) &&
