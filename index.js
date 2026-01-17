@@ -98,6 +98,7 @@ async function listeningStream() {
         const rawValue = Number(zkb.totalValue) || 0;
         const esiResponse = await axios.get(zkb.href);
         const killmail = esiResponse.data;
+        data.package.killmail = killmail;
 
         resolveKillData(killmail, esi, axios).then(enriched => {
     if (enriched) {
