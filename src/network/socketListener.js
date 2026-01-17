@@ -36,3 +36,5 @@ function startSocketStream() {
 
 // Initialize the stream
 startSocketStream();
+
+module.exports = startSocketStream;
