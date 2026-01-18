@@ -18,8 +18,6 @@ const { promiseHooks } = require("v8");
 const utils = require("./helpers");
 const { SocketAddress } = require("net");
 const { stat } = require("fs");
-const startSocketStream = require("./src/network/socketListener");
-
 
 const esi = new ESIClient("Contact: @YourName");
 const { app, io } = startWebServer(esi);
@@ -87,10 +85,10 @@ const REDISQ_URL = `https://zkillredisq.stream/listen.php?queueID=${QUEUE_ID}&tt
 async function listeningStream() {
   const WHALE_THRESHOLD = 20000000000;
   console.log(`Listening to zKillboard Queue: ${QUEUE_ID}`);
-
+  let pollDelay = 1000;
   while (true) {
     try {
-      const response = await axios.get(REDISQ_URL, { timeout: 15000 });
+      const response = await axios.get(REDISQ_URL, { timeout: 10000 });
       const data = response.data;
 
       if (data && data.package) {
@@ -99,7 +97,7 @@ async function listeningStream() {
         const rawValue = Number(zkb.totalValue) || 0;
         const esiResponse = await axios.get(zkb.href);
         const killmail = esiResponse.data;
-
+          pollDelay = 300;
         const [shipName, systemDetails, charName] = await Promise.all([
           esi.getTypeName(killmail.victim.ship_type_id),
           esi.getSystemDetails(killmail.solar_system_id),
@@ -184,7 +182,7 @@ async function listeningStream() {
     } catch (err) {
       const delay = err.response?.status === 429 ? 2000 : 5000;
       console.error(`❌ Error: ${err.message}`);
-      await new Promise((res) => setTimeout(res, delay));
+      await new Promise((res) => setTimeout(res, pollDelay, delay));
     }
   }
 }
