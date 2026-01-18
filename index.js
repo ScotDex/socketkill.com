@@ -84,7 +84,7 @@ async function listeningStream() {
   console.log(`Listening to zKillboard Queue: ${QUEUE_ID}`);
   while (true) {
     try {
-      const response = await axios.get(REDISQ_URL, { timeout: 10000 });
+      const response = await axios.get(REDISQ_URL, { timeout: 5000 });
       const data = response.data;
 
       if (data && data.package) {
@@ -93,17 +93,12 @@ async function listeningStream() {
         const rawValue = Number(zkb.totalValue) || 0;
         const esiResponse = await axios.get(zkb.href);
         const killmail = esiResponse.data;
-// 1. Get system details (This is fast/local)
         const systemDetails = await esi.getSystemDetails(killmail.solar_system_id);
-
-        // 2. Parallel resolve everything else
         const [shipName, charName, regionName] = await Promise.all([
           esi.getTypeName(killmail.victim.ship_type_id),
           esi.getCharacterName(killmail.victim?.character_id),
           systemDetails ? esi.getRegionName(systemDetails.region_id) : Promise.resolve("K-Space")
         ]);
-
-        // 3. Set the labels for your UI
         const systemName = systemDetails?.name || "Unknown System";
         const constellationId = systemDetails?.constellation_id || null;
          
@@ -162,7 +157,6 @@ async function listeningStream() {
 }
 
 async function handlePrivateIntel(kill, zkb) {
-  // 1. Setup our Threshold inside this function too
   const WHALE_THRESHOLD = 20000000000;
   const rawValue = Number(zkb.totalValue) || 0;
   const formattedValue = helpers.formatIsk(rawValue);
@@ -234,10 +228,9 @@ function benchmarkKill(killID, startTime) {
     const durationNs = endTime - startTime;
     const durationMs = Number(durationNs) / 1_000_000; // Convert to ms
 
-    // Log the "Processing Tax"
     console.log(`[PERF] Kill ${killID} | Processing Latency: ${durationMs.toFixed(3)}ms`);
     
-    // Broadcast to UI for a "Dev Mode" dashboard
+   
     io.emit('perf-stats', {
         killID,
         latency: durationMs.toFixed(3)
