@@ -82,7 +82,6 @@ const REDISQ_URL = `https://zkillredisq.stream/listen.php?queueID=${QUEUE_ID}&tt
 async function listeningStream() {
   const WHALE_THRESHOLD = 20000000000;
   console.log(`Listening to zKillboard Queue: ${QUEUE_ID}`);
-  let pollDelay = 1000;
   while (true) {
     try {
       const response = await axios.get(REDISQ_URL, { timeout: 10000 });
@@ -94,44 +93,25 @@ async function listeningStream() {
         const rawValue = Number(zkb.totalValue) || 0;
         const esiResponse = await axios.get(zkb.href);
         const killmail = esiResponse.data;
-          pollDelay = 300;
         const [shipName, systemDetails, charName] = await Promise.all([
           esi.getTypeName(killmail.victim.ship_type_id),
           esi.getSystemDetails(killmail.solar_system_id),
           esi.getCharacterName(killmail.victim?.character_id),
         ]);
+
+        const regionName = systemDetails ? await esi.getRegionName(systemDetails.region_id) : "K-Space";
         const systemName = systemDetails
           ? systemDetails.name
           : "Unknown System";
         const constellationId = systemDetails
           ? systemDetails.constellation_id
           : null;
-        let regionName = "K-Space";
-        let realRegionId = "Unknown";
         stats.scanCount++;
         scanCount++;
         
         if (scanCount % 100 == 0){
             utils.savePersistentStats(scanCount);
             console.log(`Disk Milestone Reached ${scanCount}. Save triggered`);
-        }
-
-        if (constellationId) {
-          try {
-            const constellationReq = await axios.get(
-              `https://esi.evetech.net/latest/universe/constellations/${constellationId}/`,
-              {
-                headers: { "X-Compatibility-Date": "2025-12-16" },
-              }
-            );
-
-            // 3. Resolve the name using your helper (saves to esi_cache.json)
-            regionName = await esi.getRegionName(
-              constellationReq.data.region_id
-            );
-          } catch (err) {
-            console.error("Resolving region failed:", err.message);
-          }
         }
 
         console.log(`Killmail recieved, processing...`);
