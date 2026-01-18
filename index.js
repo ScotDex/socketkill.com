@@ -93,19 +93,19 @@ async function listeningStream() {
         const rawValue = Number(zkb.totalValue) || 0;
         const esiResponse = await axios.get(zkb.href);
         const killmail = esiResponse.data;
-        const [shipName, systemDetails, charName] = await Promise.all([
+        const [shipName, charName, systemData] = await Promise.all([
           esi.getTypeName(killmail.victim.ship_type_id),
-          esi.getSystemDetails(killmail.solar_system_id),
           esi.getCharacterName(killmail.victim?.character_id),
+          esi.getSystemDetails(killmail.solar_system_id).then(async (details) => {
+            const region = details ? await esi.getRegionName(details.region_id) : "K-Space";
+            return { ...details, region };
+          })
         ]);
 
-        const regionName = systemDetails ? await esi.getRegionName(systemDetails.region_id) : "K-Space";
-        const systemName = systemDetails
-          ? systemDetails.name
-          : "Unknown System";
-        const constellationId = systemDetails
-          ? systemDetails.constellation_id
-          : null;
+        const systemName = systemData.name || "Unknown System";
+        const regionName = systemData.region;
+        const systemDetails = systemData; // This keeps your 'constellationId' logic working
+
         stats.scanCount++;
         scanCount++;
 
