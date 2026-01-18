@@ -92,11 +92,12 @@ async function listeningStream() {
       if (data && data.package) {
         const startProcessing = process.hrtime.bigint();
         dropShipRender(io, data.package);
-        resolveFullIntel(io, esi, data.package);
+        
         const zkb = data.package.zkb;
         const rawValue = Number(zkb.totalValue) || 0;
         const esiResponse = await axios.get(zkb.href);
         const killmail = esiResponse.data;
+        resolveFullIntel(io, esi, data.package);
         const systemDetails = await esi.getSystemDetails(killmail.solar_system_id);
         const [shipName, charName, regionName] = await Promise.all([
           esi.getTypeName(killmail.victim.ship_type_id),
