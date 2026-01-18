@@ -172,12 +172,12 @@ async function listeningStream() {
         } else {
           if (scanCount % 1000 === 0) {
             console.log(
-              `🛡️  Gatekeeper: ${scanCount} total kills scanned. Discarding kill in system ${killmail.solar_system_id}...`
+              `Gatekeeper: ${scanCount} total kills scanned.`
             );
           }
         }
       } else {
-        console.log("⏳ RedisQ: No new kills (10s poll). Polling again...");
+        console.log('Polling...')
       }
     } catch (err) {
       const delay = err.response?.status === 429 ? 2000 : 5000;
