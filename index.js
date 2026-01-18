@@ -16,6 +16,7 @@ const HeartbeatService = require("./heartbeatService");
 const startWebServer = require("./webServer");
 const utils = require("./helpers");
 const dropShipRender = require("./src/services/ship");
+const resolveFullIntel = require("./src/services/esiResolver");
 
 const esi = new ESIClient("Contact: @YourName");
 const { app, io } = startWebServer(esi);
@@ -91,6 +92,7 @@ async function listeningStream() {
       if (data && data.package) {
         const startProcessing = process.hrtime.bigint();
         dropShipRender(io, data.package);
+        resolveFullIntel(io, esi, data.package);
         const zkb = data.package.zkb;
         const rawValue = Number(zkb.totalValue) || 0;
         const esiResponse = await axios.get(zkb.href);
