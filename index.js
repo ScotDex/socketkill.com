@@ -102,8 +102,9 @@ async function listeningStream() {
           })
         ]);
 
-        const systemName = systemData.name || "Unknown System";
-        const regionName = systemData.region;
+       const systemDetails = systemData; 
+const systemName = systemData.name || "Unknown System";
+const regionName = systemData.region || "K-Space";
          
 
         stats.scanCount++;
