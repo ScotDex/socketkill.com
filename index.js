@@ -92,20 +92,21 @@ async function listeningStream() {
       if (data && data.package) {
         const startProcessing = process.hrtime.bigint();
         dropShipRender(io, data.package);
-        
-        const zkb = data.package.zkb;
-        const rawValue = Number(zkb.totalValue) || 0;
-        const esiResponse = await axios.get(zkb.href);
-        const killmail = esiResponse.data;
         resolveFullIntel(io, esi, data.package);
-        const systemDetails = await esi.getSystemDetails(killmail.solar_system_id);
-        const [shipName, charName, regionName] = await Promise.all([
-          esi.getTypeName(killmail.victim.ship_type_id),
-          esi.getCharacterName(killmail.victim?.character_id),
-          systemDetails ? esi.getRegionName(systemDetails.region_id) : Promise.resolve("K-Space")
-        ]);
-        const systemName = systemDetails?.name || "Unknown System";
-        const constellationId = systemDetails?.constellation_id || null;
+        
+    //    const zkb = data.package.zkb;
+     //   const rawValue = Number(zkb.totalValue) || 0;
+       // const esiResponse = await axios.get(zkb.href);
+       // const killmail = esiResponse.data;
+        
+       // const systemDetails = await esi.getSystemDetails(killmail.solar_system_id);
+       // const [shipName, charName, regionName] = await Promise.all([
+        //  esi.getTypeName(killmail.victim.ship_type_id),
+        //  esi.getCharacterName(killmail.victim?.character_id),
+         // systemDetails ? esi.getRegionName(systemDetails.region_id) : Promise.resolve("K-Space")
+       // ]);
+        //const systemName = systemDetails?.name || "Unknown System";
+        // const constellationId = systemDetails?.constellation_id || null;
          
 
         stats.scanCount++;
