@@ -120,7 +120,7 @@ async function listeningStream() {
         io.emit("raw-kill", {
           id: data.package.killID,
           val: Number(data.package.zkb.totalValue),
-          ship: shipName,
+         // ship: shipName,
           system: systemName,
           region: regionName,
           shipId: killmail.victim.ship_type_id,
