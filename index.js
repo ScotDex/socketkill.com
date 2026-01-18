@@ -15,7 +15,6 @@ const helpers = require("./helpers");
 const HeartbeatService = require("./heartbeatService");
 const startWebServer = require("./webServer");
 const utils = require("./helpers");
-const resolveFullIntel = require("./src/services/esiResolver");
 
 const esi = new ESIClient("Contact: @YourName");
 const { app, io } = startWebServer(esi);
@@ -96,7 +95,6 @@ async function listeningStream() {
         const esiResponse = await axios.get(zkb.href);
         const killmail = esiResponse.data;
           pollDelay = 300;
-        resolveFullIntel(io, esi, data.package.killmail, data.package.zkb);
         const [shipName, systemDetails, charName] = await Promise.all([
           esi.getTypeName(killmail.victim.ship_type_id),
           esi.getSystemDetails(killmail.solar_system_id),
