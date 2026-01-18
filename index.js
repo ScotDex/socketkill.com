@@ -125,6 +125,7 @@ async function listeningStream() {
           zkillUrl: `https://zkillboard.com/kill/${data.package.killID}/`,
           victimName: charName,
           totalScanned: scanCount,
+          shipImageUrl: `https://api.voidspark.org:2053/render/ship/${killmail.victim.ship_type_id}`,
         });
         const isWhale = rawValue >= WHALE_THRESHOLD;
         benchmarkKill(data.package.killID, startProcessing);
