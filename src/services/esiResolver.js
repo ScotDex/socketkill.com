@@ -1,6 +1,5 @@
-/**
- * BACKGROUND RESOLVER (The Slow Path)
- */
+const axios = require("../network/agent");
+ 
 const resolveFullIntel = async (io, esi, pkg) => {
     try {
         const zkb = pkg.zkb;
