@@ -6,9 +6,9 @@ class ESIClient{
     constructor(contactInfo) {
         this.api = axios.create({
             baseURL: "https://esi.evetech.net/latest",
-            timeout: 15000,
+            timeout: 3000,
             headers: {
-                'User-Agent': `KillStream (${contactInfo})`,
+                'User-Agent': `Socket.Kill (${contactInfo})`,
             }
         });
 
@@ -113,6 +113,10 @@ class ESIClient{
         try {
             const data = await fs.readFile(filePath, 'utf8');
             this.staticSystemData = JSON.parse(data);
+            this.systemNameMap = new Map ();
+            for (const [id, sys] of Object.entries(this.staticSystemData)) {
+            this.systemNameMap.set(sys.name.toLowerCase(), sys);
+        }
             return true;
         } catch (err) {
             console.error("Failed to load static system data:", err.message);

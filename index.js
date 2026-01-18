@@ -18,7 +18,7 @@ const utils = require("./helpers");
 const dropShipRender = require("./src/services/ship");
 
 
-const esi = new ESIClient("Contact: @YourName");
+const esi = new ESIClient("Contact: @ScottishDex");
 const { app, io } = startWebServer(esi);
 
 let scanCount = utils.loadPersistentStats();
@@ -99,14 +99,13 @@ async function listeningStream() {
       const esiResponse = await axios.get(zkb.href);
        const killmail = esiResponse.data;
         
-// NEW WAY (Fan-out)
+
 const [systemDetails, shipName, charName] = await Promise.all([
     esi.getSystemDetails(killmail.solar_system_id),
     esi.getTypeName(killmail.victim.ship_type_id),
     esi.getCharacterName(killmail.victim?.character_id)
 ]);
 
-// This is now a local memory lookup because systemDetails is already resolved
 const regionName = systemDetails ? await esi.getRegionName(systemDetails.region_id) : "K-Space";
         const systemName = systemDetails?.name || "Unknown System";
         const constellationId = systemDetails?.constellation_id || null;
@@ -211,7 +210,7 @@ async function handlePrivateIntel(kill, zkb) {
 }
 setInterval(() => {
   HeartbeatService.sendReport(
-    process.env.INTEL_WEBHOOK_URL,
+    process.env.MON_WEBHOOK,
     stats,
     mapper,
     esi
