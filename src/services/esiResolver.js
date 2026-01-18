@@ -2,7 +2,7 @@ const axios = require("../network/agent");
  
 const resolveFullIntel = async (io, esi, pkg) => {
     try {
-        const zkb = pkg.zkb;
+        const zkb = data.package.zkb;
         const esiResponse = await axios.get(zkb.href);
         const killmail = esiResponse.data;
         // 1. Execute the blocking ESI calls here
