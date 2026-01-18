@@ -104,7 +104,7 @@ async function listeningStream() {
 
         const systemName = systemData.name || "Unknown System";
         const regionName = systemData.region;
-        const systemDetails = systemData; // This keeps your 'constellationId' logic working
+         
 
         stats.scanCount++;
         scanCount++;
@@ -154,7 +154,7 @@ async function listeningStream() {
     } catch (err) {
       const delay = err.response?.status === 429 ? 2000 : 5000;
       console.error(`❌ Error: ${err.message}`);
-      await new Promise((res) => setTimeout(res, pollDelay, delay));
+      await new Promise((res) => setTimeout(res, delay));
     }
   }
 }
