@@ -96,18 +96,21 @@ async function listeningStream() {
         
       const zkb = data.package.zkb;
        const rawValue = Number(zkb.totalValue) || 0;
-        const esiResponse = await axios.get(zkb.href);
+      const esiResponse = await axios.get(zkb.href);
        const killmail = esiResponse.data;
         
-        const systemDetails = await esi.getSystemDetails(killmail.solar_system_id);
-        const [shipName, charName, regionName] = await Promise.all([
-          esi.getTypeName(killmail.victim.ship_type_id),
-          esi.getCharacterName(killmail.victim?.character_id),
-          systemDetails ? esi.getRegionName(systemDetails.region_id) : Promise.resolve("K-Space")
-       ]);
+// NEW WAY (Fan-out)
+const [systemDetails, shipName, charName] = await Promise.all([
+    esi.getSystemDetails(killmail.solar_system_id),
+    esi.getTypeName(killmail.victim.ship_type_id),
+    esi.getCharacterName(killmail.victim?.character_id)
+]);
+
+// This is now a local memory lookup because systemDetails is already resolved
+const regionName = systemDetails ? await esi.getRegionName(systemDetails.region_id) : "K-Space";
         const systemName = systemDetails?.name || "Unknown System";
         const constellationId = systemDetails?.constellation_id || null;
-         
+
 
         stats.scanCount++;
         scanCount++;
@@ -121,15 +124,15 @@ async function listeningStream() {
           id: data.package.killID,
           val: Number(data.package.zkb.totalValue),
           ship: shipName,
-         system: systemName,
+          system: systemName,
           region: regionName,
-         shipId: killmail.victim.ship_type_id,
-        href: data.package.zkb.href,
-         locationLabel: `System: ${systemName} | Region: ${regionName}`,
-         zkillUrl: `https://zkillboard.com/kill/${data.package.killID}/`,
-         victimName: charName,
-         totalScanned: scanCount,
-shipImageUrl: `https://api.voidspark.org:2053/render/ship/${killmail.victim.ship_type_id}`,
+          shipId: killmail.victim.ship_type_id,
+          href: data.package.zkb.href,
+          locationLabel: `System: ${systemName} | Region: ${regionName}`,
+          zkillUrl: `https://zkillboard.com/kill/${data.package.killID}/`,
+          victimName: charName,
+          totalScanned: scanCount,
+          shipImageUrl: `https://api.voidspark.org:2053/render/ship/${killmail.victim.ship_type_id}`,
         });
         const isWhale = rawValue >= WHALE_THRESHOLD;
         benchmarkKill(data.package.killID, startProcessing);
@@ -192,7 +195,7 @@ async function handlePrivateIntel(kill, zkb) {
       );
 
       if (process.env.INTEL_WEBHOOK_URL) {
-        await axios.post(process.env.INTEL_WEBHOOK_URL, payload);
+        axios.post(process.env.INTEL_WEBHOOK_URL, payload);
         console.log(
           `✅ [DISCORD] Intel Posted: ${names.shipName} (${formattedValue})`
         );
