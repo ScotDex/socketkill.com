@@ -3,8 +3,9 @@
  */
 const resolveFullIntel = async (io, esi, pkg) => {
     try {
-        const { killmail, zkb } = pkg;
-
+        const zkb = pkg.zkb;
+        const esiResponse = await axios.get(zkb.href);
+        const killmail = esiResponse.data;
         // 1. Execute the blocking ESI calls here
         // This is where the 500ms-2000ms delay happens, safely away from the main loop
         const [shipName, charName] = await Promise.all([
