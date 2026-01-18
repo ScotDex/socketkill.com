@@ -15,6 +15,7 @@ const helpers = require("./helpers");
 const HeartbeatService = require("./heartbeatService");
 const startWebServer = require("./webServer");
 const utils = require("./helpers");
+const dropShipRender = require("./src/services/ship");
 
 const esi = new ESIClient("Contact: @YourName");
 const { app, io } = startWebServer(esi);
@@ -89,6 +90,7 @@ async function listeningStream() {
 
       if (data && data.package) {
         const startProcessing = process.hrtime.bigint();
+        dropShipRender(io, data.package);
         const zkb = data.package.zkb;
         const rawValue = Number(zkb.totalValue) || 0;
         const esiResponse = await axios.get(zkb.href);
@@ -107,7 +109,6 @@ async function listeningStream() {
         scanCount++;
 
         console.log(`Killmail recieved, processing...`);
-        const shipImageUrl = `https://api.voidspark.org:2053/render/ship/${killmail.victim.ship_type_id}`;
 
         io.emit("gatekeeper-stats", {
           totalScanned: scanCount,
@@ -119,7 +120,6 @@ async function listeningStream() {
           system: systemName,
           region: regionName,
           shipId: killmail.victim.ship_type_id,
-          shipImageUrl: shipImageUrl,
           href: data.package.zkb.href,
           locationLabel: `System: ${systemName} | Region: ${regionName}`,
           zkillUrl: `https://zkillboard.com/kill/${data.package.killID}/`,
