@@ -108,11 +108,6 @@ async function listeningStream() {
           : null;
         stats.scanCount++;
         scanCount++;
-        
-        if (scanCount % 100 == 0){
-            utils.savePersistentStats(scanCount);
-            console.log(`Disk Milestone Reached ${scanCount}. Save triggered`);
-        }
 
         console.log(`Killmail recieved, processing...`);
         const shipImageUrl = `https://api.voidspark.org:2053/render/ship/${killmail.victim.ship_type_id}`;
@@ -226,6 +221,11 @@ setInterval(() => {
   console.log("Changing background");
   refreshNebulaBackground();
 }, ROTATION_SPEED);
+
+setInterval(() => {
+  utils.savePersistentStats(scanCount);
+  console.log(`💾 [AUTO-SAVE] Stats persisted to disk: ${scanCount}`);
+}, 60000); // Save once per minute
 
 function benchmarkKill(killID, startTime) {
     const endTime = process.hrtime.bigint();
