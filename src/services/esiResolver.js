@@ -1,20 +1,22 @@
-const axios = require("../network/agent");
- 
-const resolveFullIntel = async (io, esi, pkg) => {
+const axios = require('../network/agent');
+
+const resolveFullIntel = async (io, esi, pkg, mapper) => {
     try {
-        const zkb = data.package.zkb;
+        const zkb = pkg.zkb;
+        
+        // 🐢 THE HEAVY LIFT: Fetch the killmail data CCP-side in the background
         const esiResponse = await axios.get(zkb.href);
         const killmail = esiResponse.data;
-        // 1. Execute the blocking ESI calls here
-        // This is where the 500ms-2000ms delay happens, safely away from the main loop
+
+        // 1. Parallel ESI Lookups (Dynamic Data)
         const [shipName, charName] = await Promise.all([
             esi.getTypeName(killmail.victim.ship_type_id),
             esi.getCharacterName(killmail.victim?.character_id),
         ]);
 
-        // 2. Spatial lookup (Using your repaired local JSON via the esi client)
+        // 2. Spatial lookup from your repaired local JSON
         const systemId = killmail.solar_system_id;
-        const systemDetails = esi.systemCache[systemId]; 
+        const systemDetails = esi.systemCache ? esi.systemCache[systemId] : null; 
         const systemName = systemDetails?.name || "Unknown System";
         
         // 3. Resolve Region Name (Cached lookup)
@@ -22,8 +24,8 @@ const resolveFullIntel = async (io, esi, pkg) => {
             ? await esi.getRegionName(systemDetails.region_id) 
             : "K-Space";
 
-        // 4. UPDATE THE UI
-        // We use a specific event name so the frontend knows to "fill in" the text
+        // 4. UI UPDATE
+        // This 'patches' the 5ms ghost-row with real names
         io.emit("update-kill", {
             id: zkb.killID,
             ship: shipName,
@@ -33,7 +35,8 @@ const resolveFullIntel = async (io, esi, pkg) => {
             locationLabel: `System: ${systemName} | Region: ${regionName}`
         });
 
-        console.log(`[Sidecar] Resolved Intel for Kill ${zkb.killID}`);
+        // 5. SOCIAL/INTEL (Handle Discord/Twitter here if needed)
+        // ... call handlePrivateIntel(killmail, zkb) here ...
 
     } catch (err) {
         console.error(`⚠️ [Sidecar] Resolution Failed: ${err.message}`);
