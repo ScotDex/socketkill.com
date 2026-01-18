@@ -93,18 +93,19 @@ async function listeningStream() {
         const rawValue = Number(zkb.totalValue) || 0;
         const esiResponse = await axios.get(zkb.href);
         const killmail = esiResponse.data;
-        const [shipName, charName, systemData] = await Promise.all([
+// 1. Get system details (This is fast/local)
+        const systemDetails = await esi.getSystemDetails(killmail.solar_system_id);
+
+        // 2. Parallel resolve everything else
+        const [shipName, charName, regionName] = await Promise.all([
           esi.getTypeName(killmail.victim.ship_type_id),
           esi.getCharacterName(killmail.victim?.character_id),
-          esi.getSystemDetails(killmail.solar_system_id).then(async (details) => {
-            const region = details ? await esi.getRegionName(details.region_id) : "K-Space";
-            return { ...details, region };
-          })
+          systemDetails ? esi.getRegionName(systemDetails.region_id) : Promise.resolve("K-Space")
         ]);
 
-       const systemDetails = systemData; 
-const systemName = systemData.name || "Unknown System";
-const regionName = systemData.region || "K-Space";
+        // 3. Set the labels for your UI
+        const systemName = systemDetails?.name || "Unknown System";
+        const constellationId = systemDetails?.constellation_id || null;
          
 
         stats.scanCount++;
