@@ -16,7 +16,7 @@ const HeartbeatService = require("./heartbeatService");
 const startWebServer = require("./webServer");
 const utils = require("./helpers");
 const dropShipRender = require("./src/services/ship");
-const resolveFullIntel = require("./src/services/esiResolver");
+
 
 const esi = new ESIClient("Contact: @YourName");
 const { app, io } = startWebServer(esi);
@@ -92,21 +92,21 @@ async function listeningStream() {
       if (data && data.package) {
         const startProcessing = process.hrtime.bigint();
         dropShipRender(io, data.package);
-        resolveFullIntel(io, esi, data.package);
         
-    //    const zkb = data.package.zkb;
-     //   const rawValue = Number(zkb.totalValue) || 0;
-       // const esiResponse = await axios.get(zkb.href);
-       // const killmail = esiResponse.data;
         
-       // const systemDetails = await esi.getSystemDetails(killmail.solar_system_id);
-       // const [shipName, charName, regionName] = await Promise.all([
-        //  esi.getTypeName(killmail.victim.ship_type_id),
-        //  esi.getCharacterName(killmail.victim?.character_id),
-         // systemDetails ? esi.getRegionName(systemDetails.region_id) : Promise.resolve("K-Space")
-       // ]);
-        //const systemName = systemDetails?.name || "Unknown System";
-        // const constellationId = systemDetails?.constellation_id || null;
+      const zkb = data.package.zkb;
+       const rawValue = Number(zkb.totalValue) || 0;
+        const esiResponse = await axios.get(zkb.href);
+       const killmail = esiResponse.data;
+        
+        const systemDetails = await esi.getSystemDetails(killmail.solar_system_id);
+        const [shipName, charName, regionName] = await Promise.all([
+          esi.getTypeName(killmail.victim.ship_type_id),
+          esi.getCharacterName(killmail.victim?.character_id),
+          systemDetails ? esi.getRegionName(systemDetails.region_id) : Promise.resolve("K-Space")
+       ]);
+        const systemName = systemDetails?.name || "Unknown System";
+        const constellationId = systemDetails?.constellation_id || null;
          
 
         stats.scanCount++;
@@ -120,16 +120,16 @@ async function listeningStream() {
         io.emit("raw-kill", {
           id: data.package.killID,
           val: Number(data.package.zkb.totalValue),
-         // ship: shipName,
-         // system: systemName,
-         // region: regionName,
-        //  shipId: killmail.victim.ship_type_id,
-       //   href: data.package.zkb.href,
-       //   locationLabel: `System: ${systemName} | Region: ${regionName}`,
-       //   zkillUrl: `https://zkillboard.com/kill/${data.package.killID}/`,
-       //   victimName: charName,
-      //    totalScanned: scanCount,
-//shipImageUrl: `https://api.voidspark.org:2053/render/ship/${killmail.victim.ship_type_id}`,
+          ship: shipName,
+         system: systemName,
+          region: regionName,
+         shipId: killmail.victim.ship_type_id,
+        href: data.package.zkb.href,
+         locationLabel: `System: ${systemName} | Region: ${regionName}`,
+         zkillUrl: `https://zkillboard.com/kill/${data.package.killID}/`,
+         victimName: charName,
+         totalScanned: scanCount,
+shipImageUrl: `https://api.voidspark.org:2053/render/ship/${killmail.victim.ship_type_id}`,
         });
         const isWhale = rawValue >= WHALE_THRESHOLD;
         benchmarkKill(data.package.killID, startProcessing);
