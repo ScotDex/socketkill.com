@@ -14,10 +14,7 @@ const TwitterService = require("./src/network/twitterService");
 const helpers = require("./helpers");
 const HeartbeatService = require("./heartbeatService");
 const startWebServer = require("./webServer");
-const { promiseHooks } = require("v8");
 const utils = require("./helpers");
-const { SocketAddress } = require("net");
-const { stat } = require("fs");
 
 const esi = new ESIClient("Contact: @YourName");
 const { app, io } = startWebServer(esi);
