@@ -95,25 +95,25 @@ async function listeningStream() {
         
         
       const zkb = data.package.zkb;
-       const rawValue = Number(zkb.totalValue) || 0;
+      const rawValue = Number(zkb.totalValue) || 0;
       const esiResponse = await axios.get(zkb.href);
-       const killmail = esiResponse.data;
+      const killmail = esiResponse.data;
 
 
-const [systemDetails, shipName, charName] = await Promise.all([
+const [systemDetails, shipName, charName, corpName] = await Promise.all([
     esi.getSystemDetails(killmail.solar_system_id),
     esi.getTypeName(killmail.victim.ship_type_id),
     esi.getCharacterName(killmail.victim?.character_id),
+    esi.getCorporationName(killmail.victim?.corporation_id)
 ]);
 
-const names = {};
+// 3. Resolve region (we need systemDetails first, but we can still optimize)
+let regionName = "K-Space";
+if (systemDetails?.region_id) {
+    regionName = await esi.getRegionName(systemDetails.region_id);
+}
 
-names.corpName = await esi.getCorporationName(
-        killmail.victim?.corporation_id
-      );
-
-const regionName = systemDetails ? await esi.getRegionName(systemDetails.region_id) : "K-Space";
-        const systemName = systemDetails?.name || "Unknown System";
+const systemName = systemDetails?.name || "Unknown System";
         const constellationId = systemDetails?.constellation_id || null;
 
 
