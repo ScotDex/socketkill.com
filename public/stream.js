@@ -115,6 +115,10 @@ socket.on('raw-kill', (kill) => {
             <div class="${iskClass}">${valueFormatted}</div>
             <a href="${kill.zkillUrl}" target="_blank" class="btn btn-sm btn-outline-secondary mt-1" style="font-size: 10px;">DETAILS</a>
         </div>
+        <div class="corp-icon-container">
+            <img src="${kill.corpImageUrl}" class="corp-logo-img" loading="lazy">
+            </div>
+            </div>
     `;
 
     const overlay = document.querySelector('body');
