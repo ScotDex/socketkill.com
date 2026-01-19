@@ -96,30 +96,35 @@ socket.on('raw-kill', (kill) => {
     const now = new Date();
     const timestamp = `[${now.getUTCHours().toString().padStart(2, '0')}:${now.getUTCMinutes().toString().padStart(2, '0')}]`;
 
-    div.innerHTML = `
-        <div class="d-flex align-items-center" style="flex: 1;">
-            <div class="ship-icon-container">
-                <img src="${kill.shipImageUrl}" class="ship-render" loading="lazy">
+/* --- Updated inside socket.on('raw-kill') --- */
+
+div.innerHTML = `
+    <div class="d-flex align-items-center" style="flex: 1;">
+        <div class="ship-icon-container">
+            <img src="${kill.shipImageUrl}" class="ship-render" loading="lazy">
+        </div>
+        <div class="kill-info">
+            <div>
+                <span class="timestamp">${timestamp}</span>
+                <strong class="ship-name">${victim} lost a ${kill.ship}</strong>
             </div>
-            <div class="kill-info">
-                <div>
-                    <span class="timestamp">${timestamp}</span>
-                    <strong class="ship-name">${victim} lost a ${kill.ship}</strong>
-                </div>
-                <div class="small">
-                    <span class="location-label">${kill.locationLabel}</span>
-                </div>
+            <div class="small">
+                <span class="location-label">${kill.locationLabel}</span>
             </div>
         </div>
-        <div class="text-end" style="width: 150px;">
-            <div class="${iskClass}">${valueFormatted}</div>
-            <a href="${kill.zkillUrl}" target="_blank" class="btn btn-sm btn-outline-secondary mt-1" style="font-size: 10px;">DETAILS</a>
+    </div>
+    
+    <div class="d-flex align-items-center">
+        <div class="corp-square-container me-3">
+            <img src="${kill.corpImageUrl}" class="corp-logo-square" loading="lazy">
         </div>
-        <div class="corp-icon-container">
-            <img src="${kill.corpImageUrl}" class="corp-logo-img" loading="lazy">
-            </div>
-            </div>
-    `;
+        
+        <div class="text-end" style="width: 100px;">
+            <div class="${iskClass} fw-bold">${valueFormatted}</div>
+            <a href="${kill.zkillUrl}" target="_blank" class="btn btn-sm btn-outline-secondary mt-1" style="font-size: 10px; width: 100%;">DETAILS</a>
+        </div>
+    </div>
+`;
 
     const overlay = document.querySelector('body');
     overlay.style.opacity = '0.9';
