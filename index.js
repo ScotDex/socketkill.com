@@ -16,6 +16,7 @@ const HeartbeatService = require("./heartbeatService");
 const startWebServer = require("./webServer");
 const utils = require("./helpers");
 const dropShipRender = require("./src/services/ship");
+const { kill } = require("process");
 
 
 const esi = new ESIClient("Contact: @ScottishDex");
@@ -138,6 +139,7 @@ const systemName = systemDetails?.name || "Unknown System";
           victimName: charName,
           totalScanned: scanCount,
           shipImageUrl: `https://api.voidspark.org:2053/render/ship/${killmail.victim.ship_type_id}`,
+          corpImageUrl: `https://api.voidspark.org:2053/render/corp/${killmail.victim.corporation_id}`
         });
         const isWhale = rawValue >= WHALE_THRESHOLD;
         benchmarkKill(data.package.killID, startProcessing);
