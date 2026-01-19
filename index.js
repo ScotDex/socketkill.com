@@ -133,7 +133,7 @@ const systemName = systemDetails?.name || "Unknown System";
           region: regionName,
           shipId: killmail.victim.ship_type_id,
           href: data.package.zkb.href,
-          locationLabel: `System: ${systemName} | Region: ${regionName} | Corporation: ${names.corpName}`,
+          locationLabel: `System: ${systemName} | Region: ${regionName} | Corporation: ${corpName}`,
           zkillUrl: `https://zkillboard.com/kill/${data.package.killID}/`,
           victimName: charName,
           totalScanned: scanCount,
