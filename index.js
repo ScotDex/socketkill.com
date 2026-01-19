@@ -98,7 +98,7 @@ async function listeningStream() {
       const rawValue = Number(zkb.totalValue) || 0;
       const esiResponse = await axios.get(zkb.href);
       const killmail = esiResponse.data;
-
+const names = {};
 
 const [systemDetails, shipName, charName, corpName] = await Promise.all([
     esi.getSystemDetails(killmail.solar_system_id),
