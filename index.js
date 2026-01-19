@@ -100,12 +100,15 @@ async function listeningStream() {
        const killmail = esiResponse.data;
 
 
-const [systemDetails, shipName, charName, corpName] = await Promise.all([
+const [systemDetails, shipName, charName] = await Promise.all([
     esi.getSystemDetails(killmail.solar_system_id),
     esi.getTypeName(killmail.victim.ship_type_id),
     esi.getCharacterName(killmail.victim?.character_id),
-    esi.getCorporationName(kill.victim?.corporation_id)
 ]);
+
+names.corpName = esi.getCorporationName(
+        kill.victim?.corporation_id
+      );
 
 const regionName = systemDetails ? await esi.getRegionName(systemDetails.region_id) : "K-Space";
         const systemName = systemDetails?.name || "Unknown System";
@@ -128,7 +131,7 @@ const regionName = systemDetails ? await esi.getRegionName(systemDetails.region_
           region: regionName,
           shipId: killmail.victim.ship_type_id,
           href: data.package.zkb.href,
-          locationLabel: `System: ${systemName} | Region: ${regionName} | Corporation: ${corpName}`,
+          locationLabel: `System: ${systemName} | Region: ${regionName} | Corporation: ${names.corpName}`,
           zkillUrl: `https://zkillboard.com/kill/${data.package.killID}/`,
           victimName: charName,
           totalScanned: scanCount,
