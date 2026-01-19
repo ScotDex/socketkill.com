@@ -106,8 +106,10 @@ const [systemDetails, shipName, charName] = await Promise.all([
     esi.getCharacterName(killmail.victim?.character_id),
 ]);
 
-names.corpName = esi.getCorporationName(
-        kill.victim?.corporation_id
+const names = {};
+
+names.corpName = await esi.getCorporationName(
+        killmail.victim?.corporation_id
       );
 
 const regionName = systemDetails ? await esi.getRegionName(systemDetails.region_id) : "K-Space";
