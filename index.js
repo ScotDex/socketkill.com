@@ -16,6 +16,7 @@ const HeartbeatService = require("./heartbeatService");
 const startWebServer = require("./webServer");
 const utils = require("./helpers");
 const dropShipRender = require("./src/services/ship");
+const statsManager = require("./src/services/statsManager");
 
 // Initialize Core Services
 const esi = new ESIClient("Contact: @ScottishDex");
@@ -182,7 +183,7 @@ async function listeningStream() {
 
             if (data && data.package) {
                 // Trigger background resolution without 'await' to keep the pipe moving
-                processPackage(data.package);
+                processor.processPackage(data.package);
             } else {
                 // Polling...
                 await new Promise((res) => setTimeout(res, 500));
@@ -214,15 +215,16 @@ async function listeningStream() {
     setInterval(refreshNebulaBackground, ROTATION_SPEED);
 
     // Stats Persistence: 1 Minute
-    setInterval(() => {
-        utils.savePersistentStats(scanCount);
-        console.log(`💾 [AUTO-SAVE] Stats: ${scanCount}`);
-    }, 60000);
+   setInterval(() => {
+    statsManager.save();
+    console.log(`💾 [AUTO-SAVE] Stats: ${statsManager.getTotal()}`);
+}, 60000);
 
     // Daily Heartbeat
     setInterval(() => {
+        const reportStats = statsManager.getStatsForReport();
         HeartbeatService.sendReport(process.env.MON_WEBHOOK, stats, mapper, esi);
-        stats.scanCount = 0;
+        statsManager.resetSession();
     }, 24 * 60 * 60 * 1000);
 
     console.log("Web Server Module Ready.");
