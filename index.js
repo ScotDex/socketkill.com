@@ -93,6 +93,7 @@ async function listeningStream() {
       if (data && data.package) {
         const startProcessing = process.hrtime.bigint();
         dropShipRender(io, data.package);
+        processPackage(data.package);
         
         
       const zkb = data.package.zkb;
@@ -250,4 +251,76 @@ function benchmarkKill(killID, startTime) {
         killID,
         latency: durationMs.toFixed(3)
     });
+}
+
+async function processPackage(packageData) {
+    const startProcessing = process.hrtime.bigint();
+    const { zkb, killID } = packageData;
+    const WHALE_THRESHOLD = 20000000000;
+
+    try {
+        // 1. Initial Render & Basic Stats
+        dropShipRender(io, packageData);
+        const rawValue = Number(zkb.totalValue) || 0;
+        
+        // 2. Resolve Killmail Data
+        const esiResponse = await axios.get(zkb.href);
+        const killmail = esiResponse.data;
+
+        // 3. Parallel ESI Lookups
+        const [systemDetails, shipName, charName, corpName] = await Promise.all([
+            esi.getSystemDetails(killmail.solar_system_id),
+            esi.getTypeName(killmail.victim.ship_type_id),
+            esi.getCharacterName(killmail.victim?.character_id),
+            esi.getCorporationName(killmail.victim?.corporation_id)
+        ]);
+
+        let regionName = "K-Space";
+        if (systemDetails?.region_id) {
+            regionName = await esi.getRegionName(systemDetails.region_id);
+        }
+
+        const systemName = systemDetails?.name || "Unknown System";
+
+        // 4. Update Global Counters
+        stats.scanCount++;
+        scanCount++;
+
+        // 5. Emit to UI
+        io.emit("gatekeeper-stats", { totalScanned: scanCount });
+        io.emit("raw-kill", {
+            id: killID,
+            val: rawValue,
+            ship: shipName,
+            system: systemName,
+            region: regionName,
+            shipId: killmail.victim.ship_type_id,
+            href: zkb.href,
+            locationLabel: `System: ${systemName} | Region: ${regionName} | Corporation: ${corpName}`,
+            zkillUrl: `https://zkillboard.com/kill/${killID}/`,
+            victimName: charName,
+            totalScanned: scanCount,
+            shipImageUrl: `https://api.voidspark.org:2053/render/ship/${killmail.victim.ship_type_id}`,
+            corpImageUrl: `https://api.voidspark.org:2053/render/corp/${killmail.victim.corporation_id}`
+        });
+
+        // 6. Conditional Intel Handling
+        const isWhale = rawValue >= WHALE_THRESHOLD;
+        benchmarkKill(killID, startProcessing);
+
+        if (
+            isWhale ||
+            (isWormholeSystem(killmail.solar_system_id) &&
+                killmail.solar_system_id !== THERA_ID &&
+                mapper.isSystemRelevant(killmail.solar_system_id))
+        ) {
+            console.log(`Kill ${killID} in system ${killmail.solar_system_id} is relevant. Processing Intel...`);
+            await handlePrivateIntel(killmail, zkb);
+        } else if (scanCount % 1000 === 0) {
+            console.log(`Gatekeeper: ${scanCount} total kills scanned.`);
+        }
+
+    } catch (err) {
+        console.error(`❌ [PROCESS-ERR] Kill ${killID} failed: ${err.message}`);
+    }
 }
