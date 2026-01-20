@@ -203,13 +203,9 @@ body::after {
     }
 }
 
-/* Replace your borderPulse with this more tactical version */
-@keyframes borderTrace {
-    0% { border-left-color: #3fb950; border-top-color: transparent; }
-    25% { border-top-color: #3fb950; border-right-color: transparent; }
-    50% { border-right-color: #3fb950; border-bottom-color: transparent; }
-    75% { border-bottom-color: #3fb950; border-left-color: transparent; }
-    100% { border-color: #1c2128; }
+@keyframes borderPulse {
+    0% { border-color: #ffffff; box-shadow: 0 0 15px rgba(88, 166, 255, 0.4); }
+    100% { border-color: #1c2128; box-shadow: none; }
 }
 
 @keyframes textFlicker {
