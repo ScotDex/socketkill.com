@@ -6,7 +6,7 @@ class HeartbeatService {
 
     const uptimeStr = helpers.formatDuration(new Date() - stats.startTime);
     const payload = {
-            username: "Chain Intel Status",
+            username: "Chain Monitor Bot",
             avatar_url: "https://images.evetech.net/types/22430/icon",
             embeds: [{
                 title: "Daily System Heartbeat",
