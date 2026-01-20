@@ -68,110 +68,110 @@ async function refreshNebulaBackground() {
  * Background Processor: Handles ESI lookups and Intel Dispatching
  * This runs concurrently for every killmail received.
  */
-async function processPackage(packageData) {
-    const startProcessing = process.hrtime.bigint();
-    const { zkb, killID } = packageData;
+// async function processPackage(packageData) {
+//     const startProcessing = process.hrtime.bigint();
+//     const { zkb, killID } = packageData;
 
-    try {
-        // 1. Initial Render Hand-off
-        dropShipRender(io, packageData);
-        const rawValue = Number(zkb.totalValue) || 0;
+//     try {
+//         // 1. Initial Render Hand-off
+//         dropShipRender(io, packageData);
+//         const rawValue = Number(zkb.totalValue) || 0;
 
-        // 2. Fetch Killmail Details from ESI
-        const esiResponse = await axios.get(zkb.href);
-        const killmail = esiResponse.data;
+//         // 2. Fetch Killmail Details from ESI
+//         const esiResponse = await axios.get(zkb.href);
+//         const killmail = esiResponse.data;
 
-        // 3. Resolve Identity Data in Parallel
-        const [systemDetails, shipName, charName, corpName] = await Promise.all([
-            esi.getSystemDetails(killmail.solar_system_id),
-            esi.getTypeName(killmail.victim.ship_type_id),
-            esi.getCharacterName(killmail.victim?.character_id),
-            esi.getCorporationName(killmail.victim?.corporation_id)
-        ]);
+//         // 3. Resolve Identity Data in Parallel
+//         const [systemDetails, shipName, charName, corpName] = await Promise.all([
+//             esi.getSystemDetails(killmail.solar_system_id),
+//             esi.getTypeName(killmail.victim.ship_type_id),
+//             esi.getCharacterName(killmail.victim?.character_id),
+//             esi.getCorporationName(killmail.victim?.corporation_id)
+//         ]);
 
-        let regionName = "K-Space";
-        if (systemDetails?.region_id) {
-            regionName = await esi.getRegionName(systemDetails.region_id);
-        }
+//         let regionName = "K-Space";
+//         if (systemDetails?.region_id) {
+//             regionName = await esi.getRegionName(systemDetails.region_id);
+//         }
 
-        const systemName = systemDetails?.name || "Unknown System";
+//         const systemName = systemDetails?.name || "Unknown System";
 
-        // 4. Global Stats Increment
-        stats.scanCount++;
-        scanCount++;
+//         // 4. Global Stats Increment
+//         stats.scanCount++;
+//         scanCount++;
 
-        // 5. Broadcast to Web Front-end
-        io.emit("gatekeeper-stats", { totalScanned: scanCount });
-        io.emit("raw-kill", {
-            id: killID,
-            val: rawValue,
-            ship: shipName,
-            system: systemName,
-            region: regionName,
-            shipId: killmail.victim.ship_type_id,
-            href: zkb.href,
-            locationLabel: `System: ${systemName} | Region: ${regionName} | Corporation: ${corpName}`,
-            zkillUrl: `https://zkillboard.com/kill/${killID}/`,
-            victimName: charName,
-            totalScanned: scanCount,
-            shipImageUrl: `https://api.voidspark.org:2053/render/ship/${killmail.victim.ship_type_id}`,
-            corpImageUrl: `https://api.voidspark.org:2053/render/corp/${killmail.victim.corporation_id}`
-        });
+//         // 5. Broadcast to Web Front-end
+//         io.emit("gatekeeper-stats", { totalScanned: scanCount });
+//         io.emit("raw-kill", {
+//             id: killID,
+//             val: rawValue,
+//             ship: shipName,
+//             system: systemName,
+//             region: regionName,
+//             shipId: killmail.victim.ship_type_id,
+//             href: zkb.href,
+//             locationLabel: `System: ${systemName} | Region: ${regionName} | Corporation: ${corpName}`,
+//             zkillUrl: `https://zkillboard.com/kill/${killID}/`,
+//             victimName: charName,
+//             totalScanned: scanCount,
+//             shipImageUrl: `https://api.voidspark.org:2053/render/ship/${killmail.victim.ship_type_id}`,
+//             corpImageUrl: `https://api.voidspark.org:2053/render/corp/${killmail.victim.corporation_id}`
+//         });
 
-        // 6. Performance Benchmarking
-        benchmarkKill(killID, startProcessing);
+//         // 6. Performance Benchmarking
+//         benchmarkKill(killID, startProcessing);
 
-        // 7. Gated Intel Logic (Discord/Twitter)
-        const isWhale = rawValue >= WHALE_THRESHOLD;
-        const isRelevantWH = isWormholeSystem(killmail.solar_system_id) && 
-                           killmail.solar_system_id !== THERA_ID && 
-                           mapper.isSystemRelevant(killmail.solar_system_id);
+//         // 7. Gated Intel Logic (Discord/Twitter)
+//         const isWhale = rawValue >= WHALE_THRESHOLD;
+//         const isRelevantWH = isWormholeSystem(killmail.solar_system_id) && 
+//                            killmail.solar_system_id !== THERA_ID && 
+//                            mapper.isSystemRelevant(killmail.solar_system_id);
 
-        if (isWhale || isRelevantWH) {
-            console.log(`[INTEL] Processing relevant kill ${killID} in ${systemName}`);
-            await handlePrivateIntel(killmail, zkb);
-        } else if (scanCount % 1000 === 0) {
-            console.log(`Gatekeeper: ${scanCount} total kills scanned.`);
-        }
+//         if (isWhale || isRelevantWH) {
+//             console.log(`[INTEL] Processing relevant kill ${killID} in ${systemName}`);
+//             await handlePrivateIntel(killmail, zkb);
+//         } else if (scanCount % 1000 === 0) {
+//             console.log(`Gatekeeper: ${scanCount} total kills scanned.`);
+//         }
 
-    } catch (err) {
-        console.error(`❌ [PROCESS-ERR] Kill ${killID} failed: ${err.message}`);
-    }
-}
+//     } catch (err) {
+//         console.error(`❌ [PROCESS-ERR] Kill ${killID} failed: ${err.message}`);
+//     }
+// }
 
-async function handlePrivateIntel(kill, zkb) {
-    const rawValue = Number(zkb.totalValue) || 0;
-    const formattedValue = helpers.formatIsk(rawValue);
-    try {
-        const names = {
-            shipName: await esi.getTypeName(kill.victim?.ship_type_id),
-            systemName: (await esi.getSystemDetails(kill.solar_system_id))?.name || "Unknown System",
-        };
+// async function handlePrivateIntel(kill, zkb) {
+//     const rawValue = Number(zkb.totalValue) || 0;
+//     const formattedValue = helpers.formatIsk(rawValue);
+//     try {
+//         const names = {
+//             shipName: await esi.getTypeName(kill.victim?.ship_type_id),
+//             systemName: (await esi.getSystemDetails(kill.solar_system_id))?.name || "Unknown System",
+//         };
 
-        if (mapper.isSystemRelevant(kill.solar_system_id)) {
-            const metadata = mapper.getSystemMetadata(kill.solar_system_id);
-            names.corpName = await esi.getCorporationName(kill.victim?.corporation_id);
-            names.charName = await esi.getCharacterName(kill.victim?.character_id);
-            names.scoutName = metadata ? metadata.scannedBy : "Unknown Scout";
-            names.isAdjacent = metadata ? metadata.isAdjacent : false;
+//         if (mapper.isSystemRelevant(kill.solar_system_id)) {
+//             const metadata = mapper.getSystemMetadata(kill.solar_system_id);
+//             names.corpName = await esi.getCorporationName(kill.victim?.corporation_id);
+//             names.charName = await esi.getCharacterName(kill.victim?.character_id);
+//             names.scoutName = metadata ? metadata.scannedBy : "Unknown Scout";
+//             names.isAdjacent = metadata ? metadata.isAdjacent : false;
             
-            const tripwireUrl = `${process.env.TRIPWIRE_URL}?system=${encodeURIComponent(names.systemName)}`;
-            const payload = EmbedFactory.createKillEmbed(kill, zkb, names, tripwireUrl);
+//             const tripwireUrl = `${process.env.TRIPWIRE_URL}?system=${encodeURIComponent(names.systemName)}`;
+//             const payload = EmbedFactory.createKillEmbed(kill, zkb, names, tripwireUrl);
 
-            if (process.env.INTEL_WEBHOOK_URL) {
-                axios.post(process.env.INTEL_WEBHOOK_URL, payload).catch(e => console.error("Webhook Failed", e.message));
-                console.log(`✅ [DISCORD] Intel Posted: ${names.shipName} (${formattedValue})`);
-            }
-        }
+//             if (process.env.INTEL_WEBHOOK_URL) {
+//                 axios.post(process.env.INTEL_WEBHOOK_URL, payload).catch(e => console.error("Webhook Failed", e.message));
+//                 console.log(`✅ [DISCORD] Intel Posted: ${names.shipName} (${formattedValue})`);
+//             }
+//         }
 
-        if (rawValue >= WHALE_THRESHOLD) {
-            console.log(`Big kill detected: ${formattedValue}! Tweeting...`);
-            TwitterService.postWhale(names, formattedValue, kill.killmail_id);
-        }
-    } catch (err) {
-        console.error("❌ Error in handlePrivateIntel:", err.message);
-    }
-}
+//         if (rawValue >= WHALE_THRESHOLD) {
+//             console.log(`Big kill detected: ${formattedValue}! Tweeting...`);
+//             TwitterService.postWhale(names, formattedValue, kill.killmail_id);
+//         }
+//     } catch (err) {
+//         console.error("❌ Error in handlePrivateIntel:", err.message);
+//     }
+// }
 
 /**
  * Main Ingestion Stream
