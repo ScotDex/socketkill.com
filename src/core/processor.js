@@ -37,14 +37,19 @@ module.exports = (esi, mapper, io, statsManager) => {
                 esi.getCharacterName(killmail.victim?.character_id),
                 esi.getCorporationName(killmail.victim?.corporation_id)
             ]);
+            statsManager.increment();
 
             const systemName = systemDetails?.name || "Unknown System";
             const regionName = systemDetails?.region_id 
                 ? await esi.getRegionName(systemDetails.region_id) 
                 : "K-Space";
 
+            const durationMs = Number(process.hrtime.bigint() - startProcessing) / 1_000_000;
+            console.log(`[PERF] Kill ${killID} | Latency: ${durationMs.toFixed(3)}ms`);
+
+          
             // 2. Update Stats
-            statsManager.increment();
+            
 
             // 3. Dispatch to Web Front-end
             io.emit("gatekeeper-stats", { totalScanned: statsManager.getTotal() });
@@ -65,8 +70,7 @@ module.exports = (esi, mapper, io, statsManager) => {
             });
 
             // 4. Performance Benchmarking
-            const durationMs = Number(process.hrtime.bigint() - startProcessing) / 1_000_000;
-            io.emit('perf-stats', { killID, latency: durationMs.toFixed(3) });
+            
 
             // 5. Intel Gating Logic
             const isWhale = rawValue >= WHALE_THRESHOLD;
