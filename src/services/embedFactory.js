@@ -1,4 +1,4 @@
-const helpers = require('./helpers')
+const helpers = require('../core/helpers')
 class EmbedFactory {
     static createKillEmbed(kill, zkb, names, tripwireUrl) {
 

@@ -3,8 +3,8 @@
  * Surgical migration of killmail processing and intel dispatching logic.
  */
 const axios = require("../network/agent"); // Use your existing configured agent
-const helpers = require("../../helpers");
-const EmbedFactory = require("../../embedFactory");
+const helpers = require("./helpers");
+const EmbedFactory = require("../services/embedFactory");
 const TwitterService = require("../network/twitterService");
 
 

@@ -2,7 +2,7 @@
  * src/services/statsManager.js
  * Manages killmail counters and session metrics.
  */
-const utils = require("../../helpers");
+const utils = require("../core/helpers");
 
 class StatsManager {
     constructor() {

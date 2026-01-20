@@ -1,5 +1,5 @@
-const axios = require("./src/network/agent");
-const helpers = require('./helpers')
+const axios = require("../network/agent");
+const helpers = require('../core/helpers')
 
 class HeartbeatService {
     static async sendReport(webhookUrl, stats, mapper, esi){

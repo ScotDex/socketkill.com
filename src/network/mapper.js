@@ -1,4 +1,4 @@
-const axios = require("./src/network/agent");
+const axios = require("./agent");
 class MapperService {
     constructor(apiUrl) {
         this.apiUrl = apiUrl;

@@ -7,11 +7,11 @@
 require("dotenv").config();
 const axios = require("./src/network/agent");
 const path = require("path");
-const ESIClient = require("./esi");
-const MapperService = require("./mapper");
-const HeartbeatService = require("./heartbeatService");
-const startWebServer = require("./webServer");
-const utils = require("./helpers");
+const ESIClient = require("./src/network/esi");
+const MapperService = require("./src/network/mapper");
+const HeartbeatService = require("./src/services/heartbeatService");
+const startWebServer = require("./src/services/webServer");
+const utils = require("./src/core/helpers");
 const statsManager = require("./src/services/statsManager");
 const ProcessorFactory = require("./src/core/processor");
 

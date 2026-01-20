@@ -1,5 +1,5 @@
 require("dotenv").config();
-const axios = require("./src/network/agent");
+const axios = require("../network/agent");
 const { error } = require("console");
 const fs = require ("fs");
 const path = require ("path");
