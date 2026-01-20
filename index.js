@@ -17,6 +17,7 @@ const startWebServer = require("./webServer");
 const utils = require("./helpers");
 const dropShipRender = require("./src/services/ship");
 const statsManager = require("./src/services/statsManager");
+const ProcessorFactory = require("./src/core/processor");
 
 // Initialize Core Services
 const esi = new ESIClient("Contact: @ScottishDex");
@@ -32,6 +33,7 @@ const ROTATION_SPEED = 10 * 60 * 1000;
 
 let scanCount = utils.loadPersistentStats();
 let currentSpaceBg = null;
+let processor = null;
 const stats = {
     startTime: new Date(),
     scanCount: 0,
@@ -205,7 +207,7 @@ async function listeningStream() {
     await esi.loadCache(path.join(__dirname, "data", "esi_cache.json"));
     await mapper.refreshChain(esi.getSystemDetails.bind(esi));
     refreshNebulaBackground();
-    
+    processor = ProcessorFactory(esi, mapper, io, statsManager);
     console.log("🌌 Universe Map, Background & Chain Loaded.");
 
     // Chain Refresh: 1 Minute
