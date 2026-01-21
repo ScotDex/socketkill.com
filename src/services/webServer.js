@@ -8,29 +8,22 @@ const helmet = require('helmet');
 function startWebServer(esi) {
     const app = express();
     
-    // 🛡️ SURGICAL SECURITY HARDENING
-    // Helmet must be initialized BEFORE other middleware to set headers correctly
-    app.use(helmet({
-        contentSecurityPolicy: {
-            directives: {
-                ...helmet.contentSecurityPolicy.getDefaultDirectives(),
-                // Allow images from your proxy and EVE ESI
-                "img-src": ["'self'", "data:", "https://images.evetech.net", "https://api.voidspark.org"],
-                // Allow Socket.io to connect back to your subdomain
-                "connect-src": ["'self'", "https://killstream.voidspark.org", "wss://killstream.voidspark.org", "https://*.voidspark.org"],
-                // Allow your CRT/Alien fonts if hosted externally
-                "font-src": ["'self'", "https://fonts.gstatic.com", "https://fonts.googleapis.com"],
-                // Allow your inline typewriter scripts to function
-                "script-src": ["'self'", "'unsafe-inline'", "https://killstream.voidspark.org"]
-            },
+app.use(helmet({
+    contentSecurityPolicy: {
+        directives: {
+            ...helmet.contentSecurityPolicy.getDefaultDirectives(),
+            "img-src": ["'self'", "data:", "https://images.evetech.net", "https://api.voidspark.org"],
+            // FIX: Explicitly allow the websocket and the specific subdomain
+            "connect-src": [
+                "'self'", 
+                "https://killstream.voidspark.org", 
+                "wss://killstream.voidspark.org", 
+                "https://*.voidspark.org"
+            ],
+            "script-src": ["'self'", "'unsafe-inline'"], // Needed for your typewriter effect
         },
-        // Ensures the site only opens via HTTPS (Fixes the HSTS warning)
-        hsts: {
-            maxAge: 31536000,
-            includeSubDomains: true,
-            preload: true
-        }
-    }));
+    },
+}));
 
     const server = http.createServer(app);
     const io = new Server(server, {
