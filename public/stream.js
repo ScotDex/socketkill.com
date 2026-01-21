@@ -105,7 +105,7 @@ socket.on('raw-kill', (kill) => {
 div.innerHTML = `
     <div class="d-flex align-items-center" style="flex: 1;">
         <div class="ship-icon-container">
-            <img src="${kill.shipImageUrl}" class="ship-render" loading="lazy">
+            <img src="${kill.shipImageUrl}" class="ship-render" loading="lazy" alt="Image of a ${kill.ship}>
         </div>
         <div class="kill-info">
             <div>
@@ -120,7 +120,7 @@ div.innerHTML = `
     
     <div class="d-flex align-items-center">
         <div class="corp-square-container me-3">
-            <img src="${kill.corpImageUrl}" class="corp-logo-square" loading="lazy">
+            <img src="${kill.corpImageUrl}" class="corp-logo-square" loading="lazy" alt="Image of ${kill.corpImageUrl}>
         </div>
         
         <div class="text-end" style="width: 100px;">
