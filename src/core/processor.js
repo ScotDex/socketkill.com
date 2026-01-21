@@ -65,8 +65,8 @@ module.exports = (esi, mapper, io, statsManager) => {
                 zkillUrl: `https://zkillboard.com/kill/${killID}/`,
                 victimName: charName,
                 totalScanned: statsManager.getTotal(),
-                shipImageUrl: `https://api.voidspark.org:2053/render/ship/${killmail.victim.ship_type_id}`,
-                corpImageUrl: `https://api.voidspark.org:2053/render/corp/${killmail.victim.corporation_id}`
+                shipImageUrl: `https://api.voidspark.org/render/ship/${killmail.victim.ship_type_id}`,
+                corpImageUrl: `https://api.voidspark.org/render/corp/${killmail.victim.corporation_id}`
             });
 
             // 4. Performance Benchmarking
