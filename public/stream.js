@@ -77,6 +77,10 @@ socket.on('nebula-update', (data) => {
 });
 
 socket.on('raw-kill', (kill) => {
+
+    const emptyState = document.getElementById('empty-state');
+    if (emptyState) emptyState.remove(); // loading state
+
     if (counterElement && kill.totalScanned) {
         counterElement.innerText = kill.totalScanned.toLocaleString();
     }

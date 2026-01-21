@@ -313,3 +313,46 @@ body::after {
     box-shadow: 0 0 20px rgba(0, 212, 255, 0.5);
     transform: translateY(-2px);
 }
+
+#empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 300px;
+    color: #3fb950; /* Your Success Green */
+    font-family: 'Share Tech Mono', monospace;
+}
+
+/* The Blinking Dot */
+.dot-pulse::after {
+    content: '.';
+    animation: dots 1.5s steps(3, end) infinite;
+}
+
+@keyframes dots {
+    0%, 20% { content: '.'; }
+    40% { content: '..'; }
+    60% { content: '...'; }
+}
+
+/* The Radar Loading Circle */
+.radar-circle {
+    width: 60px;
+    height: 60px;
+    border: 2px solid rgba(63, 185, 80, 0.2);
+    border-top: 2px solid #3fb950;
+    border-radius: 50%;
+    margin-bottom: 15px;
+    animation: spin 2s linear infinite, phosphor-glow 1.5s ease-in-out infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+@keyframes phosphor-glow {
+    0%, 100% { box-shadow: 0 0 5px rgba(63, 185, 80, 0.2); }
+    50% { box-shadow: 0 0 20px rgba(63, 185, 80, 0.5); }
+}
