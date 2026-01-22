@@ -14,7 +14,7 @@ function startWebServer(esi) {
     }));
 
     const io = new Server(server, {
-        cors: { origin: allowedOrigin, 
+        cors: { origin: "*",
         methods: ["GET", "POST"],
         },
         transports: ['websocket', 'polling'],
