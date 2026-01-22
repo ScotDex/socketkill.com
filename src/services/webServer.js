@@ -8,6 +8,11 @@ const helmet = require('helmet');
 function startWebServer(esi) {
     const app = express();
     const server = http.createServer(app);
+
+    app.use(helmet({
+        contentSecurityPolicy: false,
+    }));
+    
     const io = new Server(server, {
         cors: { origin: "*" }, // Keep this for now to ensure connectivity
         transports: ['websocket', 'polling'],
