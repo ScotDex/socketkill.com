@@ -12,15 +12,19 @@ function startWebServer(esi) {
     app.use(helmet({
         contentSecurityPolicy: false,
     }));
-    
+
     const io = new Server(server, {
-        cors: { origin: "*" }, // Keep this for now to ensure connectivity
+        cors: { origin: allowedOrigin, 
+        methods: ["GET", "POST"],
+        },
         transports: ['websocket', 'polling'],
     });
 
     const PORT = process.env.PORT || 80;
 
-    app.use(cors());
+    app.use(cors({
+        origin: allowedOrigin
+    }));
     app.use(express.json());
     app.use(express.static(path.join(__dirname, '..', '..', 'public')));
     
