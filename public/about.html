@@ -12,49 +12,55 @@
             <div class="modal-body p-4" style="font-family: 'Exo 2', sans-serif; max-height: 70vh; overflow-y: auto;">
                 
                 <section class="mb-4">
-                    <h6 class="text-success fw-bold border-bottom border-secondary pb-1">WHAT IS SOCKET.KILL?</h6>
+                    <h6 class="text-success fw-bold border-bottom border-secondary pb-1 uppercase small">Mission Profile</h6>
                     <p class="small leading-relaxed">
-                        Socket.Kill is a high-performance front end inspired by the classic retro-futuristic CRT monitor presentation from the <em>Alien</em> franchise. Born from a specialized concept involving discarded data, the focus is <strong>pure performance</strong>. Minimal overhead, a centralized image proxy, and localized caching keep parsing performance <strong>under 100ms</strong>.
+                        Socket.Kill is a high-performance front end inspired by the retro-futuristic CRT monitor presentation from the <em>Alien</em> franchise. Optimized for <strong>minimal overhead</strong>, a centralized image proxy and localized cache keep parsing performance <strong>under 100ms</strong>.
                     </p>
                 </section>
 
-                <div class="row g-4">
-                    <div class="col-md-6">
-                        <h6 class="text-success fw-bold small">VS. ZKILLBOARD</h6>
-                        <p class="x-small text-secondary">It isn't designed to challenge zKill's rich historical depth. It is a shorthand tool optimized for rendering speed over rich detail.</p>
+                <div class="row g-4 mb-4">
+                    <div class="col-md-4">
+                        <h6 class="text-success fw-bold x-small uppercase">Latency</h6>
+                        <p class="x-small text-secondary">Speeds governed by RedisQ API pulse rates.</p>
                     </div>
-                    <div class="col-md-6">
-                        <h6 class="text-success fw-bold small">WHALE TELEMETRY</h6>
-                        <p class="x-small text-secondary">Losses over 1B ISK trigger <span class="text-danger">RED</span> alerts. Extreme kills are illuminated in <span class="text-warning">GOLD</span>.</p>
+                    <div class="col-md-4">
+                        <h6 class="text-success fw-bold x-small uppercase">Telemetry</h6>
+                        <p class="x-small text-secondary">Losses >1B ISK trigger <span class="text-danger">RED</span>. Extremes in <span class="text-warning">GOLD</span>.</p>
+                    </div>
+                    <div class="col-md-4">
+                        <h6 class="text-success fw-bold x-small uppercase">Privacy</h6>
+                        <p class="x-small text-secondary">No pilot data stored. Localized cache for speed only.</p>
                     </div>
                 </div>
 
-                <hr class="border-secondary opacity-25">
-
-                <section class="mb-4">
-                    <h6 class="text-success fw-bold small">TECHNICAL FAQ</h6>
-                    <ul class="list-unstyled x-small text-secondary">
-                        <li class="mb-2"><strong class="text-light">Latency:</strong> Variable speeds are governed by the RedisQ API performance.</li>
-                        <li class="mb-2"><strong class="text-light">Privacy:</strong> No character data is stored. Our cache exists only to improve speed (and avoid a CCP phone call).</li>
-                        <li class="mb-2"><strong class="text-light">Domain:</strong> Currently a subdomain of Voidspark. One day? <em>socketkill.space</em>.</li>
-                    </ul>
+                <section class="mb-4 bg-black p-3 border border-secondary rounded">
+                    <h6 class="text-success fw-bold small mb-3 uppercase">Comm Channels & Uplinks</h6>
+                    <div class="d-flex flex-wrap gap-3">
+                        <a href="https://ko-fi.com/X7X21RDFR0" target="_blank" class="btn btn-outline-primary btn-xs fw-bold x-small">
+                            💎 SUPPORT NODE (Ko-fi)
+                        </a>
+                        <a href="https://discord.gg/Sx5tFz6kcr" target="_blank" class="btn btn-outline-info btn-xs fw-bold x-small">
+                            📡 DISCORD BANTU
+                        </a>
+                        <a href="https://x.com/scottishdex" target="_blank" class="btn btn-outline-secondary btn-xs fw-bold x-small">
+                            🛰️ X_FEED
+                        </a>
+                        <a href="https://forms.gle/tjXJtzzmuqViFgTY7" target="_blank" class="btn btn-outline-success btn-xs fw-bold x-small">
+                            🛠️ Feedback & Feature Request
+                        </a>
+                    </div>
+                    <p class="mt-2 text-muted" style="font-size: 0.65rem;">*Donations facilitate the maintenance of the dedicated server droplet.</p>
                 </section>
 
-                <section class="bg-black p-3 border border-secondary rounded">
-                    <h6 class="text-success fw-bold small mb-2">💎 CREDITS & ACKNOWLEDGMENTS</h6>
+                <section class="mb-4 opacity-75">
+                    <h6 class="text-success fw-bold x-small mb-2 uppercase">💎 Credits</h6>
                     <div class="x-small text-secondary">
-                        <strong>zKillboard:</strong> Squizz Caphinator (RedisQ API)<br>
-                        <strong>CCP Games:</strong> EVE Swagger Interface (ESI)<br>
-                        <strong>Visuals:</strong> RixxJavix (Backgrounds) & EVE Image Server
+                        <strong>zKillboard:</strong> Squizz Caphinator // <strong>CCP Games:</strong> ESI & Image Server // <strong>Visuals:</strong> RixxJavix (Backgrounds)
                     </div>
                 </section>
 
-                <a href="https://forms.gle/tjXJtzzmuqViFgTY7" target="_blank" class="feedback-link">
-        <i class="icon-request"></i> FEATURE REQUISITION
-    </a>
-
                 <div class="mt-4 pt-2 border-top border-secondary opacity-50" style="font-size: 0.65rem;">
-                    <p class="mb-0">LEGAL: EVE Online and the EVE logo are registered trademarks of CCP hf. All artwork and recognizable features are intellectual property of CCP hf.</p>
+                    <p class="mb-0 italic">EVE Online and the EVE logo are registered trademarks of CCP hf. All artwork and recognizable features are intellectual property of CCP hf.</p>
                 </div>
             </div>
 
@@ -64,14 +70,3 @@
         </div>
     </div>
 </div>
-
-<style>
-    /* Add these to your style.css if they aren't there */
-    .x-small { font-size: 0.8rem; }
-    .tracking-widest { letter-spacing: 0.15em; }
-    .modal-content { background-color: #0a0a0a !important; }
-    /* Scrollbar styling for that retro look */
-    .modal-body::-webkit-scrollbar { width: 4px; }
-    .modal-body::-webkit-scrollbar-track { background: #000; }
-    .modal-body::-webkit-scrollbar-thumb { background: #198754; }
-</style>
