@@ -1,36 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Socket.Kill</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <meta name="title" content="Socket.Kill">
+    <meta name="description" content="Socket.Kill: A high-performance, real-time EVE Online killmail monitor powered by WebSockets and ESI.">
+    <meta name="author" content="ScottishDex">
+    <meta name="google-site-verification" content="yyuYcicviAe54RPKPBQHRYNHlUFFEKmzpFwZ13fk4AA">
+    <meta name="keywords" content="eve online, eve, pvp, socket.kill, killboard, real-time, intel, whale hunter, wormhole, low-latency, eve tool, pvp tracker, gatekeeper, mmorpg">
+    <link rel="icon" type="image/png" href="/favicon.png">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://killstream.voidspark.org/">
+    <meta property="og:description" content="Almost real time kill stream for eve online, a short hand alternative optimized for rendering speed and performance.">
+    <meta property="twitter:url" content="https://killstream.voidspark.org/">
+    <meta property="twitter:title" content="Socket.Kill">
+    <link rel="canonical" href="https://killstream.voidspark.org/">
+    <!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "9a7b8334fd974f46a3b570cbc18d90b1"}'></script><!-- End Cloudflare Web Analytics -->
+    <div id="connection-hub">    
+</div>
+    </head>
 <body>
     <div class="container-fluid py-3">
         <div class="d-flex align-items-center border-bottom border-secondary pb-2 mb-3">
-            <div class="d-flex align-items-center" style="min-width: 200px;">
-                <h5 class="m-0 text-success fw-bold">
-                    <span id="socket-title" class="typewriter"></span>
-                </h5>
-            </div>
-
-            <div class="mx-auto text-center text-secondary small">
-                KILLMAILS PROCESSED <span id="kill-counter" class="text-white fw-bold">0</span>
-            </div>
-
-            <div id="status" class="badge bg-danger">CONNECTING...</div>
-        </div> <div id="empty-state">
-            <div class="radar-circle"></div>
-            <div class="scanning-text">
-                WAITING FOR KILLS<span class="dot-pulse"></span>
-            </div>
-        </div>
-
-        <div id="feed"></div>
-    </div> <div id="modal-container"></div>
-    
-    <div id="hud-uplink" class="fixed-bottom d-flex justify-content-end p-3" style="pointer-events: none; z-index: 1050;">
-        <button type="button" 
-                class="btn btn-sm btn-outline-success opacity-50 hover-opacity-100 fw-bold tracking-widest" 
-                style="pointer-events: auto; font-family: 'Exo 2'; font-size: 0.65rem; border-style: dashed;"
-                data-bs-toggle="modal" 
-                data-bs-target="#aboutModal">
-            [ SYSTEM_MANIFEST ]
-        </button>
+    <div class="d-flex align-items-center" style="min-width: 200px;">
+        <h5 class="m-0 text-success fw-bold">
+            <span id="socket-title" class="typewriter"></span>
+        </h5>
     </div>
+
+    <div class="mx-auto text-center text-secondary small">
+        KILLMAILS PROCESSED <span id="kill-counter" class="text-white fw-bold">0</span>
+    </div>
+        <div id="status" class="badge bg-danger">CONNECTING...</div>
+    </div>
+</div>
+
+<div id="empty-state">
+    <div class="radar-circle"></div>
+    <div class="scanning-text">
+        WAITING FOR KILLS<span class="dot-pulse"></span>
+    </div>
+</div>
+        <div id="feed"></div>
+    </div>
+<div id="modal-container"></div>
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
@@ -44,8 +60,21 @@
                 })
                 .catch(err => console.error('Failed to load modular modal:', err));
         });
+
+        <div id="hud-uplink" class="fixed-bottom d-flex justify-content-end p-3" style="pointer-events: none;">
+    <button type="button" 
+            class="btn btn-sm btn-outline-success opacity-50 hover-opacity-100 fw-bold tracking-widest" 
+            style="pointer-events: auto; font-family: 'Exo 2'; font-size: 0.65rem; border-style: dashed;"
+            data-bs-toggle="modal" 
+            data-bs-target="#aboutModal">
+        [ SYSTEM_MANIFEST ]
+    </button>
+</div>
     </script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
     <script src="stream.js" defer></script>
 </body>
+
+
+</html>
