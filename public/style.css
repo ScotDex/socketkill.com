@@ -360,3 +360,15 @@ body::after {
     0%, 100% { box-shadow: 0 0 5px rgba(63, 185, 80, 0.2); }
     50% { box-shadow: 0 0 20px rgba(63, 185, 80, 0.5); }
 }
+
+@keyframes cathode-flicker {
+    0% { opacity: 0.99; }
+    5% { opacity: 0.95; }
+    10% { opacity: 0.99; }
+    100% { opacity: 1; }
+}
+
+body {
+    /* Apply to the whole screen, but keep it very subtle */
+    animation: cathode-flicker 0.15s infinite;
+}
