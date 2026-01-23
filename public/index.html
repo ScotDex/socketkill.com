@@ -22,17 +22,19 @@
     </head>
 <body>
     <div class="container-fluid py-3">
-        <div class="d-flex align-items-center border-bottom border-secondary pb-2 mb-3">
-    <div class="d-flex align-items-center" style="min-width: 200px;">
+<div class="d-flex align-items-center border-bottom border-secondary pb-2 mb-3 w-100">
+    <div class="flex-1" style="flex: 1 1 0; min-width: 0;">
         <h5 class="m-0 text-success fw-bold">
             <span id="socket-title" class="typewriter"></span>
         </h5>
     </div>
 
-    <div class="mx-auto text-center text-secondary small">
+    <div class="text-center text-secondary small px-3" style="flex: 0 0 auto;">
         KILLMAILS PROCESSED <span id="kill-counter" class="text-white fw-bold">0</span>
     </div>
-        <div id="status" class="badge bg-danger">CONNECTING...
+
+    <div class="flex-1 d-flex justify-content-end" style="flex: 1 1 0; min-width: 0;">
+        <div id="status" class="badge bg-danger">CONNECTING...</div>
     </div>
 </div>
 
