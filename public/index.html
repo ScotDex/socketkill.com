@@ -43,11 +43,12 @@
     </div>
 
     <div class="ms-auto d-flex align-items-center">
-        <a href="https://scotdex.github.io/Socket.Kill/" 
-           target="_blank" 
-           class="text-decoration-none small fw-bold text-success hover-opacity me-3">
-           GITHUB 
-        </a>
+        <button type="button"
+        class="btn btn-link p-0 text-decoration-none small fw-bold text-success hover-opacity me-3"
+        data-bs-toggle="modal"
+        data-bs-target="#aboutModal">
+        ABOUT
+    </button>
         <div id="status" class="badge bg-danger">CONNECTING...</div>
     </div>
 </div>
@@ -60,7 +61,21 @@
 </div>
         <div id="feed"></div>
     </div>
+<div id="modal-container"></div>
 
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            fetch('about.html')
+                .then(response => {
+                    if (!response.ok) throw new Error('Network response was not ok');
+                    return response.text();
+                })
+                .then(data => {
+                    document.getElementById('modal-container').innerHTML = data;
+                })
+                .catch(err => console.error('Failed to load modular modal:', err));
+        });
+    </script>
     <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
     <script src="stream.js" defer></script>
 </body>
