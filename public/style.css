@@ -323,6 +323,11 @@ body::after {
     font-family: 'Share Tech Mono', monospace;
 }
 
+.dot-pulse {
+    display: inline-block;
+    width: 2ch;
+    text-align: left;
+}
 /* The Blinking Dot */
 .dot-pulse::after {
     content: '.';
