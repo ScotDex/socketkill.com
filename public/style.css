@@ -139,7 +139,6 @@ body {  /* Changed from blue to Deep Charcoal for maximum contrast */
 
 .kill-row:hover .ship-name {
     text-shadow: 1px 0 #ffffff, -1px 0 #00fff9;
-    animation: glitch 0.1s infinite;
 }
 /* Status Indicators */
 #status {
