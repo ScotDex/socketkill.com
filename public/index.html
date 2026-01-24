@@ -65,6 +65,10 @@
                 })
                 .then(data => {
                     document.getElementById('modal-container').innerHTML = data;
+
+                    if (window.lucide) {
+                        lucide.createIcons();
+                    }
                 })
                 .catch(err => console.error('Failed to load modular modal:', err));
         });
