@@ -732,3 +732,24 @@ body {
         padding: 8px 12px;
     }
 }
+
+.terminal-link-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 12px;
+    vertical-align: middle;
+}
+
+/* Style the SVG specifically */
+.terminal-link-icon svg {
+    width: 18px;
+    height: 18px;
+    stroke-width: 2px; /* Thinner lines look more "tech" */
+    color: inherit;    /* Inherits your terminal text color */
+}
+
+/* Hover effect for that terminal flicker/glow */
+.terminal-link:hover .terminal-link-icon svg {
+    filter: drop-shadow(0 0 5px currentColor);
+}
