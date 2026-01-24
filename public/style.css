@@ -80,7 +80,7 @@ body {  /* Changed from blue to Deep Charcoal for maximum contrast */
     color: #f0f6fc; /* Brightest white for ship name */
     font-weight: 600;
     display: block;
-    animation: textFlicker 1s infinite secondary;
+    animation: textFlicker 1s infinite;
 }
 
 .typewriter {
