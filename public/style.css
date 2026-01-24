@@ -361,6 +361,31 @@ body::after {
     50% { box-shadow: 0 0 20px rgba(63, 185, 80, 0.5); }
 }
 
+/* CRT Boot Sequence - Simulates monitor warm-up on page load */
+@keyframes crt-boot {
+    0% {
+        filter: brightness(0) contrast(1);
+        transform: scaleY(0.001);
+        opacity: 0;
+    }
+    20% {
+        filter: brightness(3) contrast(5) saturate(2);
+        opacity: 1;
+    }
+    40% {
+        transform: scaleY(1);
+        filter: brightness(2) contrast(3) saturate(1.5);
+    }
+    70% {
+        filter: brightness(1.3) contrast(1.2);
+    }
+    100% {
+        filter: brightness(1) contrast(1);
+        transform: scaleY(1);
+        opacity: 1;
+    }
+}
+
 @keyframes cathode-flicker {
     0% { opacity: 0.99; }
     5% { opacity: 0.95; }
@@ -369,6 +394,6 @@ body::after {
 }
 
 body {
-    /* Apply to the whole screen, but keep it very subtle */
-    animation: cathode-flicker 0.15s infinite;
+    /* Boot sequence on load, then continuous subtle flicker */
+    animation: crt-boot 1.5s ease-out, cathode-flicker 0.15s infinite 1.5s;
 }
