@@ -1,71 +1,109 @@
 <div class="modal fade" id="aboutModal" tabindex="-1" aria-labelledby="aboutModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-centered">
-        <div class="modal-content bg-dark border border-secondary text-light shadow-lg">
-            
-            <div class="modal-header border-secondary py-2 bg-black">
-                <h6 class="modal-title text-success fw-bold tracking-widest" id="aboutModalLabel">
-                    <span class="opacity-50">SYS //</span> SOCKET.KILL_MANIFEST
-                </h6>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
+        <div class="modal-content terminal-panel">
 
-            <div class="modal-body p-4" style="font-family: 'Exo 2', sans-serif; max-height: 70vh; overflow-y: auto;">
-                
-                <section class="mb-4">
-                    <h6 class="text-success fw-bold border-bottom border-secondary pb-1 uppercase small">Mission Profile</h6>
-                    <p class="small leading-relaxed">
-                        Socket.Kill is a high-performance front end inspired by the retro-futuristic CRT monitor presentation from the <em>Alien</em> franchise. Optimized for <strong>minimal overhead</strong>, a centralized image proxy and localized cache keep parsing performance <strong>under 100ms</strong>.
-                    </p>
-                </section>
-
-                <div class="row g-4 mb-4">
-                    <div class="col-md-4">
-                        <h6 class="text-success fw-bold x-small uppercase">Latency</h6>
-                        <p class="x-small text-secondary">Speeds governed by RedisQ API pulse rates.</p>
+            <!-- CRT Terminal Header -->
+            <div class="terminal-header">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div>
+                        <div class="terminal-prompt">SOCKET.KILL v2.0.1</div>
+                        <div class="terminal-path">SYS://MANIFEST/ABOUT</div>
                     </div>
-                    <div class="col-md-4">
-                        <h6 class="text-success fw-bold x-small uppercase">Telemetry</h6>
-                        <p class="x-small text-secondary">Losses >1B ISK trigger <span class="text-danger">RED</span>. Extremes in <span class="text-warning">GOLD</span>.</p>
-                    </div>
-                    <div class="col-md-4">
-                        <h6 class="text-success fw-bold x-small uppercase">Privacy</h6>
-                        <p class="x-small text-secondary">No pilot data stored. Localized cache for speed only.</p>
-                    </div>
-                </div>
-
-                <section class="mb-4 bg-black p-3 border border-secondary rounded">
-                    <h6 class="text-success fw-bold small mb-3 uppercase">Comm Channels & Uplinks</h6>
-                    <div class="d-flex flex-wrap gap-3">
-                        <a href="https://ko-fi.com/X7X21RDFR0" target="_blank" class="btn btn-outline-primary btn-xs fw-bold x-small">
-                            💎 SUPPORT NODE (Ko-fi)
-                        </a>
-                        <a href="https://discord.gg/Sx5tFz6kcr" target="_blank" class="btn btn-outline-info btn-xs fw-bold x-small">
-                            📡 DISCORD BANTU
-                        </a>
-                        <a href="https://x.com/scottishdex" target="_blank" class="btn btn-outline-secondary btn-xs fw-bold x-small">
-                            🛰️ X_FEED
-                        </a>
-                        <a href="https://forms.gle/tjXJtzzmuqViFgTY7" target="_blank" class="btn btn-outline-success btn-xs fw-bold x-small">
-                            🛠️ Feedback & Feature Request
-                        </a>
-                    </div>
-                    <p class="mt-2 text-muted" style="font-size: 0.65rem;">*Donations facilitate the maintenance of the dedicated server droplet.</p>
-                </section>
-
-                <section class="mb-4 opacity-75">
-                    <h6 class="text-success fw-bold x-small mb-2 uppercase">💎 Credits</h6>
-                    <div class="x-small text-secondary">
-                        <strong>zKillboard:</strong> Squizz Caphinator // <strong>CCP Games:</strong> ESI & Image Server // <strong>Visuals:</strong> RixxJavix (Backgrounds)
-                    </div>
-                </section>
-
-                <div class="mt-4 pt-2 border-top border-secondary opacity-50" style="font-size: 0.65rem;">
-                    <p class="mb-0 italic">EVE Online and the EVE logo are registered trademarks of CCP hf. All artwork and recognizable features are intellectual property of CCP hf.</p>
+                    <button type="button" class="terminal-close" data-bs-dismiss="modal" aria-label="Close">
+                        <span>[ X ]</span>
+                    </button>
                 </div>
             </div>
 
-            <div class="modal-footer border-top-0 bg-black">
-                <button type="button" class="btn btn-outline-success btn-sm w-100 fw-bold" data-bs-dismiss="modal">RE-ENGAGE FEED</button>
+            <!-- Terminal Body with Scanlines -->
+            <div class="terminal-body">
+
+                <!-- Mission Profile -->
+                <section class="terminal-section">
+                    <div class="terminal-section-header">
+                        <span class="terminal-bracket">&gt;&gt;</span> MISSION_PROFILE
+                    </div>
+                    <div class="terminal-text">
+                        Socket.Kill is a high-performance front end inspired by the retro-futuristic CRT monitor presentation from the <span class="text-warning">Alien</span> franchise. Optimized for <span class="terminal-highlight">minimal overhead</span>, a centralized image proxy and localized cache keep parsing performance <span class="terminal-highlight">&lt;100ms</span>.
+                    </div>
+                </section>
+
+                <!-- System Specs Grid -->
+                <section class="terminal-section">
+                    <div class="terminal-section-header">
+                        <span class="terminal-bracket">&gt;&gt;</span> SYSTEM_SPECIFICATIONS
+                    </div>
+                    <div class="terminal-grid">
+                        <div class="terminal-grid-item">
+                            <div class="terminal-label">[LATENCY]</div>
+                            <div class="terminal-value">Governed by RedisQ API pulse rates</div>
+                        </div>
+                        <div class="terminal-grid-item">
+                            <div class="terminal-label">[TELEMETRY]</div>
+                            <div class="terminal-value">Losses &gt;1B ISK trigger <span class="text-danger">RED</span> | Extremes <span class="text-warning">GOLD</span></div>
+                        </div>
+                        <div class="terminal-grid-item">
+                            <div class="terminal-label">[PRIVACY]</div>
+                            <div class="terminal-value">No pilot data stored. Local cache only.</div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Communication Channels -->
+                <section class="terminal-section terminal-links-section">
+                    <div class="terminal-section-header">
+                        <span class="terminal-bracket">&gt;&gt;</span> COMM_CHANNELS
+                    </div>
+                    <div class="terminal-links">
+                        <a href="https://ko-fi.com/X7X21RDFR0" target="_blank" class="terminal-link">
+                            <span class="terminal-link-icon">💎</span>
+                            <span class="terminal-link-text">SUPPORT_NODE</span>
+                            <span class="terminal-link-arrow">→</span>
+                        </a>
+                        <a href="https://discord.gg/Sx5tFz6kcr" target="_blank" class="terminal-link">
+                            <span class="terminal-link-icon">📡</span>
+                            <span class="terminal-link-text">DISCORD_BANTU</span>
+                            <span class="terminal-link-arrow">→</span>
+                        </a>
+                        <a href="https://x.com/scottishdex" target="_blank" class="terminal-link">
+                            <span class="terminal-link-icon">🛰️</span>
+                            <span class="terminal-link-text">X_FEED</span>
+                            <span class="terminal-link-arrow">→</span>
+                        </a>
+                        <a href="https://forms.gle/tjXJtzzmuqViFgTY7" target="_blank" class="terminal-link">
+                            <span class="terminal-link-icon">🛠️</span>
+                            <span class="terminal-link-text">FEEDBACK_FORM</span>
+                            <span class="terminal-link-arrow">→</span>
+                        </a>
+                    </div>
+                    <div class="terminal-note">
+                        *Donations facilitate dedicated server droplet maintenance
+                    </div>
+                </section>
+
+                <!-- Credits -->
+                <section class="terminal-section">
+                    <div class="terminal-section-header">
+                        <span class="terminal-bracket">&gt;&gt;</span> CREDITS
+                    </div>
+                    <div class="terminal-credits">
+                        <div><span class="terminal-credit-key">zKillboard:</span> Squizz Caphinator</div>
+                        <div><span class="terminal-credit-key">CCP Games:</span> ESI & Image Server</div>
+                        <div><span class="terminal-credit-key">Visuals:</span> RixxJavix (Backgrounds)</div>
+                    </div>
+                </section>
+
+                <!-- Legal -->
+                <div class="terminal-legal">
+                    EVE Online and the EVE logo are registered trademarks of CCP hf. All artwork and recognizable features are intellectual property of CCP hf.
+                </div>
+            </div>
+
+            <!-- Footer Command -->
+            <div class="terminal-footer">
+                <button type="button" class="terminal-button" data-bs-dismiss="modal">
+                    <span class="terminal-button-prompt">$</span> CLOSE_MANIFEST
+                </button>
             </div>
         </div>
     </div>
