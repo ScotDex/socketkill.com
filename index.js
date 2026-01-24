@@ -88,10 +88,10 @@ async function listeningStream() {
     setInterval(refreshNebulaBackground, ROTATION_SPEED);
 
     // Stats Persistence: 1 Minute
-   setInterval(() => {
-    statsManager.save();
-    console.log(`💾 [AUTO-SAVE] Stats: ${statsManager.getTotal()}`);
-}, 60000);
+    setInterval(() => {
+        statsManager.save();
+        console.log(`💾 [AUTO-SAVE] Stats: ${statsManager.getTotal()}`);
+    }, 60000);
 
     // Daily Heartbeat
     setInterval(() => {
