@@ -22,6 +22,7 @@
     <!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "9a7b8334fd974f46a3b570cbc18d90b1"}'></script><!-- End Cloudflare Web Analytics -->
     </head>
 <body>
+    <div id="crt-screen">
     <div class="container-fluid py-3">
 <div class="d-flex align-items-center border-bottom border-secondary pb-2 mb-3 w-100">
     <div class="flex-1" style="flex: 1 1 0; min-width: 0;">
@@ -45,8 +46,15 @@
         WAITING FOR KILLS<span class="dot-pulse"></span>
     </div>
 </div>
-        <div id="feed"></div>
-    </div></div>
+    <div id="feed"></div>
+        </div></div>
+
+
+
+
+
+
+
 <div id="modal-container"></div>
         <div id="hud-uplink" class="fixed-bottom d-flex justify-content-end p-3" style="pointer-events: none;">
     <button type="button" 
@@ -55,7 +63,7 @@
             data-bs-toggle="modal" 
             data-bs-target="#aboutModal">
         [ SYSTEM_ABOUT ]
-    </button>
+    </button></div>
 </div>
     <script>
         document.addEventListener('DOMContentLoaded', () => {

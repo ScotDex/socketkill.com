@@ -395,7 +395,12 @@ body::after {
 
 body {
     /* Boot sequence on load, then continuous subtle flicker */
-    animation: crt-boot 1.5s ease-out, cathode-flicker 0.15s infinite 1.5s;
+    animation: cathode-flicker 0.15s infinite;
+}
+
+#crt-screen {
+    animation: crt-boot 1.5s ease-out forwards;
+    transform-origin: center;
 }
 
 /* ========================================
