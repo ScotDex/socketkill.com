@@ -411,9 +411,17 @@ body::after {
     100% { opacity: 1; }
 }
 
+@keyframes slowDrift {
+    0% { background-size: 100% auto; background-position: center; }
+    50% { background-size: 115% auto; background-position: top right; }
+    100% { background-size: 100% auto; background-position: center; }
+}
+
 body {
     /* Boot sequence on load, then continuous subtle flicker */
     animation: cathode-flicker 0.15s infinite;
+    animation: slowDrift 120s linear infinite;
+    background-attachment: fixed;
 }
 
 #crt-screen {
