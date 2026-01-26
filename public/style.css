@@ -422,6 +422,9 @@ body {
     animation: cathode-flicker 0.15s infinite;
     animation: slowDrift 120s linear infinite;
     background-attachment: fixed;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
 }
 
 #crt-screen {
@@ -816,4 +819,22 @@ body {
 /* Subtle flicker to indicate active data processing */
 #peripheral-stats .stat-data {
     animation: cathode-flicker 0.2s infinite alternate;
+}
+
+@media (max-width: 768px) {
+    body {
+        /* Focuses the image on the action for narrow screens */
+        background-position: 70% top; 
+        background-attachment: scroll; /* Better performance on mobile browsers */
+    }
+    
+    /* Disable slowDrift on mobile if the 'checkerboard' persists */
+    body {
+        animation: cathode-flicker 0.15s infinite; 
+    }
+
+    /* Hide peripheral stats to keep the small screen clean */
+    #peripheral-stats {
+        display: none;
+    }
 }
