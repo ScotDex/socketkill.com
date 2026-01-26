@@ -5,7 +5,7 @@ body {  /* Changed from blue to Deep Charcoal for maximum contrast */
     margin: 0;
     /* VISUAL 1: Enabled scrolling for depth/parallax feel vs fixed */
     background-attachment: scroll; 
-    background-size: 110% auto; 
+    background-size: cover; 
     background-position: top center;
     transition: background 2.0s ease-in-out;
 }
