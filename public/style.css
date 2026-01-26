@@ -20,11 +20,19 @@ body {  /* Changed from blue to Deep Charcoal for maximum contrast */
     border-radius: 8px;
     margin-top: 20px;
     border: 1px solid rgba(63, 185, 80, 0.2);
+    background: radial-gradient(
+        Circle at center,
+        rgba(22, 27, 34, 0.7) 0%, 
+        rgba(10, 12, 16, 0.9) 100%
+    );
+
 
     box-shadow: 
         0 20px 50px rgba(0, 0, 0, 0.9),           /* Heavy lift shadow */
         0 0 15px rgba(63, 185, 80, 0.05),        /* Subtle green light spill */
         inset 0 0 40px rgba(0, 0, 0, 0.8);       /* Internal depth vignette */
+    
+    
 }
 
 .scanner-active {
