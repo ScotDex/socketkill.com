@@ -784,3 +784,36 @@ body {
 .terminal-link:hover .terminal-link-icon svg {
     filter: drop-shadow(0 0 5px currentColor);
 }
+
+#peripheral-stats {
+    position: fixed;
+    bottom: 25px;
+    left: 25px;
+    z-index: 10001; /* Above the glass, below the 'CRT' scanline overlay */
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.7rem;
+    color: rgba(63, 185, 80, 0.6); /* Success Green at low opacity */
+    pointer-events: none; /* User can click through it to the background */
+    text-transform: uppercase;
+}
+
+.stat-line {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 2px;
+}
+
+.stat-tag {
+    opacity: 0.5;
+    letter-spacing: 1px;
+}
+
+.stat-data {
+    color: #3fb950;
+    text-shadow: 0 0 5px rgba(63, 185, 80, 0.3);
+}
+
+/* Subtle flicker to indicate active data processing */
+#peripheral-stats .stat-data {
+    animation: cathode-flicker 0.2s infinite alternate;
+}

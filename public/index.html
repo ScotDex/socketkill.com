@@ -72,14 +72,31 @@
 
 
 <div id="modal-container"></div>
-        <div id="hud-uplink" class="fixed-bottom d-flex justify-content-end p-3" style="pointer-events: none;">
+<div id="hud-uplink" class="fixed-bottom d-flex justify-content-between p-3" style="pointer-events: none;">
+    
+    <div id="peripheral-stats" class="terminal-logic" style="opacity: 0.6;">
+        <div class="stat-line d-flex gap-2" style="font-family: 'Share Tech Mono', monospace; font-size: 0.7rem;">
+            <span class="stat-tag text-secondary">TQ_STATUS:</span>
+            <span id="tq-status" class="stat-data text-success">ONLINE</span>
+        </div>
+        <div class="stat-line d-flex gap-2" style="font-family: 'Share Tech Mono', monospace; font-size: 0.7rem;">
+            <span class="stat-tag text-secondary">GLOBAL_NPC:</span>
+            <span id="npc-delta" class="stat-data text-success">0</span>
+        </div>
+        <div class="stat-line d-flex gap-2" style="font-family: 'Share Tech Mono', monospace; font-size: 0.7rem;">
+            <span class="stat-tag text-secondary">SHIP_DELTA:</span>
+            <span id="ship-delta" class="stat-data text-success">0</span>
+        </div>
+    </div>
+
     <button type="button" 
             class="btn btn-sm btn-outline-success opacity-50 hover-opacity-100 fw-bold tracking-widest" 
-            style="pointer-events: auto; font-family: 'Exo 2'; font-size: 0.65rem; border-style: dashed;"
+            style="pointer-events: auto; font-family: 'Exo 2'; font-size: 0.65rem; border-style: dashed; align-self: flex-end;"
             data-bs-toggle="modal" 
             data-bs-target="#aboutModal">
         [ SYSTEM_ABOUT ]
-    </button></div>
+    </button>
+</div>
 </div>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
