@@ -50,10 +50,14 @@ body {  /* Changed from blue to Deep Charcoal for maximum contrast */
     align-items: center;
     background-color: rgba(22, 27, 34, 0.6); /* Transparent row */
     animation: slideIn 0.15s ease-out forwards, borderPulse 2s ease-out;
+    transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275), background 0.1s ease;
 }
 
 .kill-row:hover { 
     background-color: #1c2128; 
+    transform: scale(1.01) translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+    z-index: 10;
 }
 
 .hover-opacity:hover {
