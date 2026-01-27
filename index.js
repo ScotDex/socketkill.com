@@ -28,13 +28,23 @@ const ROTATION_SPEED = 10 * 60 * 1000;
 let currentSpaceBg = null;
 let processor = null;
 
-io.on("connection", (socket) => {
+async function syncPlayerCount() {
+    const status = await utils.getPlayerCount();
+    if (status) {
+        io.emit('player-count', status)
+    }
+
+}
+
+io.on("connection", async(socket) => {
     if (currentSpaceBg) {
         socket.emit("nebula-update", currentSpaceBg);
     } else {
         refreshNebulaBackground();
     }
     socket.emit('gatekeeper-stats', { totalScanned: statsManager.getTotal() });
+    const currentStatus = await utils.getPlayerCount();
+    socket.emit('player-count', currentStatus);
 });
 
 async function refreshNebulaBackground() {
@@ -80,7 +90,7 @@ async function listeningStream() {
     refreshNebulaBackground();
     processor = ProcessorFactory(esi, mapper, io, statsManager);
     console.log("🌌 Universe Map, Background & Chain Loaded.");
-
+    syncPlayerCount();
     // Chain Refresh: 1 Minute
     setInterval(() => mapper.refreshChain(esi.getSystemDetails.bind(esi)), 60000);
 

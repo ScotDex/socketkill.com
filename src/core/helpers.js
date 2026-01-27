@@ -1,6 +1,6 @@
 require("dotenv").config();
 const axios = require("../network/agent");
-const { error } = require("console");
+const { error, count } = require("console");
 const fs = require ("fs");
 const path = require ("path");
 const { json } = require("stream/consumers");
@@ -21,6 +21,23 @@ class utils {
 
     static getZkillLink (killId){
         return `https://zkillboard.com/kill/${killId}/`;
+    }
+
+    static async getPlayerCount() {
+        try {
+            const url = "https://api.voidspark.org:2053/eve/status"
+            const response = await axios.get(url);
+            
+            return {
+                count: response.data.players,
+                active: true
+            }
+        } catch (err) {
+
+            console.error("❌ [ESI] Status Check Failed:", err.message);
+            return { count: 0, version: "OFFLINE", active: false };
+            
+        }
     }
 
     static async getBackPhoto(){
@@ -103,6 +120,8 @@ static async savePersistentStats(count) {
     }
 
 }
+
+
 
 
 /**

@@ -56,6 +56,20 @@ socket.on('gatekeeper-stats', (data) => {
     }
 });
 
+socket.on('player-count', (data) => {
+    const display = document.getElementById('player-count');
+    const toast = document.getElementById('player-toast');
+    
+    if (data && data.active) {
+        toast.classList.remove('d-none');
+        display.innerText = data.count.toLocaleString();
+    } else {
+        // Handle the "OFFLINE" state if ESI fails
+        display.innerText = "OFFLINE";
+        display.classList.replace('text-success', 'text-danger');
+    }
+});
+
 socket.on('nebula-update', (data) => {
     if (data && data.url) {
         const tempImg = new Image();
