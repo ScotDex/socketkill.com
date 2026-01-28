@@ -168,8 +168,11 @@ socket.on('raw-kill', (kill) => {
     const emptyState = document.getElementById('empty-state');
     if (emptyState) emptyState.remove();
 
-    if (counterElement && kill.totalScanned) {
+if (counterElement && kill.totalScanned) {
         counterElement.innerText = kill.totalScanned.toLocaleString();
+        counterElement.classList.remove('counter-update');
+        void counterElement.offsetWidth; 
+        counterElement.classList.add('counter-update');
     }
 
     const val = Number(kill.val);
