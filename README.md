@@ -1,25 +1,28 @@
+# 🛰️ Socket.Kill | Tactical Intel Engine
 
-[![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/X7X21RDFR0)
+**Internal Protocol: Operational Intelligence Aggregation**
 
-# 🛰️ EVE Online Intel Engine: Wingspan Edition (2026)
+A high-performance intelligence aggregator designed to bridge mapper telemetry with the real-time killmail stream. This engine serves as the tactical backbone for chain monitoring and capital-class asset detection.
 
-A high-performance, containerized intelligence engine built in Node.js that bridges **Tripwire mapper data** with **zKillboard's RedisQ**. This service dynamically monitors active wormhole chains and delivers real-time, filtered kill alerts to Discord.
+## 🛠️ System Architecture & Logic
+The engine utilizes a "Reject-by-Default" philosophy to maintain sub-millisecond processing times during peak EVE activity.
 
-## 🛠️ Tactical Overview
-Unlike generic killmail listeners, this engine is **stateful and context-aware**. It prioritizes local data and dynamic filtering to provide a "Gatekeeper" service for specific wormhole operations.
+* **The Gatekeeper Protocol**: Implements a strict $O(1)$ Set-lookup against a monitored interest list. Incoming data packets not explicitly mapped in the system interest list are discarded before secondary processing.
+* **Write-Behind Persistence**: To manage rate-limiting and I/O overhead, the system utilizes a 60-second "Dirty Cache" cycle. Identity and entity data are held in memory and persisted to disk in bulk.
+* **Stateful Contextualization**: The engine maintains a local copy of static universe data and entity caches to ensure all broadcasts are fully hydrated with human-readable names without redundant external calls.
+* **Diegetic Front-End**: The UI is optimized as a low-overhead terminal. By deferring non-critical render-blocking requests, the system prioritizes the initial visual paint and stabilizes the Speed Index.
 
-* **Dynamic Chain Filtering**: Automatically pulls active `systemID`s from a Tripwire-based API (deliverynetwork.space) every 60 seconds.
-* **The Gatekeeper Logic**: Uses $O(1)$ Set-lookup to filter the global zKillboard "firehose," instantly discarding any killmail not occurring within the monitored chain.
-* **ESI-Light Persistence**: Implements a "Write-Behind" strategy for Character, Corporation, and Ship data to stay within ESI rate limits while building a rich local database.
-* **Docker Optimized**: Designed for 24/7 deployment on low-resource environments (e.g., DigitalOcean Droplets) with a footprint of <256MB RAM.
+## 🚀 Internal Configuration
 
-## 🚀 Setup & Usage
-
-### 1. Prerequisites
-* Docker and Docker Compose installed.
-* A `data/` directory in the root (for persistent JSON caches).
-
-### 2. Configuration (`.env`)
-Create a `.env` file in the root directory:
 ```env
-INTEL_WEBHOOK_URL=[https://discord.com/api/webhooks/](https://discord.com/api/webhooks/)...
+# --- LOGISTICS & ALERTS ---
+INTEL_WEBHOOK_URL=
+MON_WEBHOOK=
+
+# --- DATA STREAM SELECTION ---
+ZKILL_QUEUE_ID=
+WINGSPAN_API=
+
+# --- THRESHOLDS & ENGINE TUNING ---
+WHALE_THRESHOLD=
+ROTATION_SPEED=
