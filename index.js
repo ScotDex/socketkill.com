@@ -14,6 +14,7 @@ const startWebServer = require("./src/services/webServer");
 const utils = require("./src/core/helpers");
 const statsManager = require("./src/services/statsManager");
 const ProcessorFactory = require("./src/core/processor");
+const { arrayBuffer } = require("stream/consumers");
 
 // Initialize Core Services
 const esi = new ESIClient("Contact: @ScottishDex");
@@ -42,6 +43,8 @@ io.on("connection", async(socket) => {
     } else {
         refreshNebulaBackground();
     }
+    const regions = Array.from(esi.cache.regions.values()).sort();
+    socket.emit("region-list", regions);
     socket.emit('gatekeeper-stats', { totalScanned: statsManager.getTotal() });
     const currentStatus = await utils.getPlayerCount();
     socket.emit('player-count', currentStatus);
