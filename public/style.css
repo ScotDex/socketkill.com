@@ -834,3 +834,16 @@ body::after {
     text-shadow: 0 0 8px rgba(63, 185, 80, 0.6);
     letter-spacing: 2px;
 }
+
+/* The Counter Pulse */
+.counter-update {
+    animation: counter-pop 0.3s ease-out;
+    color: #ffffff !important; /* Brighter white during the pop */
+    display: inline-block;
+}
+
+@keyframes counter-pop {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.4); text-shadow: 0 0 10px #3fb950; }
+    100% { transform: scale(1); }
+}
