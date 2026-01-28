@@ -814,3 +814,23 @@ body::after {
         padding: 8px 12px;
     }
 }
+
+/* The Cursor Base */
+.typewriter::after {
+    content: "█"; /* Use the solid block character for that retro terminal feel */
+    margin-left: 5px;
+    color: #3fb950;
+    animation: cursor-blink 1.2s step-end infinite;
+}
+
+/* Step-end ensures the cursor is either 100% visible or 0%, no "fading" */
+@keyframes cursor-blink {
+    from, to { opacity: 1; }
+    50% { opacity: 0; }
+}
+
+/* Optional: Slight glow to match your title */
+#socket-title {
+    text-shadow: 0 0 8px rgba(63, 185, 80, 0.6);
+    letter-spacing: 2px;
+}
