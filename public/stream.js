@@ -8,8 +8,12 @@ const feed = document.getElementById('feed');
 const status = document.getElementById('status');
 const counterElement = document.getElementById('kill-counter');
 const regionSearch = document.getElementById('regionSearch');
+const autocompleteBox = document.getElementById('terminal-autocomplete'); // New
+const suggestionList = document.getElementById('suggestion-list');     // New
+
 const MAX_FEED_SIZE = 50;
 let isTyping = false; 
+let regionCache = []; // Internal search index to prevent duplication bugs
 
 /* --- 1. Utility Functions --- */
 
@@ -28,13 +32,10 @@ const formatIskValue = (value) => {
 const typeTitle = (elementId, text, speed = 150) => {
     if (isTyping) return;
     isTyping = true;
-    
     const element = document.getElementById(elementId);
     if (!element) return;
-    
     element.innerHTML = ""; 
     let i = 0;
-    
     function type() {
         if (i < text.length) {
             element.innerHTML += text.charAt(i);
@@ -50,18 +51,58 @@ const typeTitle = (elementId, text, speed = 150) => {
 /* --- 2. Global Event Listeners --- */
 
 /**
- * Filter existing kills and manage terminal visibility
- * Placed globally to prevent duplicate listener stacking
+ * Unified Input Handler: Manages both Feed Filtering and Custom Autocomplete
  */
 regionSearch.addEventListener('input', (e) => {
     const term = e.target.value.toLowerCase().trim();
     const rows = document.querySelectorAll('.kill-row');
 
+    // 1. Feed Filtering Logic
     rows.forEach(row => {
         const locationText = row.querySelector('.location-label')?.textContent.toLowerCase() || "";
-        // If term is empty, show all. If typing, show matches only.
         row.hidden = term !== "" && !locationText.includes(term);
     });
+
+    // 2. Custom Autocomplete Engine
+    suggestionList.innerHTML = ''; // Purge old suggestions immediately
+    
+    if (term.length < 2) {
+        autocompleteBox.classList.add('d-none');
+        return;
+    }
+
+    // Surgical Filter: Limit to top 5 matches
+    const matches = regionCache
+        .filter(r => r.toLowerCase().includes(term))
+        .slice(0, 5); 
+
+    if (matches.length > 0) {
+        autocompleteBox.classList.remove('d-none');
+        matches.forEach(match => {
+            const item = document.createElement('div');
+            item.className = 'suggestion-item p-1 pointer';
+            item.innerHTML = `> ${match.toUpperCase()}`;
+            
+            item.onclick = () => {
+                regionSearch.value = match;
+                autocompleteBox.classList.add('d-none');
+                // Force a re-trigger to filter the live feed by the full selection
+                regionSearch.dispatchEvent(new Event('input')); 
+            };
+            suggestionList.appendChild(item);
+        });
+    } else {
+        autocompleteBox.classList.add('d-none');
+    }
+});
+
+/**
+ * UX Fix: Close autocomplete box if user clicks away
+ */
+document.addEventListener('click', (e) => {
+    if (!regionSearch.contains(e.target) && !autocompleteBox.contains(e.target)) {
+        autocompleteBox.classList.add('d-none');
+    }
 });
 
 /* --- 3. Socket Handlers --- */
@@ -77,18 +118,10 @@ socket.on('disconnect', () => {
 });
 
 /**
- * Populates the GOTO_REGION datalist from server-side cache
+ * Updates the internal region index from server-side cache
  */
 socket.on('region-list', (regionNames) => {
-    const datalist = document.getElementById('regionOptions');
-    if (!datalist) return;
-    
-    datalist.innerHTML = ''; 
-    regionNames.forEach(name => {
-        const opt = document.createElement('option');
-        opt.value = name;
-        datalist.appendChild(opt);
-    });
+    regionCache = regionNames; // Direct overwrite prevents duplication bug
 });
 
 socket.on('gatekeeper-stats', (data) => {
@@ -100,7 +133,6 @@ socket.on('gatekeeper-stats', (data) => {
 socket.on('player-count', (data) => {
     const display = document.getElementById('player-count');
     const toast = document.getElementById('player-toast');
-    
     if (data && data.active) {
         toast.classList.remove('d-none');
         display.innerText = data.count.toLocaleString();
@@ -130,10 +162,9 @@ socket.on('nebula-update', (data) => {
 });
 
 /**
- * Main Killmail Processor
+ * Main Killmail Processor: Handles dynamic injection and memory management
  */
 socket.on('raw-kill', (kill) => {
-    // Remove loading state on first data packet
     const emptyState = document.getElementById('empty-state');
     if (emptyState) emptyState.remove();
 
@@ -142,15 +173,8 @@ socket.on('raw-kill', (kill) => {
     }
 
     const val = Number(kill.val);
-    const isWhale = val >= 10000000000; 
-    const isBillion = val >= 1000000000; 
-    
     const div = document.createElement('div');
-    div.className = `kill-row justify-content-between ${isWhale ? 'whale' : ''}`;
-    
-    const valueFormatted = formatIskValue(val);
-    const iskClass = isBillion ? 'isk-billion' : 'isk-million';
-    const victim = kill.victimName || "Unknown Pilot";
+    div.className = `kill-row justify-content-between ${val >= 10000000000 ? 'whale' : ''}`;
     
     const now = new Date();
     const timestamp = `[${now.getUTCHours().toString().padStart(2, '0')}:${now.getUTCMinutes().toString().padStart(2, '0')}]`;
@@ -163,50 +187,40 @@ socket.on('raw-kill', (kill) => {
             <div class="kill-info">
                 <div>
                     <span class="timestamp">${timestamp}</span>
-                    <strong class="ship-name">${victim} lost a ${kill.ship}</strong>
+                    <strong class="ship-name">${kill.victimName || "Unknown"} lost a ${kill.ship}</strong>
                 </div>
                 <div class="small">
                     <span class="location-label">${kill.locationLabel}</span>
                 </div>
             </div>
         </div>
-        
         <div class="d-flex align-items-center">
             <div class="corp-square-container me-3">
                 <img src="${kill.corpImageUrl}" class="corp-logo-square" loading="lazy">
             </div>
-            
             <div class="text-end" style="width: 100px;">
-                <div class="${iskClass} fw-bold">${valueFormatted}</div>
+                <div class="${val >= 1000000000 ? 'isk-billion' : 'isk-million'} fw-bold">${formatIskValue(val)}</div>
                 <a href="${kill.zkillUrl}" target="_blank" class="btn btn-sm btn-outline-secondary mt-1" style="font-size: 10px; width: 100%;">DETAILS</a>
             </div>
         </div>
     `;
 
-    // Visual Flicker on update
+    // Visual flicker effect on body
     const overlay = document.querySelector('body');
     overlay.style.opacity = '0.9';
     setTimeout(() => overlay.style.opacity = '1', 50);
 
-    // Apply Active Filter to incoming data
+    // Filter Injection: Check if new kill matches active terminal filter
     const currentFilter = regionSearch.value.toLowerCase().trim();
-    if (currentFilter !== "") {
-        const locationMatch = kill.locationLabel.toLowerCase();
-        if (!locationMatch.includes(currentFilter)) {
-            div.hidden = true; 
-        }
+    if (currentFilter !== "" && !kill.locationLabel.toLowerCase().includes(currentFilter)) {
+        div.hidden = true; 
     }
 
     feed.prepend(div);
-
-    // Memory Management: Prune old rows
-    if (feed.children.length > MAX_FEED_SIZE) {
-        feed.lastChild.remove();
-    }
+    if (feed.children.length > MAX_FEED_SIZE) feed.lastChild.remove();
 });
 
 /* --- 4. Unified Bootloader --- */
-
 const initApp = () => {
     typeTitle('socket-title', 'Socket.Kill', 150);
 };
