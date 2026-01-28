@@ -39,6 +39,16 @@ body::before {
     z-index: 9999;
 }
 
+.kill-row[hidden] {
+    display: none !important;
+}
+
+#regionSearch::placeholder {
+    color: rgba(63, 185, 80, 0.3);
+    font-style: italic;
+}
+
+
 body::after {
     content: "";
     position: fixed;
