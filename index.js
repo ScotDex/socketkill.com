@@ -26,6 +26,9 @@ const QUEUE_ID = process.env.ZKILL_QUEUE_ID || "Wingspan-Monitor";
 const REDISQ_URL = `https://zkillredisq.stream/listen.php?queueID=${QUEUE_ID}&ttw=1`;
 const ROTATION_SPEED = 10 * 60 * 1000;
 
+const startMonitor = require('./src/network/monitor'); // Path to your file
+startMonitor(750);
+
 let currentSpaceBg = null;
 let processor = null;
 
