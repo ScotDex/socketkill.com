@@ -8,41 +8,8 @@ let isTyping = false; // Safety flag to prevent double-typing
 
 /* --- Utility Functions --- */
 
-async function initRegionFilter() {
-    try {
-        const response = await fetch('/data/esi_cache.json'); 
-        const json = await response.json();
-        const datalist = document.getElementById('regionOptions');
-        
-        // Extract names directly from your "regions" object
-        if (json.regions) {
-            Object.values(json.regions).sort().forEach(regionName => {
-                const opt = document.createElement('option');
-                opt.value = regionName;
-                datalist.appendChild(opt);
-            });
-        }
-    } catch (err) {
-        console.error("Terminal Error: Region index inaccessible.", err);
-    }
-}
 
-// Attach the listener to the search input
-document.getElementById('regionSearch').addEventListener('input', (e) => {
-    const term = e.target.value.toLowerCase();
-    const rows = document.querySelectorAll('.kill-row');
 
-    rows.forEach(row => {
-        // Target your .location-info where the region string exists
-        const locationStr = row.querySelector('.location-info')?.textContent.toLowerCase() || "";
-        
-        // Use the native hidden attribute to hide non-matches
-        // If the box is empty, all rows stay visible (row.hidden = false)
-        row.hidden = term !== "" && !locationStr.includes(term);
-    });
-});
-
-initRegionFilter();
 // Types text character-by-character into a target element
 const typeTitle = (elementId, text, speed = 150) => {
     if (isTyping) return;
