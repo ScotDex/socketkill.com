@@ -182,7 +182,7 @@ socket.on('raw-kill', (kill) => {
     div.innerHTML = `
         <div class="d-flex align-items-center" style="flex: 1;">
             <div class="ship-icon-container">
-                <img src="${kill.shipImageUrl}" class="ship-render" loading="lazy">
+                <img src="${kill.shipImageUrl}" alt="Ship Render" class="ship-render" loading="lazy">
             </div>
             <div class="kill-info">
                 <div>
@@ -196,7 +196,7 @@ socket.on('raw-kill', (kill) => {
         </div>
         <div class="d-flex align-items-center">
             <div class="corp-square-container me-3">
-                <img src="${kill.corpImageUrl}" class="corp-logo-square" loading="lazy">
+                <img src="${kill.corpImageUrl}" alt="Corporation Logo" class="corp-logo-square" loading="lazy">
             </div>
             <div class="text-end" style="width: 100px;">
                 <div class="${val >= 1000000000 ? 'isk-billion' : 'isk-million'} fw-bold">${formatIskValue(val)}</div>
