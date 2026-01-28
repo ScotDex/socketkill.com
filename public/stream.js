@@ -8,41 +8,37 @@ let isTyping = false; // Safety flag to prevent double-typing
 
 /* --- Utility Functions --- */
 
-// stream.js or in your script tag
-// Initialize the Region Filter
 async function initRegionFilter() {
     try {
-        // Assuming your backend exposes the cached regions at this endpoint
         const response = await fetch('/data/esi_cache.json'); 
-        const cache = await response.json();
+        const json = await response.json();
         const datalist = document.getElementById('regionOptions');
         
-        // Grab the regions dictionary from your backend cache structure
-        const regions = cache.regions || {};
-
-        // Populate datalist with human-readable names
-        Object.values(regions).sort().forEach(regionName => {
-            const option = document.createElement('option');
-            option.value = regionName;
-            datalist.appendChild(option);
-        });
-        
+        // Extract names directly from your "regions" object
+        if (json.regions) {
+            Object.values(json.regions).sort().forEach(regionName => {
+                const opt = document.createElement('option');
+                opt.value = regionName;
+                datalist.appendChild(opt);
+            });
+        }
     } catch (err) {
-        console.warn("⚠️ Filter: Could not load static region list.");
+        console.error("Terminal Error: Region index inaccessible.", err);
     }
 }
 
-// Live Filtering Logic
+// Attach the listener to the search input
 document.getElementById('regionSearch').addEventListener('input', (e) => {
     const term = e.target.value.toLowerCase();
     const rows = document.querySelectorAll('.kill-row');
 
     rows.forEach(row => {
-        // Match against your existing .location-info class
-        const locationText = row.querySelector('.location-info')?.textContent.toLowerCase() || "";
+        // Target your .location-info where the region string exists
+        const locationStr = row.querySelector('.location-info')?.textContent.toLowerCase() || "";
         
-        // If term is empty, show all. If typing, filter rows.
-        row.hidden = term !== "" && !locationText.includes(term);
+        // Use the native hidden attribute to hide non-matches
+        // If the box is empty, all rows stay visible (row.hidden = false)
+        row.hidden = term !== "" && !locationStr.includes(term);
     });
 });
 
