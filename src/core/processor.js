@@ -22,21 +22,38 @@ module.exports = (esi, mapper, io, statsManager) => {
      */
     async function processPackage(packageData) {
         const startProcessing = process.hrtime.bigint();
-        const { zkb, killID } = packageData;
+        
+        // --- 1. NORMALIZATION LAYER ---
+        const isR2 = !!packageData.zkill;
+        const killID = isR2 ? packageData.zkill.killID : packageData.killID;
+        const zkb = isR2 ? packageData.zkill.zkb : packageData.zkb;
+        const rawValue = Number(zkb.totalValue || zkb.total_value) || 0;
+
+        const zkbHref = isR2 
+            ? `https://zkillboard.com/kill/${killID}/` 
+            : zkb.href;
+
+        let killmail;
 
         try {
-            // 1. Resolve Killmail and Core Identity in Parallel
-            // We use the raw zkb.href to get full details not present in the RedisQ package
-            const esiResponse = await axios.get(zkb.href);
-            const killmail = esiResponse.data;
-            const rawValue = Number(zkb.totalValue) || 0;
+            // --- 2. DATA SOURCE SELECTION ---
+            if (isR2) {
+                // R2 Native: zero network cost
+                killmail = packageData.esi;
+            } else {
+                // Legacy: perform the fetch
+                const esiResponse = await axios.get(zkbHref);
+                killmail = esiResponse.data;
+            }
 
+            // --- 3. PARALLEL RESOLUTION (Optimized) ---
             const [systemDetails, shipName, charName, corpName] = await Promise.all([
                 esi.getSystemDetails(killmail.solar_system_id),
                 esi.getTypeName(killmail.victim.ship_type_id),
                 esi.getCharacterName(killmail.victim?.character_id),
                 esi.getCorporationName(killmail.victim?.corporation_id)
             ]);
+            
             statsManager.increment();
 
             const systemName = systemDetails?.name || "Unknown System";
@@ -45,13 +62,9 @@ module.exports = (esi, mapper, io, statsManager) => {
                 : "K-Space";
 
             const durationMs = Number(process.hrtime.bigint() - startProcessing) / 1_000_000;
-            console.log(`[PERF] Kill ${killID} | Latency: ${durationMs.toFixed(3)}ms`);
+            console.log(`[PERF] Kill ${killID} | Mode: ${isR2 ? 'R2' : 'LEG'} | Latency: ${durationMs.toFixed(3)}ms`);
 
-          
-            // 2. Update Stats
-            
-
-            // 3. Dispatch to Web Front-end
+            // --- 4. DISPATCH ---
             io.emit("gatekeeper-stats", { totalScanned: statsManager.getTotal() });
             io.emit("raw-kill", {
                 id: killID,
@@ -60,7 +73,7 @@ module.exports = (esi, mapper, io, statsManager) => {
                 system: systemName,
                 region: regionName,
                 shipId: killmail.victim.ship_type_id,
-                href: zkb.href,
+                href: zkbHref,
                 locationLabel: `System: ${systemName} | Region: ${regionName} | Corporation: ${corpName}`,
                 zkillUrl: `https://zkillboard.com/kill/${killID}/`,
                 victimName: charName,
@@ -69,17 +82,16 @@ module.exports = (esi, mapper, io, statsManager) => {
                 corpImageUrl: `https://api.voidspark.org:2053/render/corp/${killmail.victim.corporation_id}`
             });
 
-            // 4. Performance Benchmarking
-            
-
-            // 5. Intel Gating Logic
+            // --- 5. INTEL GATING ---
             const isWhale = rawValue >= WHALE_THRESHOLD;
             const isRelevantWH = isWormholeSystem(killmail.solar_system_id) && 
                                killmail.solar_system_id !== THERA_ID && 
                                mapper.isSystemRelevant(killmail.solar_system_id);
 
             if (isWhale || isRelevantWH) {
-                await handlePrivateIntel(killmail, zkb, {
+                // We pass a normalized zkb object to handlePrivateIntel
+                const intelZkb = isR2 ? { ...zkb, href: zkbHref } : zkb;
+                await handlePrivateIntel(killmail, intelZkb, {
                     shipName,
                     systemName,
                     charName,
