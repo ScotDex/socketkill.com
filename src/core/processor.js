@@ -1,52 +1,60 @@
 /**
  * src/core/processor.js
- * Surgical migration of killmail processing and intel dispatching logic.
+ * Hot-Swappable Dual-Stack Processor (R2 + RedisQ)
  */
-const axios = require("../network/agent"); // Use your existing configured agent
+const axios = require("../network/agent");
 const helpers = require("./helpers");
 const EmbedFactory = require("../services/embedFactory");
 const TwitterService = require("../network/twitterService");
 
-
 module.exports = (esi, mapper, io, statsManager) => {
-    
-    // Constants
     const THERA_ID = 31000005;
     const WHALE_THRESHOLD = 20000000000;
-
-    // Helper: Identify Wormhole space
     const isWormholeSystem = (systemId) => systemId >= 31000001 && systemId <= 32000000;
 
-    /**
-     * Primary entry point for every killmail from the stream
-     */
     async function processPackage(packageData) {
         const startProcessing = process.hrtime.bigint();
-        
-        // --- 1. NORMALIZATION LAYER ---
+
+        // --- 1. SURGICAL NORMALIZATION LAYER ---
+        // Detect shape: R2 has 'zkb' at root; Legacy has it inside 'package'
         const isR2 = !!packageData.zkb && !packageData.package;
-        const killID = isR2 ? packageData.killmail_id : packageData.killID;
-        const zkb = isR2 ? packageData.zkb : packageData.zkb; // Both use 'zkb'
-        const rawValue = Number(zkb.totalValue || zkb.total_value) || 0;
+        const isLegacy = !!packageData.package;
 
-        const zkbHref = isR2 
-            ? `https://zkillboard.com/kill/${killID}/` 
-            : zkb.href;
+        let killID, zkb, killmail;
 
-        let killmail;
+        if (isR2) {
+            // PowerShell-verified R2 mapping
+            killID = packageData.killmail_id;
+            zkb = packageData.zkb;
+            killmail = packageData.esi; // ESI data is pre-bundled in R2
+        } else if (isLegacy) {
+            // Traditional RedisQ mapping
+            killID = packageData.package.killID;
+            zkb = packageData.package.zkb;
+            // killmail remains null; we will fetch it via axios below
+        } else {
+            console.error("❌ [PROCESSOR-ERR] Received unrecognized packet shape.");
+            return;
+        }
+
+        // Standardize the href for UI and Intel
+        const zkbHref = isR2 ? `https://zkillboard.com/kill/${killID}/` : zkb.href;
+        const rawValue = Number(zkb?.totalValue || 0);
 
         try {
             // --- 2. DATA SOURCE SELECTION ---
-            if (isR2) {
-                // R2 Native: zero network cost
-                killmail = packageData.esi;
-            } else {
-                // Legacy: perform the fetch
+            if (!killmail) {
+                // If it's not R2, we must perform the Legacy ESI fetch
                 const esiResponse = await axios.get(zkbHref);
                 killmail = esiResponse.data;
             }
 
-            // --- 3. PARALLEL RESOLUTION (Optimized) ---
+            // Safety check for malformed ESI data
+            if (!killmail?.solar_system_id) {
+                throw new Error("Missing solar_system_id in killmail payload");
+            }
+
+            // --- 3. PARALLEL RESOLUTION ---
             const [systemDetails, shipName, charName, corpName] = await Promise.all([
                 esi.getSystemDetails(killmail.solar_system_id),
                 esi.getTypeName(killmail.victim.ship_type_id),
@@ -89,7 +97,7 @@ module.exports = (esi, mapper, io, statsManager) => {
                                mapper.isSystemRelevant(killmail.solar_system_id);
 
             if (isWhale || isRelevantWH) {
-                // We pass a normalized zkb object to handlePrivateIntel
+                // Ensure handlePrivateIntel gets a normalized ZKB object with the href
                 const intelZkb = isR2 ? { ...zkb, href: zkbHref } : zkb;
                 await handlePrivateIntel(killmail, intelZkb, {
                     shipName,
@@ -101,20 +109,15 @@ module.exports = (esi, mapper, io, statsManager) => {
             }
 
         } catch (err) {
-            console.error(`❌ [PROCESSOR-ERR] Kill ${killID} failed: ${err.message}`);
+            console.error(`❌ [PROCESSOR-ERR] Kill ${killID || 'Unknown'} failed: ${err.message}`);
         }
     }
 
-    /**
-     * Handles Discord Webhooks and Twitter notifications
-     */
     async function handlePrivateIntel(kill, zkb, identity) {
         const formattedValue = helpers.formatIsk(identity.rawValue);
-        
         try {
             if (mapper.isSystemRelevant(kill.solar_system_id)) {
                 const metadata = mapper.getSystemMetadata(kill.solar_system_id);
-                
                 const names = {
                     ...identity,
                     scoutName: metadata ? metadata.scannedBy : "Unknown Scout",
