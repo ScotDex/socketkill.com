@@ -97,7 +97,7 @@ async function listeningStream() {
                     if (!duplicateGuard.has(pkg.killmail_id)) {
                         // SURGICAL WRAP: We wrap it in { package: pkg } so your 
                         // existing processor logic remains untouched.
-                        processor.processPackage({ package: pkg });
+                        processor.processPackage(pkg);
 
                         duplicateGuard.add(pkg.killmail_id);
                         if (duplicateGuard.size > 1000) {
