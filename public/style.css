@@ -857,3 +857,43 @@ body::after {
     50% { transform: scale(1.4); text-shadow: 0 0 10px #3fb950; }
     100% { transform: scale(1); }
 }
+
+.legal-footer {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(4px);
+    border-top: 1px solid rgba(63, 185, 80, 0.2);
+    padding: 5px 20px;
+    z-index: 50; /* Sits behind your HUD buttons */
+    pointer-events: none; /* Won't block clicks to the stream */
+}
+
+.footer-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: #444; /* Dim enough to not distract, bright enough to be legal */
+    font-size: 0.6rem;
+    font-family: 'Exo 2', sans-serif;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.footer-meta {
+    text-align: right;
+    font-weight: 600;
+}
+
+.separator {
+    margin: 0 10px;
+    color: #222;
+}
+
+/* Red Team Fix: Ensure your HUD buttons sit above the footer */
+#hud-uplink, #hud-status {
+    bottom: 30px !important; 
+    transition: bottom 0.3s ease;
+}
