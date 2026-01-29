@@ -37,6 +37,32 @@ body::before {
     pointer-events: none;
     z-index: 9999;
 }
+/* Core Terminal Input Class */
+.terminal-input-field {
+    background: transparent;
+    border: none;
+    outline: none !important;
+    color: #3fb950;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.85rem;
+    letter-spacing: 1px;
+    caret-color: #3fb950; /* The blinking green cursor */
+    width: 100%;
+}
+
+/* Optional: Add a subtle glow when the user is actively typing */
+.terminal-input-field:focus {
+    text-shadow: 0 0 5px rgba(63, 185, 80, 0.5);
+}
+
+/* Placeholder styling to match the dim 'ready' state */
+.terminal-input-field::placeholder {
+    color: rgba(63, 185, 80, 0.3);
+    text-transform: uppercase;
+}
+
+
+
 
 .kill-row[hidden] {
     display: none !important;

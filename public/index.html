@@ -64,7 +64,7 @@
     <input type="text" 
            id="regionSearch"
            aria-label="Filter kills by region"  
-           class="terminal-prompt bg-transparent border-0 outline-none w-100" 
+           class="terminal-input-field" 
            placeholder="ENTER_REGION" 
            autocomplete="off"
            style="outline: none; color: #3fb950; font-family: 'Share Tech Mono', monospace; font-size: 0.85rem;">
@@ -81,17 +81,6 @@
     <div id="feed"></div>
     </main>
         </div></div>
-
-<div id="modal-container"></div>
-<div id="hud-uplink" class="fixed-bottom d-flex justify-content-start align-items-end p-3 w-100" style="pointer-events: none;">
-    <button type="button" 
-            class="btn btn-sm btn-outline-success opacity-50 hover-opacity-100 fw-bold tracking-widest" 
-            style="pointer-events: auto; font-family: 'Exo 2'; font-size: 0.65rem; border-style: dashed;"
-            data-bs-toggle="modal" 
-            data-bs-target="#aboutModal">
-        [ SYSTEM_ABOUT ]
-    </button>
-</div>
 
 <div id="hud-status" class="fixed-bottom d-flex justify-content-end align-items-end p-3 w-100" style="pointer-events: none;">
     <div id="player-toast" class="player-count-card d-none" style="pointer-events: auto;">
@@ -117,7 +106,7 @@
     <footer class="legal-footer">
         <div class="footer-content">
             <div class="footer-left">
-                <span class="ccp-notice opacity-50">© CCP HF //</span>
+                <span class="ccp-notice opacity-50">EVE Online and the EVE logo are the registered trademarks of CCP hf. All rights reserved.//</span>
                 <span class="tech-spec ms-2">
                     [ CREDITS: 
                     <a href="https://github.com/zKillboard/RedisQ" target="_blank" class="credit-link">REDISQ</a> // 
