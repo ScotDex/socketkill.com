@@ -92,12 +92,13 @@ async function listeningStream() {
                 if (response.status === 200) {
                     consecutive404s = 0; // Reset stall counter
                     const pkg = response.data;
-
+                    const r2KillID = pkg.zkill.killID;
                     // Idempotency check for reprocessed kills (Edit 2)
                     if (!duplicateGuard.has(pkg.killmail_id)) {
                         // SURGICAL WRAP: We wrap it in { package: pkg } so your 
                         // existing processor logic remains untouched.
                         processor.processPackage(pkg);
+                        duplicateGuard.add(r2KillID);
 
                         duplicateGuard.add(pkg.killmail_id);
                         if (duplicateGuard.size > 1000) {
