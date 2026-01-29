@@ -880,6 +880,7 @@ body::after {
     font-family: 'Exo 2', sans-serif;
     text-transform: uppercase;
     letter-spacing: 1px;
+    pointer-events: auto;
 }
 
 .footer-meta {
