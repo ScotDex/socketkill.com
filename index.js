@@ -33,7 +33,7 @@ let currentSequence = null;
 let consecutive404s = 0;
 const duplicateGuard = new Set();
 
-const startMonitor = require('./src/network/monitor'); 
+const startMonitor = require('./src/network/monitor'); // Path to your file
 startMonitor(750);
 
 let currentSpaceBg = null;
@@ -66,69 +66,23 @@ async function refreshNebulaBackground() {
     if (data) {
         currentSpaceBg = data;
         io.emit("nebula-update", data);
-        
+        console.log(`✅ Background Synced: ${data.name}`);
     }
 }
 
 async function listeningStream() {
-    const mode = USE_R2 ? 'R2_SEQUENCE' : 'REDIS_Q';
-    console.log(`📡 Dev Uplink Active | Mode: ${mode}`);
     console.log(`Listening to zKillboard Queue: ${QUEUE_ID}`);
     while (true) {
         try {
-            if (USE_R2) {
-                if (currentSequence === null) {
-                    const sync = await axios.get(SEQUENCE_CACHE_URL);
-                    currentSequence = sync.data.sequence;
-                    console.log(`🛰️ [R2-SYNC] Starting at: ${currentSequence}`);
-                }
+            const response = await axios.get(REDISQ_URL, { timeout: 5000 });
+            const data = response.data;
 
-                const response = await axios.get(`${R2_BASE_URL}/${currentSequence}.json`, {
-                    timeout: 3000,
-                    validateStatus: (s) => s < 500
-
-                });
-
-                if (response.status === 200) {
-                    consecutive404s = 0; // Reset stall counter
-                    const pkg = response.data;
-                    const r2KillID = pkg.killmail_id;
-                    // Idempotency check for reprocessed kills (Edit 2)
-                    if (!duplicateGuard.has(pkg.killmail_id)) {
-                        // SURGICAL WRAP: We wrap it in { package: pkg } so your 
-                        // existing processor logic remains untouched.
-                        processor.processPackage(pkg);
-                        duplicateGuard.add(r2KillID);
-
-                        duplicateGuard.add(pkg.killmail_id);
-                        if (duplicateGuard.size > 1000) {
-                            const oldest = duplicateGuard.values().next().value;
-                            duplicateGuard.delete(oldest);
-                        }
-                    }
-
-                    currentSequence++;
-                    continue; // Burst mode: skip wait if we found a file
-                }
-
-                if (response.status === 404) {
-                    consecutive404s++;
-                    // If we've stalled for ~30s (15 * 2s), the sequence might have jumped
-                    if (consecutive404s > 15) {
-                        console.warn("⚠️ [R2] Potential sequence gap detected. Re-priming...");
-                        currentSequence = null;
-                    }
-                    await new Promise(res => setTimeout(res, 2000));
-                }
+            if (data && data.package) {
+                // Trigger background resolution without 'await' to keep the pipe moving
+                processor.processPackage(data.package);
             } else {
-
-                const response = await axios.get(REDISQ_URL, { timeout: 5000 });
-                if (response.data && response.data.package) {
-                    processor.processPackage(response.data.package);
-                } else {
-                    await new Promise((res) => setTimeout(res, 500));
-                }
-
+                // Polling...
+                await new Promise((res) => setTimeout(res, 500));
             }
         } catch (err) {
             const delay = err.response?.status === 429 ? 2000 : 5000;
