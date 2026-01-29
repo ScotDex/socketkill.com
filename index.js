@@ -33,7 +33,7 @@ let currentSequence = null;
 let consecutive404s = 0;
 const duplicateGuard = new Set();
 
-const startMonitor = require('./src/network/monitor'); // Path to your file
+const startMonitor = require('./src/network/monitor'); 
 startMonitor(750);
 
 let currentSpaceBg = null;
@@ -66,7 +66,7 @@ async function refreshNebulaBackground() {
     if (data) {
         currentSpaceBg = data;
         io.emit("nebula-update", data);
-        console.log(`✅ Background Synced: ${data.name}`);
+        
     }
 }
 
