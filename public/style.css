@@ -219,6 +219,18 @@ body::after {
     animation: blink-caret 0.75s step-end infinite;
 }
 
+
+.ccp-notice {
+    opacity: 0.15; /* Barely visible 'ghost' text */
+    transition: opacity 0.3s ease, color 0.3s ease;
+    cursor: help;
+}
+
+.legal-footer:hover .ccp-notice {
+    opacity: 0.8; /* Re-lights only when the user interacts with the footer */
+    color: #888;
+}
+
 .location-info {
     color: #ce5007d7;
     font-size: 0.9rem;
