@@ -25,7 +25,7 @@ const mapper = new MapperService(process.env.WINGSPAN_API);
 const QUEUE_ID = process.env.ZKILL_QUEUE_ID || "Wingspan-Monitor";
 const REDISQ_URL = `https://zkillredisq.stream/listen.php?queueID=${QUEUE_ID}&ttw=1`;
 const ROTATION_SPEED = 10 * 60 * 1000;
-const USE_R2 = false;
+const USE_R2 = true;
 const R2_BASE_URL = "https://r2z2.zkillboard.com/ephemeral";
 const SEQUENCE_CACHE_URL = `${R2_BASE_URL}/sequence.json`;
 
@@ -92,7 +92,7 @@ async function listeningStream() {
                 if (response.status === 200) {
                     consecutive404s = 0; // Reset stall counter
                     const pkg = response.data;
-                    const r2KillID = pkg.zkill.killID;
+                    const r2KillID = pkg.killmail_id;
                     // Idempotency check for reprocessed kills (Edit 2)
                     if (!duplicateGuard.has(pkg.killmail_id)) {
                         // SURGICAL WRAP: We wrap it in { package: pkg } so your 
