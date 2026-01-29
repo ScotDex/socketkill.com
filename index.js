@@ -25,7 +25,7 @@ const mapper = new MapperService(process.env.WINGSPAN_API);
 const QUEUE_ID = process.env.ZKILL_QUEUE_ID || "Wingspan-Monitor";
 const REDISQ_URL = `https://zkillredisq.stream/listen.php?queueID=${QUEUE_ID}&ttw=1`;
 const ROTATION_SPEED = 10 * 60 * 1000;
-const USE_R2 = true;
+const USE_R2 = false;
 const R2_BASE_URL = "https://r2z2.zkillboard.com/ephemeral";
 const SEQUENCE_CACHE_URL = `${R2_BASE_URL}/sequence.json`;
 
