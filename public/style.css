@@ -14,11 +14,10 @@
 
 /* === BASE LAYOUT === */
 body {
-    color: #142536;
+    color: #0d1117;
     font-family: 'Exo 2', 'Segoe UI', sans-serif;
     margin: 0;
-    background-attachment: scroll;
-    background-size: cover;
+    background-attachment: fixed;
     background-position: top center;
     transition: background 2s ease-in-out;
     animation: cathode-flicker 0.15s infinite, slowDrift 120s linear infinite;
