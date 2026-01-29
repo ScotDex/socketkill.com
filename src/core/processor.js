@@ -24,9 +24,9 @@ module.exports = (esi, mapper, io, statsManager) => {
         const startProcessing = process.hrtime.bigint();
         
         // --- 1. NORMALIZATION LAYER ---
-        const isR2 = !!packageData.zkill;
-        const killID = isR2 ? packageData.zkill.killID : packageData.killID;
-        const zkb = isR2 ? packageData.zkill.zkb : packageData.zkb;
+        const isR2 = !!packageData.zkb && !packageData.package;
+        const killID = isR2 ? packageData.killmail_id : packageData.killID;
+        const zkb = isR2 ? packageData.zkb : packageData.zkb; // Both use 'zkb'
         const rawValue = Number(zkb.totalValue || zkb.total_value) || 0;
 
         const zkbHref = isR2 
