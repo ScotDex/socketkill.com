@@ -791,9 +791,20 @@ body::after {
 }
 
 @keyframes slowDrift {
-    0% { background-size: 100% auto; background-position: center; }
-    50% { background-size: 115% auto; background-position: top right; }
-    100% { background-size: 100% auto; background-position: center; }
+    0% { 
+        /* Start slightly larger than the container */
+        background-size: 110% 110%; 
+        background-position: 0% 0%; 
+    }
+    50% { 
+        /* Zoom in and drift to a different corner */
+        background-size: 125% 125%; 
+        background-position: 100% 100%; 
+    }
+    100% { 
+        background-size: 110% 110%; 
+        background-position: 0% 0%; 
+    }
 }
 
 /* === RESPONSIVE === */
