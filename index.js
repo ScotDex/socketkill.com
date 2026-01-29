@@ -25,6 +25,13 @@ const mapper = new MapperService(process.env.WINGSPAN_API);
 const QUEUE_ID = process.env.ZKILL_QUEUE_ID || "Wingspan-Monitor";
 const REDISQ_URL = `https://zkillredisq.stream/listen.php?queueID=${QUEUE_ID}&ttw=1`;
 const ROTATION_SPEED = 10 * 60 * 1000;
+const USE_R2 = false;
+const R2_BASE_URL = "https://r2z2.zkillboard.com/ephemeral";
+const SEQUENCE_CACHE_URL = `${R2_BASE_URL}/sequence.json`;
+
+let currentSequence = null;
+let consecutive404s = 0;
+const duplicateGuard = new Set();
 
 const startMonitor = require('./src/network/monitor'); // Path to your file
 startMonitor(750);
@@ -64,18 +71,63 @@ async function refreshNebulaBackground() {
 }
 
 async function listeningStream() {
+    const mode = USE_R2 ? 'R2_SEQUENCE' : 'REDIS_Q';
+    console.log(`📡 Dev Uplink Active | Mode: ${mode}`);
     console.log(`Listening to zKillboard Queue: ${QUEUE_ID}`);
     while (true) {
         try {
-            const response = await axios.get(REDISQ_URL, { timeout: 5000 });
-            const data = response.data;
+            if (USE_R2) {
+                if (currentSequence === null) {
+                    const sync = await axios.get(SEQUENCE_CACHE_URL);
+                    currentSequence = sync.data.sequence;
+                    console.log(`🛰️ [R2-SYNC] Starting at: ${currentSequence}`);
+                }
 
-            if (data && data.package) {
-                // Trigger background resolution without 'await' to keep the pipe moving
-                processor.processPackage(data.package);
+                const response = await axios.get(`${R2_BASE_URL}/${currentSequence}.json`, {
+                    timeout: 3000,
+                    validateStatus: (s) => s < 500
+
+                });
+
+                if (response.status === 200) {
+                    consecutive404s = 0; // Reset stall counter
+                    const pkg = response.data;
+
+                    // Idempotency check for reprocessed kills (Edit 2)
+                    if (!duplicateGuard.has(pkg.killmail_id)) {
+                        // SURGICAL WRAP: We wrap it in { package: pkg } so your 
+                        // existing processor logic remains untouched.
+                        processor.processPackage({ package: pkg });
+
+                        duplicateGuard.add(pkg.killmail_id);
+                        if (duplicateGuard.size > 1000) {
+                            const oldest = duplicateGuard.values().next().value;
+                            duplicateGuard.delete(oldest);
+                        }
+                    }
+
+                    currentSequence++;
+                    continue; // Burst mode: skip wait if we found a file
+                }
+
+                if (response.status === 404) {
+                    consecutive404s++;
+                    // If we've stalled for ~30s (15 * 2s), the sequence might have jumped
+                    if (consecutive404s > 15) {
+                        console.warn("⚠️ [R2] Potential sequence gap detected. Re-priming...");
+                        currentSequence = null;
+                    }
+                    await new Promise(res => setTimeout(res, 2000));
+                }
             } else {
-                // Polling...
-                await new Promise((res) => setTimeout(res, 500));
+
+                const response = await axios.get(REDISQ_URL, { timeout: 5000 });
+                if (response.data && response.data.package) {
+                    processor.processPackage(response.data.package);
+                } else {
+                    await new Promise((res) => setTimeout(res, 500));
+                }
+
             }
         } catch (err) {
             const delay = err.response?.status === 429 ? 2000 : 5000;
