@@ -97,6 +97,7 @@ async function r2BackgroundWorker() {
     try {
         const res = await axios.get(SEQUENCE_CACHE_URL);
         currentSequence = res.data.sequence;
+        console.log('✅ R2_WORKER: Primed at sequence:', currentSequence);
     } catch (e) {
         console.error("❌ R2_WORKER: Failed to prime sequence.");
         setTimeout(r2BackgroundWorker, 10000);
@@ -115,6 +116,10 @@ while (true) {
                     if (!duplicateGuard.has(r2Package.killID)) {
                         duplicateGuard.add(r2Package.killID);
                         console.log(`[R2_WIN] Beat Socket for Kill ${r2Package.killID}`);
+                        processor.processPackage(r2Package);
+                    } else {
+                        console.log(`[R2_LOSS] Socket beat R2 for Kill ${r2Package.killID}`);
+                    }
 
                         if (duplicateGuard.size > 500) {
                             const firstValue = duplicateGuard.values().next().value;
