@@ -24,24 +24,17 @@ body {
     background-repeat: no-repeat;
 }
 
-.supporter-overlay {
-    position: fixed;
-    top: 100px;
-    left: 20px;
+.supporter-readout {
     font-family: 'Share Tech Mono', monospace;
-    font-size: 0.6rem;
-    color: var(--neon-green);
-    opacity: 0.08; /* Extremely subtle */
-    pointer-events: none;
-    z-index: -1; /* Behind the feed, part of the wallpaper */
-    text-transform: uppercase;
+    letter-spacing: 2px;
+    text-shadow: 0 0 5px rgba(63, 185, 80, 0.5);
+    transition: all 0.3s ease;
 }
 
-.supporter-entry {
-    margin-bottom: 5px;
-    display: block;
+/* Optional: subtle pulse when the name changes */
+.name-change-flash {
+    animation: counter-pop 0.3s ease-out;
 }
-
 
 /* CRT visual effects overlays */
 body::before {
