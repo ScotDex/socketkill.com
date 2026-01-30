@@ -111,52 +111,47 @@ async function r2BackgroundWorker() {
     while (true) {
         try {
             const url = `${R2_BASE_URL}/${currentSequence}.json?cb=${Date.now()}`;
-            const response = await cleanAxios.get(url, { timeout: 3000 });
+            
+            // TRACE 1: Confirm the loop is actually ticking
+            if (consecutive404s % 10 === 0) {
+                console.log(`[R2_TRACE] Polling Seq: ${currentSequence} | URL: ${url}`);
+            }
+
+            const response = await cleanAxios.get(url, { timeout: 2000 });
 
             if (response.status === 200) {
+                // TRACE 2: Found a file!
+                console.log(`[R2_TRACE] Found file for Seq: ${currentSequence}. Parsing...`);
+                
                 const r2Package = normalizer.fromR2(response.data);
-
+                
                 if (r2Package && r2Package.killID) {
                     if (!duplicateGuard.has(r2Package.killID)) {
                         duplicateGuard.add(r2Package.killID);
                         console.log(`🏆 [R2_WIN] Captured Kill ${r2Package.killID}`);
                         processor.processPackage(r2Package);
-                        
-                        // Keep duplicateGuard lean
-                        if (duplicateGuard.size > 2000) {
-                            const firstValue = duplicateGuard.values().next().value;
-                            duplicateGuard.delete(firstValue);
-                        }
+                    } else {
+                        console.log(`🛡️ [R2_LOSS] Socket already caught Kill ${r2Package.killID}`);
                     }
+                } else {
+                    // TRACE 3: Normalizer failure
+                    console.error(`❌ [R2_TRACE] Normalizer failed for Seq: ${currentSequence}. Data structure might have changed.`);
                 }
+
                 currentSequence++;
                 consecutive404s = 0;
             }
         } catch (err) {
             if (err.response?.status === 404) {
                 consecutive404s++;
-                
-                if (consecutive404s % 20 === 0) {
-                    console.log(`📡 R2_SYNC: Probing for recovery at ${currentSequence}...`);
-                    try {
-                        const sync = await cleanAxios.get(SEQUENCE_CACHE_URL);
-                        
-                        // IF sequence.json is ahead, jump to it.
-                        if (sync.data.sequence > currentSequence) {
-                            console.log(`🚀 R2_JUMP: Logic jump to ${sync.data.sequence}`);
-                            currentSequence = sync.data.sequence;
-                        } else {
-                            // IF sequence.json is stale, try a blind leap of +10
-                            // This probes to see if zKill just forgot to update the JSON index
-                            console.log(`🕵️ R2_PROBE: sequence.json is stale. Attempting blind probe +10...`);
-                            currentSequence += 10;
-                        }
-                        consecutive404s = 0;
-                    } catch (sErr) { /* Silent fail */ }
+                // Log every 30th 404 to keep logs clean but confirm activity
+                if (consecutive404s % 30 === 0) {
+                    console.log(`😴 [R2_TRACE] Sequence ${currentSequence} not yet available (Attempt ${consecutive404s})`);
                 }
                 await new Promise(r => setTimeout(r, 1000));
             } else {
-                console.error(`❌ R2_NETWORK_ERR: ${err.message}`);
+                // TRACE 4: Network errors (Timeouts, 429s, 500s)
+                console.error(`📡 [R2_TRACE] Network Error: ${err.message} | Code: ${err.code}`);
                 await new Promise(r => setTimeout(r, 5000));
             }
         }
