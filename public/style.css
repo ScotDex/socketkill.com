@@ -639,16 +639,38 @@ body::after {
     transition: bottom 0.3s ease;
 }
 
-#global-stats-bar {
-    position: sticky;
-    top: 0;
-    z-index: 1000; /* Ensure it stays above everything */
-    height: 30px;
-    background: #0a0a0a;
-    border-bottom: 1px solid #222;
-    display: flex;
-    align-items: center;
-    padding: 0 20px;
-    font-size: 11px;
-    color: #666;
+/* Center Header Stats Container */
+.stats-command-center {
+    flex: 0 0 auto;
+    min-width: 180px; /* Prevents layout jump when numbers grow */
+    text-align: center;
+    font-family: 'Exo 2', sans-serif;
+    text-transform: uppercase;
+}
+
+/* Individual Stat Rows */
+.stat-row-primary {
+    font-size: 0.75rem;
+    color: #888;
+    letter-spacing: 1px;
+}
+
+.stat-row-secondary {
+    font-size: 0.62rem;
+    color: #555;
+    letter-spacing: 1.5px;
+    margin-top: 2px;
+    padding-top: 2px;
+    border-top: 1px solid rgba(63, 185, 80, 0.1); /* Very faint green tint */
+}
+
+/* The actual numbers */
+#kill-counter {
+    color: #fff;
+    text-shadow: 0 0 5px rgba(255, 255, 255, 0.2);
+}
+
+#npc-count {
+    color: #ffc107; /* Warning Amber */
+    text-shadow: 0 0 5px rgba(255, 193, 7, 0.2);
 }
