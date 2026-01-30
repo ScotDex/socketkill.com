@@ -16,6 +16,7 @@ const utils = require("./src/core/helpers");
 const statsManager = require("./src/services/statsManager");
 const ProcessorFactory = require("./src/core/processor");
 const { arrayBuffer } = require("stream/consumers");
+const cleanAxios = require("axios");
 
 // Initialize Core Services
 const esi = new ESIClient("Contact: @ScottishDex");
@@ -94,6 +95,9 @@ async function listeningStream() {
 }
 async function r2BackgroundWorker() {
     console.log("🚀 R2 Shadow Worker: Starting Polling Loop...");
+
+    const res = await cleanAxios.get(SEQUENCE_CACHE_URL, { 
+    headers: { 'User-Agent': 'WiNGSPAN-Intel-Shadow-Worker' } });
     try {
         // FIX: Ensure the variable name matches the one used below
         const res = await axios.get(SEQUENCE_CACHE_URL, { timeout: 5000 });
@@ -114,7 +118,7 @@ console.log("🏃 R2_WORKER: Transitioning to live polling...");
 while (true) {
         try {
             const url = `${R2_BASE_URL}/${currentSequence}.json?cb=${Date.now()}`;
-            const response = await axios.get(url, { timeout: 3000 });
+            const response = await cleanAxios.get(url, { timeout: 3000 });
 
             if (response.status === 200) {
                 const r2Package = normalizer.fromR2(response.data);
