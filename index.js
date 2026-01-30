@@ -111,8 +111,9 @@ async function r2BackgroundWorker() {
             if (response.status === 200) {
                 const r2Package = normalizer.fromR2(response.data);
 
-                if (!duplicateGuard.has(r2Package.killID)) {
-                    duplicateGuard.add(r2Package.killID);
+                if (r2Package && r2Package.killID) {
+                    if (!duplicateGuard.has(r2Package.killID)) {
+                        duplicateGuard.add(r2Package.killID);
 
                     if (duplicateGuard.size > 500) {
                         const firstValue = duplicateGuard.values().next().value;
