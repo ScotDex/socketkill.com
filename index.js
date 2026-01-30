@@ -81,6 +81,18 @@ async function listeningStream() {
 
             if (data && data.package) {
                 // Trigger background resolution without 'await' to keep the pipe moving
+
+                const killID = data.package.killID;
+
+                // 2. THE GUARD: Check if R2 already won this race
+                if (duplicateGuard.has(killID)) {
+                    // SILENT EXIT: R2 already processed this. 
+                    // No log, no processor call, no front-end emit.
+                    continue; 
+                }
+
+                // 3. CLAIM IT: If socket won, mark it so R2 doesn't double-process
+                duplicateGuard.add(killID);
                 processor.processPackage(data.package);
             } else {
                 // Polling...
