@@ -199,5 +199,5 @@ async function r2BackgroundWorker() {
 
     console.log("Web Server Module Ready.");
     listeningStream(); 
-    r2BackgroundWorker();
+    // r2BackgroundWorker();
 })();
