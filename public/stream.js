@@ -15,7 +15,22 @@ const MAX_FEED_SIZE = 50;
 let isTyping = false; 
 let regionCache = []; // Internal search index to prevent duplication bugs
 
-/* --- 1. Utility Functions --- */
+const SUPPORTERS = ["Shaftmaster Mastershafts", "Romulus", "Pheonix Venom"];
+let supporterIndex = 0;
+
+
+const cycleSupporters = () => {
+    const display = document.getElementById('active-supporter');
+    if (!display || SUPPORTERS.length === 0) return;
+
+    // Visual pop/flicker
+    display.classList.remove('counter-update');
+    void display.offsetWidth; 
+    display.classList.add('counter-update');
+
+    display.innerText = SUPPORTERS[supporterIndex];
+    supporterIndex = (supporterIndex + 1) % SUPPORTERS.length;
+};
 
 /**
  * Formats raw ISK numbers into readable terminal shorthand (M/B)
@@ -151,12 +166,6 @@ socket.on('nebula-update', (data) => {
             document.body.style.backgroundSize = 'cover';
             document.body.style.backgroundAttachment = 'fixed';
             document.body.style.backgroundPosition = 'center';
-
-            const credit = document.getElementById('image-credit');
-            if (credit) {
-                const displayName = data.name.split('.')[0].replace(/_/g, ' ').toUpperCase();
-                credit.innerHTML = `LOCATION: <span class="text-success">${displayName}</span> | ART: <span class="text-white">RIXX JAVIX</span>`;
-            }
         };
     }
 });
@@ -227,6 +236,10 @@ if (counterElement && kill.totalScanned) {
 const initApp = () => {
     typeTitle('socket-title', 'Socket.Kill', 150);
 };
+if (SUPPORTERS.length > 0) {
+    cycleSupporters(); // Run once immediately
+    setInterval(cycleSupporters, 7000); // Cycle every 7 seconds
+}
 
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', initApp);
