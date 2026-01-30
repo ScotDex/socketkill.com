@@ -111,16 +111,6 @@ regionSearch.addEventListener('input', (e) => {
     }
 });
 
-/**
- * UX Fix: Close autocomplete box if user clicks away
- */
-document.addEventListener('click', (e) => {
-    if (!regionSearch.contains(e.target) && !autocompleteBox.contains(e.target)) {
-        autocompleteBox.classList.add('d-none');
-    }
-});
-
-/* --- 3. Socket Handlers --- */
 
 socket.on('connect', () => {
     status.innerText = "ONLINE";
@@ -235,12 +225,12 @@ if (counterElement && kill.totalScanned) {
 /* --- 4. Unified Bootloader --- */
 const initApp = () => {
     typeTitle('socket-title', 'Socket.Kill', 150);
-};
-if (SUPPORTERS.length > 0) {
-    cycleSupporters(); // Run once immediately
-    setInterval(cycleSupporters, 7000); // Cycle every 7 seconds
-}
 
+    if (SUPPORTERS.length > 0) {
+        cycleSupporters(); // Run once immediately
+        setInterval(cycleSupporters, 7000); // Cycle every 7 seconds
+    }
+};
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', initApp);
 } else {
