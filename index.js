@@ -11,6 +11,7 @@ const ESIClient = require("./src/network/esi");
 const MapperService = require("./src/network/mapper");
 const HeartbeatService = require("./src/services/heartbeatService");
 const startWebServer = require("./src/services/webServer");
+const normalizer = require("./src/core/normalizer");
 const utils = require("./src/core/helpers");
 const statsManager = require("./src/services/statsManager");
 const ProcessorFactory = require("./src/core/processor");
@@ -42,7 +43,7 @@ let processor = null;
 async function syncPlayerCount() {
     const status = await utils.getPlayerCount();
     if (status) {
-        io.emit('player-count', status)
+        io.emit('player-count', status);
     }
 
 }
@@ -91,10 +92,63 @@ async function listeningStream() {
         }
     }
 }
+async function r2BackgroundWorker() {
+    console.log("🚀 R2 Shadow Worker: Starting Polling Loop...");
+    try {
+        const res = await axios.get(SEQUENCE_CACHE_URL);
+        currentSequence = res.data.sequence;
+    } catch (e) {
+        console.error("❌ R2_WORKER: Failed to prime sequence.");
+        setTimeout(r2BackgroundWorker, 10000);
+        return;
+    }
 
-/**
- * Initialization & Maintenance Loops
- */
+    while (true) {
+        try {
+            const url = `${R2_BASE_URL}/${currentSequence}.json?cb=${Date.now()}`;
+            const response = await axios.get(url, { timeout: 3000 });
+
+            if (response.status === 200) {
+                const r2Package = normalizer.fromR2(response.data);
+
+                if (!duplicateGuard.has(r2Package.killID)) {
+                    duplicateGuard.add(r2Package.killID);
+
+                    if (duplicateGuard.size > 500) {
+                        const firstValue = duplicateGuard.values().next().value;
+                        duplicateGuard.delete(firstValue);
+                    }
+
+                    console.log(`[R2_SHADOW] Sequence ${currentSequence} detected.`);
+                    processor.processPackage(r2Package);
+                }
+
+                currentSequence++;
+                consecutive404s = 0;
+            }
+        } catch (err) {
+            if (err.response?.status === 404) {
+                consecutive404s++;
+                if (consecutive404s > 10) {
+                    try {
+                        const sync = await axios.get(SEQUENCE_CACHE_URL);
+                        if (sync.data.sequence > currentSequence) {
+                            currentSequence = sync.data.sequence;
+                        }
+                    } catch (syncErr) {
+                        console.error("❌ R2_SYNC_ERR: Failed to re-sync sequence.");
+                    }
+                    consecutive404s = 0;
+                }
+                await new Promise(r => setTimeout(r, 5000));
+            } else {
+                console.error(`❌ R2_NETWORK_ERR: ${err.message}`);
+                await new Promise(r => setTimeout(r, 10000));
+            }
+        }
+    }
+}
+
 (async () => {
     console.log("Initializing WiNGSPAN Intel Monitor...");
     await esi.loadSystemCache("./data/systems.json");
@@ -125,4 +179,5 @@ async function listeningStream() {
 
     console.log("Web Server Module Ready.");
     listeningStream();
+    r2BackgroundWorker();
 })();
