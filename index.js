@@ -94,61 +94,61 @@ async function listeningStream() {
     }
 }
 async function r2BackgroundWorker() {
-    console.log("🚀 [GATE 1] R2 Worker Initialization started.");
     try {
         const res = await cleanAxios.get(SEQUENCE_CACHE_URL, { timeout: 5000 });
-        
         if (res.data && res.data.sequence) {
             currentSequence = parseInt(res.data.sequence) - 5;
-            console.log(`✅ [GATE 2] Primed. Sequence: ${currentSequence} (Type: ${typeof currentSequence})`);
+            console.log(`🚀 R2_WORKER: Primed and ready at sequence ${currentSequence}`);
         } else {
-            console.error("❌ [GATE 2-FAIL] res.data.sequence is missing:", res.data);
-            return;
+            throw new Error("Invalid sequence data");
         }
     } catch (e) {
-        console.error(`❌ [GATE 1-ERR] Priming failed: ${e.message}`);
+        console.error(`❌ R2_WORKER: Priming failed (${e.message}). Retrying in 10s...`);
         setTimeout(r2BackgroundWorker, 10000);
         return;
     }
 
-    console.log("🏃 [GATE 3] Entering while(true) loop...");
-
     while (true) {
         try {
             const url = `${R2_BASE_URL}/${currentSequence}.json?cb=${Date.now()}`;
-            console.log(`📡 [GATE 4] Requesting: ${url}`);
-
             const response = await cleanAxios.get(url, { timeout: 3000 });
-            console.log(`📥 [GATE 5] Received Status: ${response.status} for Seq: ${currentSequence}`);
 
             if (response.status === 200) {
                 const r2Package = normalizer.fromR2(response.data);
-                
+
                 if (r2Package && r2Package.killID) {
-                    console.log(`🔍 [GATE 6] Package Valid. KillID: ${r2Package.killID}`);
                     if (!duplicateGuard.has(r2Package.killID)) {
                         duplicateGuard.add(r2Package.killID);
                         console.log(`🏆 [R2_WIN] Captured Kill ${r2Package.killID}`);
                         processor.processPackage(r2Package);
-                    } else {
-                        console.log(`🛡️ [R2_LOSS] Duplicate detected for ${r2Package.killID}`);
+                        
+                        // Keep duplicateGuard lean
+                        if (duplicateGuard.size > 2000) {
+                            const firstValue = duplicateGuard.values().next().value;
+                            duplicateGuard.delete(firstValue);
+                        }
                     }
-                } else {
-                    console.log("⚠️ [GATE 6-WARN] Normalizer returned null package.");
                 }
-
                 currentSequence++;
                 consecutive404s = 0;
             }
         } catch (err) {
             if (err.response?.status === 404) {
                 consecutive404s++;
-                if (consecutive404s % 5 === 0) {
-                    console.log(`😴 [GATE 4-WAIT] Still 404 at ${currentSequence} (Attempt ${consecutive404s})`);
+                
+                // Jump logic for when ESI returns and the sequence has skipped ahead
+                if (consecutive404s > 20) {
+                    try {
+                        const sync = await cleanAxios.get(SEQUENCE_CACHE_URL);
+                        if (sync.data.sequence > currentSequence) {
+                            currentSequence = sync.data.sequence;
+                            consecutive404s = 0;
+                        }
+                    } catch (sErr) { /* Silent fail on sync */ }
                 }
                 await new Promise(r => setTimeout(r, 1000));
             } else {
-                console.error(`❌ [GATE 4-ERR] Network/Logic error: ${err.message}`);
+                console.error(`❌ R2_NETWORK_ERR: ${err.message}`);
                 await new Promise(r => setTimeout(r, 5000));
             }
         }
