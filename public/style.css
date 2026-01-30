@@ -24,6 +24,25 @@ body {
     background-repeat: no-repeat;
 }
 
+.supporter-overlay {
+    position: fixed;
+    top: 100px;
+    left: 20px;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.6rem;
+    color: var(--neon-green);
+    opacity: 0.08; /* Extremely subtle */
+    pointer-events: none;
+    z-index: -1; /* Behind the feed, part of the wallpaper */
+    text-transform: uppercase;
+}
+
+.supporter-entry {
+    margin-bottom: 5px;
+    display: block;
+}
+
+
 /* CRT visual effects overlays */
 body::before {
     content: " ";
