@@ -115,12 +115,10 @@ while (true) {
                 if (r2Package && r2Package.killID) {
                     if (!duplicateGuard.has(r2Package.killID)) {
                         duplicateGuard.add(r2Package.killID);
+                        
                         console.log(`[R2_WIN] Beat Socket for Kill ${r2Package.killID}`);
-                        processor.processPackage(r2Package);
-                    } else {
-                        console.log(`[R2_LOSS] Socket beat R2 for Kill ${r2Package.killID}`);
-                    }
-
+                        
+                        // Maintenance: Keep the Set lean
                         if (duplicateGuard.size > 500) {
                             const firstValue = duplicateGuard.values().next().value;
                             duplicateGuard.delete(firstValue);
@@ -128,12 +126,14 @@ while (true) {
 
                         console.log(`[R2_SHADOW] Sequence ${currentSequence} detected.`);
                         processor.processPackage(r2Package);
-                    } // Closes duplicateGuard.has
-                } // Closes r2Package && killID
+                    } else {
+                        console.log(`[R2_LOSS] Socket beat R2 for Kill ${r2Package.killID}`);
+                    }
+                } // This closes: if (r2Package && r2Package.killID)
 
                 currentSequence++;
                 consecutive404s = 0;
-            } // Closes if status 200
+            } // This closes: if (response.status === 200)
         } catch (err) {
             if (err.response?.status === 404) {
                 consecutive404s++;
@@ -148,14 +148,13 @@ while (true) {
                     }
                     consecutive404s = 0;
                 }
-                await new Promise(r => setTimeout(r, 5000));
+                await new Promise(r => setTimeout(r, 1000)); // Poll faster at tip
             } else {
                 console.error(`❌ R2_NETWORK_ERR: ${err.message}`);
                 await new Promise(r => setTimeout(r, 10000));
             }
         }
     }
-}
 
 (async () => {
     console.log("Initializing WiNGSPAN Intel Monitor...");
