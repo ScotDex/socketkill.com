@@ -26,13 +26,9 @@ const mapper = new MapperService(process.env.WINGSPAN_API);
 const QUEUE_ID = process.env.ZKILL_QUEUE_ID || "Wingspan-Monitor";
 const REDISQ_URL = `https://zkillredisq.stream/listen.php?queueID=${QUEUE_ID}&ttw=1`;
 const ROTATION_SPEED = 10 * 60 * 1000;
-const USE_R2 = false;
 const R2_BASE_URL = "https://r2z2.zkillboard.com/ephemeral";
-const SEQUENCE_CACHE_URL = `${R2_BASE_URL}/sequence.json`;
+const currentSequence = `${R2_BASE_URL}/sequence.json`;
 
-let currentSequence = null;
-let consecutive404s = 0;
-const duplicateGuard = new Set();
 
 const startMonitor = require('./src/network/monitor'); // Path to your file
 startMonitor(750);
@@ -114,6 +110,7 @@ while (true) {
                 if (r2Package && r2Package.killID) {
                     if (!duplicateGuard.has(r2Package.killID)) {
                         duplicateGuard.add(r2Package.killID);
+                        console.log(`[R2_WIN] Beat Socket for Kill ${r2Package.killID}`);
 
                         if (duplicateGuard.size > 500) {
                             const firstValue = duplicateGuard.values().next().value;
