@@ -136,16 +136,23 @@ async function r2BackgroundWorker() {
             if (err.response?.status === 404) {
                 consecutive404s++;
                 
-                // Jump logic for when ESI returns and the sequence has skipped ahead
-                if (consecutive404s > 20) {
-                    console.log(`📡 R2_SYNC: 404 at ${currentSequence}. Checking for jump...`);
+                if (consecutive404s % 20 === 0) {
+                    console.log(`📡 R2_SYNC: Probing for recovery at ${currentSequence}...`);
                     try {
                         const sync = await cleanAxios.get(SEQUENCE_CACHE_URL);
+                        
+                        // IF sequence.json is ahead, jump to it.
                         if (sync.data.sequence > currentSequence) {
+                            console.log(`🚀 R2_JUMP: Logic jump to ${sync.data.sequence}`);
                             currentSequence = sync.data.sequence;
-                            consecutive404s = 0;
+                        } else {
+                            // IF sequence.json is stale, try a blind leap of +10
+                            // This probes to see if zKill just forgot to update the JSON index
+                            console.log(`🕵️ R2_PROBE: sequence.json is stale. Attempting blind probe +10...`);
+                            currentSequence += 10;
                         }
-                    } catch (sErr) { /* Silent fail on sync */ }
+                        consecutive404s = 0;
+                    } catch (sErr) { /* Silent fail */ }
                 }
                 await new Promise(r => setTimeout(r, 1000));
             } else {
