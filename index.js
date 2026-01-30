@@ -27,7 +27,11 @@ const QUEUE_ID = process.env.ZKILL_QUEUE_ID || "Wingspan-Monitor";
 const REDISQ_URL = `https://zkillredisq.stream/listen.php?queueID=${QUEUE_ID}&ttw=1`;
 const ROTATION_SPEED = 10 * 60 * 1000;
 const R2_BASE_URL = "https://r2z2.zkillboard.com/ephemeral";
-const currentSequence = `${R2_BASE_URL}/sequence.json`;
+const SEQUENCE_CACHE_URL = `${R2_BASE_URL}/sequence.json`;
+
+let currentSequence = 0; // Initialize as 0, will be overwritten by priming
+let consecutive404s = 0;
+const duplicateGuard = new Set();
 
 
 const startMonitor = require('./src/network/monitor'); // Path to your file
