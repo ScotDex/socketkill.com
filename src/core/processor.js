@@ -16,13 +16,19 @@ module.exports = (esi, mapper, io, statsManager) => {
      */
     async function processPackage(packageData) {
         const startProcessing = process.hrtime.bigint();
-        const { zkb, killID } = packageData;
+        const { zkb, killID, isR2, esiData } = packageData;
 
         try {
             // 1. Resolve Killmail and Core Identity in Parallel
             // We use the raw zkb.href to get full details not present in the RedisQ package
-            const esiResponse = await axios.get(zkb.href);
-            const killmail = esiResponse.data;
+            let killmail;
+
+            if (isR2 && esiData){
+                killmail = esiData;
+            } else {
+                const esiResponse = await axios.get(zkb.href);
+                killmail = esiResponse.data;
+            }
             const rawValue = Number(zkb.totalValue) || 0;
 
             const [systemDetails, shipName, charName, corpName] = await Promise.all([
