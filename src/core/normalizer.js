@@ -1,11 +1,14 @@
 module.exports = {
 
     fromR2: (r2Data) => {
-        return {
-
-            if (!r2Data || !r2Data.zkill || !r2Data.esi) {
+        
+        if (!r2Data || !r2Data.zkill || !r2Data.esi) {
             return null;
         }
+        
+        return {
+
+            
             killID: r2Data.zkill.killID,
             zkb: {
                 totalValue: r2Data.zkill.zkb.totalValue,
