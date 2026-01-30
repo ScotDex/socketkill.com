@@ -31,10 +31,6 @@ body {
     transition: all 0.3s ease;
 }
 
-/* Optional: subtle pulse when the name changes */
-.name-change-flash {
-    animation: counter-pop 0.3s ease-out;
-}
 
 /* CRT visual effects overlays */
 body::before {
