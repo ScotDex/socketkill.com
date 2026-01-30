@@ -1,13 +1,7 @@
-/**
- * src/core/processor.js
- * Surgical migration of killmail processing and intel dispatching logic.
- */
 const axios = require("../network/agent"); // Use your existing configured agent
 const helpers = require("./helpers");
 const EmbedFactory = require("../services/embedFactory");
 const TwitterService = require("../network/twitterService");
-
-
 module.exports = (esi, mapper, io, statsManager) => {
     
     // Constants
@@ -92,10 +86,6 @@ module.exports = (esi, mapper, io, statsManager) => {
             console.error(`❌ [PROCESSOR-ERR] Kill ${killID} failed: ${err.message}`);
         }
     }
-
-    /**
-     * Handles Discord Webhooks and Twitter notifications
-     */
     async function handlePrivateIntel(kill, zkb, identity) {
         const formattedValue = helpers.formatIsk(identity.rawValue);
         

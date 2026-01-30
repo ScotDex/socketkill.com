@@ -13,9 +13,9 @@ class utils {
     static formatIsk (rawValue) {
         const value = rawValue || 0;
         if (value >= 1000000000) {
-            return `${(value / 1000000000).toFixed(2)}B`;
+            return `${(value / 1000000000).toFixed(2)}Billion `;
         }
-        return `${(value / 1000000).toFixed(2)}M`;
+        return `${(value / 1000000).toFixed(2)}Million `;
     }
 
 
@@ -120,13 +120,5 @@ static async savePersistentStats(count) {
     }
 
 }
-
-
-
-
-/**
- * Socket.Kill Performance Benchmarker
- * Measures the gap between RedisQ Arrival and UI Dispatch
- */
 
 module.exports = utils;
