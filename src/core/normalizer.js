@@ -1,25 +1,30 @@
 module.exports = {
-    fromR2: (r2Data) => {
-        // Strict Check: Ensure both wrapper keys exist
-        if (!r2Data || !r2Data.zkill || !r2Data.esi) {
+    fromR2: (data) => {
+        if (!data) return null;
+
+        // 1. Identification: Look in the root, 'zkill', or 'zkb' blocks
+        const killID = data.killmail_id || data.zkill?.killID || data.zkb?.killID;
+        const hash = data.hash || data.zkill?.zkb?.hash || data.zkb?.hash;
+        const totalValue = data.zkill?.zkb?.totalValue || data.zkb?.totalValue || data.totalValue || 0;
+
+        // 2. ESI Data Extraction: Navigate the 'esi' nesting
+        // Note: Sometimes it's data.esi, sometimes it's data.esi.esi
+        const esiPayload = data.esi?.esi ? data.esi.esi : (data.esi || data);
+
+        // Validation: If we don't have a Kill ID, we can't process it.
+        if (!killID) {
             return null;
         }
 
-        const zkb = r2Data.zkill.zkb || {};
-        
         return {
-            // Map from the zkill block
-            killID: r2Data.zkill.killID,
-            
+            killID: killID,
             zkb: {
-                totalValue: zkb.totalValue || 0,
-                // Construct the ESI link using both blocks
-                href: `https://esi.evetech.net/latest/killmails/${r2Data.esi.killmail_id}/${zkb.hash}/`
+                totalValue: totalValue,
+                // Construct link using root or zkb data
+                href: hash ? `https://esi.evetech.net/latest/killmails/${killID}/${hash}/` : null
             },
-
             isR2: true,
-            // Pass the ESI block as the primary data source for the processor
-            esiData: r2Data.esi 
+            esiData: esiPayload 
         };
     }
 };
