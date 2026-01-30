@@ -15,18 +15,13 @@ const MAX_FEED_SIZE = 50;
 let isTyping = false; 
 let regionCache = []; // Internal search index to prevent duplication bugs
 
-const SUPPORTERS = ["Shaftmaster Mastershafts", "Romulus", "Pheonix Venom"];
+const SUPPORTERS = ["Shaftmaster Mastershafts", "Romulus", "Pheonix Venom", "Zoey Deninardes", "Himo Naerth"];
 let supporterIndex = 0;
 
 
 const cycleSupporters = () => {
     const display = document.getElementById('active-supporter');
     if (!display || SUPPORTERS.length === 0) return;
-
-    // Visual pop/flicker
-    display.classList.remove('counter-update');
-    void display.offsetWidth; 
-    display.classList.add('counter-update');
 
     display.innerText = SUPPORTERS[supporterIndex];
     supporterIndex = (supporterIndex + 1) % SUPPORTERS.length;
