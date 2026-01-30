@@ -95,11 +95,18 @@ async function listeningStream() {
 async function r2BackgroundWorker() {
     console.log("🚀 R2 Shadow Worker: Starting Polling Loop...");
     try {
-        const response = await axios.get(SEQUENCE_CACHE_URL);
-        currentSequence = parseInt(res.data.sequence) - 5;
-        console.log('✅ R2_WORKER: Primed at sequence:', currentSequence);
+        // FIX: Ensure the variable name matches the one used below
+        const res = await axios.get(SEQUENCE_CACHE_URL, { timeout: 5000 });
+        
+        if (res.data && res.data.sequence) {
+            currentSequence = parseInt(res.data.sequence) - 5;
+            console.log('✅ R2_WORKER: Primed at sequence:', currentSequence);
+        } else {
+            throw new Error("Malformed sequence data");
+        }
     } catch (e) {
-        console.error("❌ R2_WORKER: Failed to prime sequence.");
+        // Detailed error logging helps find these "ReferenceErrors" faster
+        console.error(`❌ R2_WORKER: Failed to prime sequence. (${e.message})`);
         setTimeout(r2BackgroundWorker, 10000);
         return;
     }
