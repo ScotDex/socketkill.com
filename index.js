@@ -103,7 +103,7 @@ async function r2BackgroundWorker() {
         return;
     }
 
-    while (true) {
+while (true) {
         try {
             const url = `${R2_BASE_URL}/${currentSequence}.json?cb=${Date.now()}`;
             const response = await axios.get(url, { timeout: 3000 });
@@ -115,18 +115,19 @@ async function r2BackgroundWorker() {
                     if (!duplicateGuard.has(r2Package.killID)) {
                         duplicateGuard.add(r2Package.killID);
 
-                    if (duplicateGuard.size > 500) {
-                        const firstValue = duplicateGuard.values().next().value;
-                        duplicateGuard.delete(firstValue);
-                    }
+                        if (duplicateGuard.size > 500) {
+                            const firstValue = duplicateGuard.values().next().value;
+                            duplicateGuard.delete(firstValue);
+                        }
 
-                    console.log(`[R2_SHADOW] Sequence ${currentSequence} detected.`);
-                    processor.processPackage(r2Package);
-                }
+                        console.log(`[R2_SHADOW] Sequence ${currentSequence} detected.`);
+                        processor.processPackage(r2Package);
+                    } // Closes duplicateGuard.has
+                } // Closes r2Package && killID
 
                 currentSequence++;
                 consecutive404s = 0;
-            }
+            } // Closes if status 200
         } catch (err) {
             if (err.response?.status === 404) {
                 consecutive404s++;
@@ -148,7 +149,6 @@ async function r2BackgroundWorker() {
             }
         }
     }
-}
 
 (async () => {
     console.log("Initializing WiNGSPAN Intel Monitor...");
