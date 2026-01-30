@@ -155,7 +155,7 @@ while (true) {
             }
         }
     }
-
+}
 (async () => {
     console.log("Initializing WiNGSPAN Intel Monitor...");
     await esi.loadSystemCache("./data/systems.json");
