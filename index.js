@@ -110,7 +110,7 @@ async function r2BackgroundWorker() {
         setTimeout(r2BackgroundWorker, 10000);
         return;
     }
-
+console.log("🏃 R2_WORKER: Transitioning to live polling...");
 while (true) {
         try {
             const url = `${R2_BASE_URL}/${currentSequence}.json?cb=${Date.now()}`;
