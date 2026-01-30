@@ -96,7 +96,7 @@ async function r2BackgroundWorker() {
     console.log("🚀 R2 Shadow Worker: Starting Polling Loop...");
     try {
         const res = await axios.get(SEQUENCE_CACHE_URL);
-        currentSequence = res.data.sequence;
+        currentSequence = parseInt(res.data.sequence) - 5;
         console.log('✅ R2_WORKER: Primed at sequence:', currentSequence);
     } catch (e) {
         console.error("❌ R2_WORKER: Failed to prime sequence.");
