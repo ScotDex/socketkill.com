@@ -138,6 +138,7 @@ async function r2BackgroundWorker() {
                 
                 // Jump logic for when ESI returns and the sequence has skipped ahead
                 if (consecutive404s > 20) {
+                    console.log(`📡 R2_SYNC: 404 at ${currentSequence}. Checking for jump...`);
                     try {
                         const sync = await cleanAxios.get(SEQUENCE_CACHE_URL);
                         if (sync.data.sequence > currentSequence) {
