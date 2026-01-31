@@ -5,8 +5,14 @@ class HeartbeatService {
     static async sendReport(webhookUrl, stats, mapper, esi){
 
     const uptimeStr = helpers.formatDuration(new Date() - stats.startTime);
+
+    const totalCacheSize = Object.values(esi.cache)
+    .reduce((acc, map) => acc + (map instanceof Map ? map.size : 0), 0);
+
+    const memUsage = process.memoryUsage().rss / 1024 / 1024;
+
     const payload = {
-            username: "Chain Monitor Bot",
+            username: "Socket.Kill Heartbeat Monitor @Dex",
             avatar_url: "https://images.evetech.net/types/22430/icon",
             embeds: [{
                 title: "Daily System Heartbeat",
@@ -15,7 +21,8 @@ class HeartbeatService {
                     { name: "Uptime", value: `**${uptimeStr}**`, inline: true },
                     { name: "Daily Scans", value: `**${stats.scanCount.toLocaleString()}**`, inline: true },
                     { name: "Systems Monitored", value: `**${mapper.getSystemsCount()}**`, inline: true },
-                    { name: "Character Cache", value: `**${Object.keys(esi.cache).length}**`, inline: true }
+                    { name: "Total Cache Entries", value: `**${totalCacheSize.toLocaleString()}**`, inline: true },
+                    { name: "Process RAM", value: `**${memUsage.toFixed(2)} MB**`, inline: true }
                 ],
                 footer: { text: `WiNGSPAN Intel Engine • ${new Date().toUTCString()}` }
             }]
