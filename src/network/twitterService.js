@@ -13,7 +13,13 @@ const twitterClient = new TwitterApi({
 class TwitterService {
     static async postWhale (names, formattedValue, killId){
         try {
-            const status = `💥BOOM! A ${names.shipName} worth ${formattedValue}ISK was destroyed, see more https://zkillboard.com/kill/${killId}/ #TweetFleet #EveOnline #Socket.Kill`;
+            const status = `💥BOOM! A ${names.shipName} was destroyed!
+            
+            Value: ${formattedValue} ISK 
+            
+            https://zkillboard.com/kill/${killId}/ 
+            
+            #TweetFleet #EveOnline #SocketKill`;
             await twitterClient.v2.tweet(status);
             console.log(`Tweet posted for Kill #${killId}`);
         } catch (err) {

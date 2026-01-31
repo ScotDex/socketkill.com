@@ -37,6 +37,9 @@ module.exports = (esi, mapper, io, statsManager) => {
                 esi.getCharacterName(killmail.victim?.character_id),
                 esi.getCorporationName(killmail.victim?.corporation_id)
             ]);
+
+            const finalVictimName = (charName == "Unknown" || !charName ) ? corpName : charName;
+
             statsManager.increment();
 
             const systemName = systemDetails?.name || "Unknown System";
@@ -63,7 +66,7 @@ module.exports = (esi, mapper, io, statsManager) => {
                 href: zkb.href,
                 locationLabel: `System: ${systemName} | Region: ${regionName} | Corporation: ${corpName}`,
                 zkillUrl: `https://zkillboard.com/kill/${killID}/`,
-                victimName: charName,
+                victimName: finalVictimName,
                 totalScanned: statsManager.getTotal(),
                 shipImageUrl: `https://api.voidspark.org:2053/render/ship/${killmail.victim.ship_type_id}`,
                 corpImageUrl: `https://api.voidspark.org:2053/render/corp/${killmail.victim.corporation_id}`
