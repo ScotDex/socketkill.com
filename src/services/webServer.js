@@ -14,6 +14,8 @@ function startWebServer(esi) {
     }));
 
     const io = new Server(server, {
+        pingTimeout: 2000,
+        pingInterval: 5000,
         cors: { origin: "*",
         methods: ["GET", "POST"],
         },

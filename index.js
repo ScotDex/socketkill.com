@@ -15,7 +15,6 @@ const normalizer = require("./src/core/normalizer");
 const utils = require("./src/core/helpers");
 const statsManager = require("./src/services/statsManager");
 const ProcessorFactory = require("./src/core/processor");
-const { arrayBuffer } = require("stream/consumers");
 const cleanAxios = require("axios");
 
 // Initialize Core Services
@@ -27,12 +26,26 @@ const mapper = new MapperService(process.env.WINGSPAN_API);
 const QUEUE_ID = process.env.ZKILL_QUEUE_ID || "Wingspan-Monitor";
 const REDISQ_URL = `https://zkillredisq.stream/listen.php?queueID=${QUEUE_ID}&ttw=1`;
 const ROTATION_SPEED = 10 * 60 * 1000;
-const R2_BASE_URL = "https://r2z2.zkillboard.com/ephemeral";
+const R2_BASE_URL = "https://r2z2.zkillboard.com/ephemeral"; // Non Production
 const SEQUENCE_CACHE_URL = `${R2_BASE_URL}/sequence.json`;
 
-let currentSequence = 0; // Initialize as 0, will be overwritten by priming
+let currentSequence = 0; 
 let consecutive404s = 0;
-const duplicateGuard = new Set();
+const duplicateGuard = {
+    cache: new Map(),
+    ttl: 10 * 60 * 1000, 
+
+    has(id) {
+        return this.cache.has(id);
+    },
+
+    add(id) {
+        this.cache.set(id, Date.now());
+        
+        setTimeout(() => this.cache.delete(id), this.ttl);
+    },
+    size() { return this.cache.size; }
+};
 
 
 const startMonitor = require('./src/network/monitor'); // Path to your file

@@ -1,9 +1,7 @@
 require("dotenv").config();
 const axios = require("../network/agent");
-const { error, count } = require("console");
 const fs = require ("fs");
 const path = require ("path");
-const { json } = require("stream/consumers");
 
 // Use process.cwd() to stay inside the /usr/src/app folder
 const DATA_PATH = path.join(process.cwd(), "data", "stats.json");
@@ -13,9 +11,9 @@ class utils {
     static formatIsk (rawValue) {
         const value = rawValue || 0;
         if (value >= 1000000000) {
-            return `${(value / 1000000000).toFixed(2)}Billion `;
+            return `${(value / 1000000000).toFixed(2)}B`;
         }
-        return `${(value / 1000000).toFixed(2)}Million `;
+        return `${(value / 1000000).toFixed(2)}M`;
     }
 
 

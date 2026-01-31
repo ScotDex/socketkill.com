@@ -4,6 +4,7 @@ const axios = require ('axios');
 const persistentAgent = new https.Agent({
     keepAlive: true,
     maxSockets: 32,
+    keepAliveMsecs: 1000,
     maxFreeSockets: 8,
     timeout: 60000,
     scheduling: 'lifo'
