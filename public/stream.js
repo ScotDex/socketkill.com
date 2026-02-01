@@ -217,6 +217,40 @@ if (counterElement && kill.totalScanned) {
     if (feed.children.length > MAX_FEED_SIZE) feed.lastChild.remove();
 });
 
+/**
+ * Fetches and updates the NPC ticker in the footer
+ */
+const updateNPCTicker = async () => {
+    const npcDisplay = document.getElementById('npc-count');
+    if (!npcDisplay) return;
+
+    try {
+        // Direct hit to your background service on port 2053
+        const response = await fetch('https://api.voidspark.org:2053/stats/npc-kills');
+        const data = await response.json();
+
+        if (data && data.lifetimeTotal) {
+            // Use lifetimeTotal for the "Big Number" branding
+            npcDisplay.innerText = data.lifetimeTotal.toLocaleString();
+            
+            // Optional: Add a subtle flicker to show it updated
+            npcDisplay.style.opacity = "0.5";
+            setTimeout(() => npcDisplay.style.opacity = "1", 200);
+        }
+    } catch (err) {
+        npcDisplay.innerText = "OFFLINE";
+        npcDisplay.classList.replace('text-warning', 'text-danger');
+    }
+};
+
+// Initial sync on page load
+updateNPCTicker();
+
+// Refresh every 5 minutes (300,000ms)
+setInterval(updateNPCTicker, 300000);
+
+
+
 /* --- 4. Unified Bootloader --- */
 const initApp = () => {
     typeTitle('socket-title', 'Socket.Kill', 150);
