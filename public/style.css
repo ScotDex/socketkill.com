@@ -10,6 +10,10 @@
     --dark-bg: #0d1117;
     --glass-bg: rgba(10, 12, 16, 0.85);
     --mono-font: 'Share Tech Mono', monospace;
+
+    --phosphor-glow: 0 0 2px rgba(63, 185, 80, 0.6), 
+                     0 0 4px rgba(63, 185, 80, 0.3), 
+                     0 0 1px rgba(255, 255, 255, 0.2);
 }
 
 /* === BASE LAYOUT === */
@@ -224,7 +228,7 @@ body::after {
     font-weight: 600;
     display: block;
     animation: textFlicker 1s infinite;
-    text-shadow: 0 0 3px rgba(63, 185, 80, 0.2);
+    text-shadow: var(--phosphor-glow)
 }
 
 .typewriter {
