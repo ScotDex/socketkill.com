@@ -16,7 +16,7 @@ const talker = axios.create({
     headers:  {
         'Accept-Encoding': 'gzip, deflate, br',
         'Connection': 'keep-alive',
-        'User-Agent': 'Socket.Kill - (@ScottishDex)',
+        'User-Agent': 'Socket.Kill - (@ScottishDex/https://killstream.voidspark.org/)',
     }
 });
 
