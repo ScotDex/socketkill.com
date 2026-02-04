@@ -2,29 +2,32 @@ module.exports = {
     fromR2: (data) => {
         if (!data) return null;
 
-        // 1. Identification: Look in the root, 'zkill', or 'zkb' blocks
-        const killID = data.killmail_id || data.zkill?.killID || data.zkb?.killID;
-        const hash = data.hash || data.zkill?.zkb?.hash || data.zkb?.hash;
-        const totalValue = data.zkill?.zkb?.totalValue || data.zkb?.totalValue || data.totalValue || 0;
+        // 1. Identification: R2 uses 'killmail_id' at the root
+        const killID = data.killmail_id || data.zkb?.killID || data.zkill?.killID;
+        const hash = data.hash || data.zkb?.hash;
+        
+        // 2. Value Extraction: Root 'zkb' block is the source of truth now
+        const totalValue = data.zkb?.totalValue || data.zkill?.zkb?.totalValue || 0;
 
-        // 2. ESI Data Extraction: Navigate the 'esi' nesting
-        // Note: Sometimes it's data.esi, sometimes it's data.esi.esi
-        const esiPayload = data.esi?.esi ? data.esi.esi : (data.esi || data);
+        // 3. ESI Data Extraction: 
+        // In your R2 dump, 'victim' and 'attackers' are at the ROOT.
+        // We check if 'victim' exists at root; if not, we check 'esi' wrapper.
+        const esiPayload = data.victim ? data : (data.esi || data);
 
-        // Validation: If we don't have a Kill ID, we can't process it.
-        if (!killID) {
-            return null;
-        }
+        if (!killID) return null;
 
         return {
             killID: killID,
             zkb: {
                 totalValue: totalValue,
-                // Construct link using root or zkb data
-                href: hash ? `https://esi.evetech.net/latest/killmails/${killID}/${hash}/` : null
+                href: hash ? `https://esi.evetech.net/latest/killmails/${killID}/${hash}/` : null,
+                // Add useful metadata from your R2 dump
+                isNPC: data.zkb?.npc || false,
+                labels: data.zkb?.labels || []
             },
             isR2: true,
-            esiData: esiPayload 
+            esiData: esiPayload,
+            sequence: data.sequence_id // Good for tracking lag
         };
     }
 };

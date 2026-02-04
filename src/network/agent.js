@@ -15,7 +15,8 @@ const talker = axios.create({
     timeout: 15000,
     headers:  {
         'Accept-Encoding': 'gzip, deflate, br',
-        'Connection': 'keep-alive'
+        'Connection': 'keep-alive',
+        'User-Agent': 'Socket.Kill - (@ScottishDex)',
     }
 });
 
