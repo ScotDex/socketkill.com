@@ -656,3 +656,53 @@ body::after {
     transition: bottom 0.3s ease;
 }
 
+/* === MOBILE OPTIMIZATION: STREAM FOCUS === */
+@media (max-width: 768px) {
+    /* 1. Hide the "Atmosphere" and secondary intel */
+    .legal-footer, 
+    #hud-status, 
+    .text-center.text-secondary.small.px-3, /* The "Kills Processed" counter */
+    .radar-circle,
+    .ccp-notice {
+        display: none !important;
+    }
+
+    /* 2. Tighten the Header */
+    .container-fluid {
+        padding-top: 5px !important;
+    }
+    
+    .border-bottom.border-secondary {
+        margin-bottom: 10px !important;
+        padding-bottom: 5px !important;
+    }
+
+    /* 3. Maximize the Feed Space */
+    #feed {
+        margin-top: 10px;
+        border-radius: 4px; /* Sharper corners for small screens */
+        border-left: none;
+        border-right: none; /* Edge-to-edge feel */
+    }
+
+    /* 4. Optimize the Rows (Save vertical space) */
+    .kill-row {
+        padding: 5px 10px;
+        min-height: 50px;
+    }
+
+    .ship-icon-container, .corp-square-container {
+        width: 48px;
+        height: 48px;
+        margin-right: 10px;
+    }
+
+    .ship-name {
+        font-size: 0.9rem;
+    }
+
+    /* 5. Force the search bar to be more prominent */
+    .terminal-header {
+        padding: 4px 10px;
+    }
+}
