@@ -51,9 +51,12 @@
         KILLMAILS PROCESSED <span id="kill-counter" class="text-white fw-bold">0</span>
     </div>
 
-    <div class="flex-1 d-flex justify-content-end" style="flex: 1 1 0; min-width: 0;">
-        <div id="status" class="badge bg-danger">CONNECTING...</div>
+<div class="flex-1 d-flex justify-content-end align-items-center" style="flex: 1 1 0; min-width: 0;">
+    <div class="osc-container d-none d-md-block">
+        <div class="osc-wave"></div>
     </div>
+    <div id="status" class="badge bg-danger ms-2">CONNECTING...</div>
+</div>
 </div>
 <main>
     <div class="terminal-header d-flex align-items-center mb-0" 
@@ -64,9 +67,7 @@
        <span class="terminal-status-text" style="font-size: 0.85rem; letter-spacing: 1px; color: #3fb950;">READY</span>
    </div>
 
-   <div class="osc-container">
-    <div class="osc-wave"></div>
-</div>
+
    
    <input type="text" 
           id="regionSearch"
