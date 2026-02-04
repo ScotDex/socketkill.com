@@ -159,6 +159,13 @@ socket.on('nebula-update', (data) => {
  * Main Killmail Processor: Handles dynamic injection and memory management
  */
 socket.on('raw-kill', (kill) => {
+
+    const oscWave = document.querySelector('.osc-wave');
+    if (oscWave) {
+        oscWave.classList.add('osc-active');
+        // Reset the spike after 800ms to mimic a signal pulse
+        setTimeout(() => oscWave.classList.remove('osc-active'), 800);
+    }
     const emptyState = document.getElementById('empty-state');
     if (emptyState) emptyState.remove();
 
