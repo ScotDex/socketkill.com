@@ -115,6 +115,8 @@ async function refreshNebulaBackground() {
 //         }
 //     }
 // }
+
+console.log(`📡 Network Agent Identity: ${talker.defaults.headers['User-Agent']}`);
 async function r2BackgroundWorker() {
   try {
     const res = await talker.get(SEQUENCE_CACHE_URL, { timeout: 5000 });
