@@ -4,8 +4,6 @@ const { Server } = require('socket.io');
 const cors = require('cors');
 const path = require('path');
 const helmet = require('helmet');
-const { fstat } = require('fs');
-const { Certificate } = require('crypto');
 const fs = require('fs');
 
 function startWebServer(esi) {

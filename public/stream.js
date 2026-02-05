@@ -233,7 +233,7 @@ const updateNPCTicker = async () => {
 
     try {
         // Direct hit to your background service on port 2053
-        const response = await fetch('https://api.voidspark.org:2053/stats/npc-kills');
+        const response = await fetch('https://api.socketkill.com:2053/stats/npc-kills');
         const data = await response.json();
 
         if (data && data.lifetimeTotal) {
