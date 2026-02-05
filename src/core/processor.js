@@ -68,8 +68,8 @@ module.exports = (esi, mapper, io, statsManager) => {
                 zkillUrl: `https://zkillboard.com/kill/${killID}/`,
                 victimName: finalVictimName,
                 totalScanned: statsManager.getTotal(),
-                shipImageUrl: `https://api.voidspark.org:2053/render/ship/${killmail.victim.ship_type_id}`,
-                corpImageUrl: `https://api.voidspark.org:2053/render/corp/${killmail.victim.corporation_id}`
+                shipImageUrl: `https://api.socketkill.com:2053/render/ship/${killmail.victim.ship_type_id}`,
+                corpImageUrl: `https://api.socketkill.com:2053/render/corp/${killmail.victim.corporation_id}`
             });
 
             // 4. Performance Benchmarking
