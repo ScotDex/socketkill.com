@@ -15,7 +15,7 @@ const normalizer = require("./src/core/normalizer");
 const utils = require("./src/core/helpers");
 const statsManager = require("./src/services/statsManager");
 const ProcessorFactory = require("./src/core/processor");
-const cleanAxios = require("axios");
+const talker = require("axios");
 
 // Initialize Core Services
 const esi = new ESIClient("Contact: @ScottishDex");
@@ -118,7 +118,7 @@ async function refreshNebulaBackground() {
 // }
 async function r2BackgroundWorker() {
   try {
-    const res = await cleanAxios.get(SEQUENCE_CACHE_URL, { timeout: 5000 });
+    const res = await talker.get(SEQUENCE_CACHE_URL, { timeout: 5000 });
     if (res.data && res.data.sequence) {
       currentSequence = parseInt(res.data.sequence) - 5;
       console.log(
@@ -144,7 +144,7 @@ async function r2BackgroundWorker() {
         console.log(`[R2_TRACE] Polling Seq: ${currentSequence} | URL: ${url}`);
       }
 
-      const response = await cleanAxios.get(url, { timeout: 2000 });
+      const response = await talker.get(url, { timeout: 2000 });
 
       if (response.status === 200) {
         // TRACE 2: Found a file!
