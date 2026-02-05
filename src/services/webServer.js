@@ -1,13 +1,22 @@
 const express = require('express');
-const http = require('http');
+const http = require('https');
 const { Server } = require('socket.io');
 const cors = require('cors');
 const path = require('path');
 const helmet = require('helmet');
+const { fstat } = require('fs');
+const { Certificate } = require('crypto');
+const fs = require('fs');
 
 function startWebServer(esi) {
     const app = express();
-    const server = http.createServer(app);
+
+    const options = {
+        key: fs.readFileSync(path.join(__dirname, 'ssl', 'socketkillcom.key')),
+        cert: fs.readFileSync(path.join(__dirname, 'ssl', 'socketkillcom.pem'))
+    };
+
+    const server = https.createServer(options, app);
 
     app.use(helmet({
         contentSecurityPolicy: false,
