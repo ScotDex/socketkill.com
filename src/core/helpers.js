@@ -23,7 +23,7 @@ class utils {
 
     static async getPlayerCount() {
         try {
-            const url = "https://api.voidspark.org:2053/eve/status"
+            const url = "https://api.socketkill.com:2053/eve/status"
             const response = await axios.get(url);
             
             return {
