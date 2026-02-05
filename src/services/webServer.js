@@ -1,5 +1,5 @@
 const express = require('express');
-const http = require('https');
+const https = require('https');
 const { Server } = require('socket.io');
 const cors = require('cors');
 const path = require('path');
@@ -12,8 +12,8 @@ function startWebServer(esi) {
     const app = express();
 
     const options = {
-        key: fs.readFileSync(path.join(__dirname, 'ssl', 'socketkillcom.key')),
-        cert: fs.readFileSync(path.join(__dirname, 'ssl', 'socketkillcom.pem'))
+        key: fs.readFileSync(path.join(__dirname, '..', '..', 'ssl', 'socketkillcom.key')),
+        cert: fs.readFileSync(path.join(__dirname, '..', '..', 'ssl', 'socketkillcom.pem'))
     };
 
     const server = https.createServer(options, app);
