@@ -5,7 +5,7 @@
  */
 
 require("dotenv").config();
-const axios = require("./src/network/agent");
+const talker = require("./src/network/agent");
 const path = require("path");
 const ESIClient = require("./src/network/esi");
 const MapperService = require("./src/network/mapper");
@@ -15,7 +15,6 @@ const normalizer = require("./src/core/normalizer");
 const utils = require("./src/core/helpers");
 const statsManager = require("./src/services/statsManager");
 const ProcessorFactory = require("./src/core/processor");
-const talker = require("axios");
 
 // Initialize Core Services
 const esi = new ESIClient("Contact: @ScottishDex");
