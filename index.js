@@ -9,20 +9,18 @@ const normalizer = require("./src/core/normalizer");
 const utils = require("./src/core/helpers");
 const statsManager = require("./src/services/statsManager");
 const ProcessorFactory = require("./src/core/processor");
-
-// Initialize Core Services
 const esi = new ESIClient("Contact: @ScottishDex");
-const { app, io } = startWebServer(esi);
+const { io } = startWebServer(esi);
 const mapper = new MapperService(process.env.WINGSPAN_API);
 
 const ROTATION_SPEED = 10 * 60 * 1000;
-const R2_BASE_URL = "https://r2z2.zkillboard.com/ephemeral"; // Non Production
+const R2_BASE_URL = process.env.R2_BASE_URL
 const SEQUENCE_CACHE_URL = `${R2_BASE_URL}/sequence.json`;
 
 let currentSequence = 0;
 let consecutive404s = 0;
 
-const startMonitor = require("./src/network/monitor"); // Path to your file
+const startMonitor = require("./src/network/monitor"); 
 startMonitor(750);
 
 let currentSpaceBg = null;
@@ -58,7 +56,6 @@ async function refreshNebulaBackground() {
   }
 }
 
-console.log(`📡 Network Agent Identity: ${talker.defaults.headers['User-Agent']}`);
 async function r2BackgroundWorker() {
   try {
     const res = await talker.get(SEQUENCE_CACHE_URL, { timeout: 5000 });
@@ -78,61 +75,31 @@ async function r2BackgroundWorker() {
     return;
   }
 
-  while (true) {
-    try {
-      const url = `${R2_BASE_URL}/${currentSequence}.json?cb=${Date.now()}`;
-
-      // TRACE 1: Confirm the loop is actually ticking
-      if (consecutive404s % 10 === 0) {
-        console.log(`[R2_TRACE] Polling Seq: ${currentSequence} | URL: ${url}`);
-      }
-
-      const response = await talker.get(url, { timeout: 2000 });
-
-      if (response.status === 200) {
-        // TRACE 2: Found a file!
-        console.log(
-          `[R2_TRACE] Found file for Seq: ${currentSequence}. Parsing...`,
-        );
-
+while (true) {
+        let response;
+        const url = `${R2_BASE_URL}/${currentSequence}.json?cb=${Date.now()}`;
+        try {
+            response = await talker.get(url, { timeout: 2000 });
+        } catch (err) {
+            const is404 = err.response?.status === 404;
+            consecutive404s = is404 ? consecutive404s + 1 : 0;
+            const backoff = is404 ? 12000 : 5000; 
+            if (is404 && consecutive404s >= 30) return r2BackgroundWorker(); 
+            await new Promise(r => setTimeout(r, backoff));
+            continue; 
+        }
         const r2Package = normalizer.fromR2(response.data);
-
-        if (r2Package && r2Package.killID) {
-          // REMOVED duplicateGuard check - sequential IDs don't duplicate
-          console.log(`🏆 [R2_INGEST] Captured Kill ${r2Package.killID}`);
-          processor.processPackage(r2Package);
-        } else {
-          console.error(
-            `❌ [R2_TRACE] Normalizer failed for Seq: ${currentSequence}.`,
-          );
+        if (r2Package?.killID) {
+            console.log(`[R2_INGEST] Captured Kill ${r2Package.killID}`);
+            processor.processPackage(r2Package);
+            currentSequence++;
+            consecutive404s = 0;
         }
-
-        currentSequence++;
-        consecutive404s = 0;
-      }
-} catch (err) {
-    if (err.response?.status === 404) {
-        consecutive404s++;
-        const backoffTime = 10000; 
-        if (consecutive404s % 5 === 0) {
-            console.log(`😴 [R2_STALL] Sequence ${currentSequence} still 404. Backing off 10s. (Total 404s: ${consecutive404s})`);
-        }
-        if (consecutive404s >= 30) {
-            console.warn(`⚠️ [R2_SYNC] High 404 count. Re-priming sequence from master...`);
-            return r2BackgroundWorker(); 
-        }
-
-        await new Promise((r) => setTimeout(r, backoffTime));
-    } else {
-        const errorDelay = err.response?.status === 429 ? 30000 : 5000;
-        console.error(`📡 [R2_TRACE] Network Error: ${err.message}`);
-        await new Promise((r) => setTimeout(r, errorDelay));
     }
 }
-  }
-}
+
 (async () => {
-  console.log("Initializing WiNGSPAN Intel Monitor...");
+  console.log("Initializing Socket.Kill...");
   await esi.loadSystemCache("./data/systems.json");
   await esi.loadCache(path.join(__dirname, "data", "esi_cache.json"));
   await mapper.refreshChain(esi.getSystemDetails.bind(esi));
@@ -140,19 +107,12 @@ async function r2BackgroundWorker() {
   processor = ProcessorFactory(esi, mapper, io, statsManager);
   console.log("🌌 Universe Map, Background & Chain Loaded.");
   syncPlayerCount();
-  // Chain Refresh: 1 Minute
   setInterval(() => mapper.refreshChain(esi.getSystemDetails.bind(esi)), 60000);
-
-  // Background Rotation: 10 Minutes
   setInterval(refreshNebulaBackground, ROTATION_SPEED);
-
-  // Stats Persistence: 1 Minute
   setInterval(() => {
     statsManager.save();
     console.log(`💾 [AUTO-SAVE] Stats: ${statsManager.getTotal()}`);
   }, 60000);
-
-  // Daily Heartbeat
   setInterval(
     () => {
       const reportStats = statsManager.getStatsForReport();
@@ -166,8 +126,6 @@ async function r2BackgroundWorker() {
     },
     24 * 60 * 60 * 1000,
   );
-
   console.log("Web Server Module Ready.");
-  // listeningStream();
   r2BackgroundWorker();
 })();
