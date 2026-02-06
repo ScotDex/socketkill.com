@@ -41,7 +41,7 @@ const formatIskValue = (value) => {
  */
 const typeShipNameSurgical = (el, text, speed = 2) => {
     let i = 0;
-    const final = text.toUpperCase();
+    const final = text
     el.classList.add('typewriter-cursor');
 
     const render = () => {
@@ -215,7 +215,7 @@ if (counterElement && kill.totalScanned) {
             <div class="kill-info">
                 <div>
                     <span class="timestamp">${timestamp}</span>
-                    <strong class="ship-name">${kill.victimName || "Unknown"} lost a ${kill.ship}
+                    <strong class="ship-name">${kill.victimName || "Unknown"} lost a 
                     <span class="type-target ship-name-container"></span></strong>
                 </div>
                 <div class="small">
