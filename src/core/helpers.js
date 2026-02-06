@@ -8,6 +8,14 @@ const DATA_PATH = path.join(process.cwd(), "data", "stats.json");
 
 class utils {
 
+    static getArticle(name) {
+        if (!name) return "a";
+        const vowels = ['a', 'e', 'i', 'o', 'u'];
+        const firstLetter = name.charAt(0).toLowerCase();
+        return vowels.includes(firstLetter) ? "an" : "a";
+
+    }
+
     static formatIsk (rawValue) {
         const value = rawValue || 0;
         if (value >= 1000000000) {

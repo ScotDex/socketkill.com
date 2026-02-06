@@ -215,7 +215,8 @@ if (counterElement && kill.totalScanned) {
             <div class="kill-info">
                 <div>
                     <span class="timestamp">${timestamp}</span>
-                    <strong class="ship-name">${kill.victimName || "Unknown"} lost a 
+                    <strong class="ship-name">${kill.victimName || "Unknown"} lost  
+                    <span class"article-target"></span>
                     <span class="type-target ship-name-container"></span></strong>
                 </div>
                 <div class="small">

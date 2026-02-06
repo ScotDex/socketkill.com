@@ -631,6 +631,11 @@ body::after {
     100% { transform: scale(1); }
 }
 
+.article-target {
+    margin-right: 4px;
+    text-transform: lowercase; /* Keeps the terminal look consistent */
+}
+
 .legal-footer {
     position: fixed;
     bottom: 0;

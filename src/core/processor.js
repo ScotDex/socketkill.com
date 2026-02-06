@@ -62,6 +62,7 @@ module.exports = (esi, mapper, io, statsManager) => {
                 ship: shipName,
                 system: systemName,
                 region: regionName,
+                article: helpers.getArticle(shipName),
                 shipId: killmail.victim.ship_type_id,
                 href: zkb.href,
                 locationLabel: `System: ${systemName} | Region: ${regionName} | Corporation: ${corpName}`,
