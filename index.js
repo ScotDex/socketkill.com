@@ -1,9 +1,3 @@
-/**
- * Project: WiNGSPAN Intel & Whale Hunter
- * Author: Dexomus Viliana (scottishdex)
- * Version: 1.1.0 (Concurrent Refactor)
- */
-
 require("dotenv").config();
 const talker = require("./src/network/agent");
 const path = require("path");
@@ -21,30 +15,12 @@ const esi = new ESIClient("Contact: @ScottishDex");
 const { app, io } = startWebServer(esi);
 const mapper = new MapperService(process.env.WINGSPAN_API);
 
-// Constants & State
-// const QUEUE_ID = process.env.ZKILL_QUEUE_ID || "Wingspan-Monitor";
-// const REDISQ_URL = `https://zkillredisq.stream/listen.php?queueID=${QUEUE_ID}&ttw=1`;
 const ROTATION_SPEED = 10 * 60 * 1000;
 const R2_BASE_URL = "https://r2z2.zkillboard.com/ephemeral"; // Non Production
 const SEQUENCE_CACHE_URL = `${R2_BASE_URL}/sequence.json`;
 
 let currentSequence = 0;
 let consecutive404s = 0;
-// const duplicateGuard = {
-//     cache: new Map(),
-//     ttl: 10 * 60 * 1000,
-
-//     has(id) {
-//         return this.cache.has(id);
-//     },
-
-//     add(id) {
-//         this.cache.set(id, Date.now());
-
-//         setTimeout(() => this.cache.delete(id), this.ttl);
-//     },
-//     size() { return this.cache.size; }
-// };
 
 const startMonitor = require("./src/network/monitor"); // Path to your file
 startMonitor(750);
@@ -81,40 +57,6 @@ async function refreshNebulaBackground() {
     console.log(`✅ Background Synced: ${data.name}`);
   }
 }
-
-// async function listeningStream() {
-//     console.log(`Listening to zKillboard Queue: ${QUEUE_ID}`);
-//     while (true) {
-//         try {
-//             const response = await axios.get(REDISQ_URL, { timeout: 5000 });
-//             const data = response.data;
-
-//             if (data && data.package) {
-//                 // Trigger background resolution without 'await' to keep the pipe moving
-
-//                 const killID = data.package.killID;
-
-//                 // 2. THE GUARD: Check if R2 already won this race
-//                 if (duplicateGuard.has(killID)) {
-//                     // SILENT EXIT: R2 already processed this.
-//                     // No log, no processor call, no front-end emit.
-//                     continue;
-//                 }
-
-//                 // 3. CLAIM IT: If socket won, mark it so R2 doesn't double-process
-//                 duplicateGuard.add(killID);
-//                 processor.processPackage(data.package);
-//             } else {
-//                 // Polling...
-//                 await new Promise((res) => setTimeout(res, 500));
-//             }
-//         } catch (err) {
-//             const delay = err.response?.status === 429 ? 2000 : 5000;
-//             console.error(`❌ [STREAM-ERR]: ${err.message}`);
-//             await new Promise((res) => setTimeout(res, delay));
-//         }
-//     }
-// }
 
 console.log(`📡 Network Agent Identity: ${talker.defaults.headers['User-Agent']}`);
 async function r2BackgroundWorker() {
@@ -168,29 +110,20 @@ async function r2BackgroundWorker() {
         currentSequence++;
         consecutive404s = 0;
       }
-// ... existing r2BackgroundWorker code ...
 } catch (err) {
     if (err.response?.status === 404) {
         consecutive404s++;
-
-        // 1. SET THE BACKOFF (Following zkillbot standard)
-        // We wait 10 seconds before asking for the next sequence again.
         const backoffTime = 10000; 
-
         if (consecutive404s % 5 === 0) {
             console.log(`😴 [R2_STALL] Sequence ${currentSequence} still 404. Backing off 10s. (Total 404s: ${consecutive404s})`);
         }
-
-        // 2. THE RE-SYNC TRIGGER (Safety Valve)
-        // If we hit 404 for too long (e.g., 30 attempts), the sequence might have jumped.
         if (consecutive404s >= 30) {
             console.warn(`⚠️ [R2_SYNC] High 404 count. Re-priming sequence from master...`);
-            return r2BackgroundWorker(); // Restart worker to fetch fresh sequence.json
+            return r2BackgroundWorker(); 
         }
 
         await new Promise((r) => setTimeout(r, backoffTime));
     } else {
-        // Handle 429 (Rate Limit) or 500s with even longer delays
         const errorDelay = err.response?.status === 429 ? 30000 : 5000;
         console.error(`📡 [R2_TRACE] Network Error: ${err.message}`);
         await new Promise((r) => setTimeout(r, errorDelay));
