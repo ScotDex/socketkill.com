@@ -37,6 +37,30 @@ const formatIskValue = (value) => {
 };
 
 /**
+ * Surgically types text into an element
+ */
+const typeShipNameSurgical = (el, text, speed = 2) => {
+    let i = 0;
+    const final = text.toUpperCase();
+    el.classList.add('typewriter-cursor');
+
+    const render = () => {
+        if (i < final.length) {
+            // Add characters every X frames for a steady "data-write" feel
+            if (Math.floor(performance.now() / 30) > i) { 
+                el.innerText += final[i];
+                i++;
+            }
+            requestAnimationFrame(render);
+        } else {
+            // Keep the cursor for 2 seconds after finishing, then fade it
+            setTimeout(() => el.classList.remove('typewriter-cursor'), 2000);
+        }
+    };
+    render();
+};
+
+/**
  * Retro-terminal typewriter effect for titles
  */
 const typeTitle = (elementId, text, speed = 150) => {
@@ -191,7 +215,8 @@ if (counterElement && kill.totalScanned) {
             <div class="kill-info">
                 <div>
                     <span class="timestamp">${timestamp}</span>
-                    <strong class="ship-name">${kill.victimName || "Unknown"} lost a ${kill.ship}</strong>
+                    <strong class="ship-name">${kill.victimName || "Unknown"} lost a ${kill.ship}
+                    <span class="type-target ship-name-container"></span></strong>
                 </div>
                 <div class="small">
                     <span class="location-label">${kill.locationLabel}</span>
@@ -221,6 +246,8 @@ if (counterElement && kill.totalScanned) {
     }
 
     feed.prepend(div);
+    const target = div.querySelector('.type-target');
+    typeShipNameSurgical(target, kill.ship);
     if (feed.children.length > MAX_FEED_SIZE) feed.lastChild.remove();
 });
 
