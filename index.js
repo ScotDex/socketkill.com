@@ -168,24 +168,34 @@ async function r2BackgroundWorker() {
         currentSequence++;
         consecutive404s = 0;
       }
-    } catch (err) {
-      if (err.response?.status === 404) {
+// ... existing r2BackgroundWorker code ...
+} catch (err) {
+    if (err.response?.status === 404) {
         consecutive404s++;
-        // Log every 30th 404 to keep logs clean but confirm activity
-        if (consecutive404s % 30 === 0) {
-          console.log(
-            `😴 [R2_TRACE] Sequence ${currentSequence} not yet available (Attempt ${consecutive404s})`,
-          );
+
+        // 1. SET THE BACKOFF (Following zkillbot standard)
+        // We wait 10 seconds before asking for the next sequence again.
+        const backoffTime = 10000; 
+
+        if (consecutive404s % 5 === 0) {
+            console.log(`😴 [R2_STALL] Sequence ${currentSequence} still 404. Backing off 10s. (Total 404s: ${consecutive404s})`);
         }
-        await new Promise((r) => setTimeout(r, 1000));
-      } else {
-        // TRACE 4: Network errors (Timeouts, 429s, 500s)
-        console.error(
-          `📡 [R2_TRACE] Network Error: ${err.message} | Code: ${err.code}`,
-        );
-        await new Promise((r) => setTimeout(r, 5000));
-      }
+
+        // 2. THE RE-SYNC TRIGGER (Safety Valve)
+        // If we hit 404 for too long (e.g., 30 attempts), the sequence might have jumped.
+        if (consecutive404s >= 30) {
+            console.warn(`⚠️ [R2_SYNC] High 404 count. Re-priming sequence from master...`);
+            return r2BackgroundWorker(); // Restart worker to fetch fresh sequence.json
+        }
+
+        await new Promise((r) => setTimeout(r, backoffTime));
+    } else {
+        // Handle 429 (Rate Limit) or 500s with even longer delays
+        const errorDelay = err.response?.status === 429 ? 30000 : 5000;
+        console.error(`📡 [R2_TRACE] Network Error: ${err.message}`);
+        await new Promise((r) => setTimeout(r, errorDelay));
     }
+}
   }
 }
 (async () => {
