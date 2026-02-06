@@ -98,7 +98,23 @@ terminal-header:focus-within .terminal-button-prompt,
     text-transform: uppercase;
 }
 
+.ship-name-container {
+    display: inline-block;
+    min-width: 12ch; /* Reserves space for most ship names */
+    vertical-align: bottom;
+}
 
+.typewriter-cursor::after {
+    content: "█";
+    margin-left: 2px;
+    color: var(--neon-green);
+    animation: cursor-blink 0.8s step-end infinite;
+}
+
+@keyframes cursor-blink {
+    from, to { opacity: 1; }
+    50% { opacity: 0; }
+}
 
 
 .kill-row[hidden] {
