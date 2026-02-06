@@ -247,6 +247,8 @@ if (counterElement && kill.totalScanned) {
     }
 
     feed.prepend(div);
+    const articleTarget = div.querySelector('.article-target');
+    articleTarget.innerText = kill.article || "a";
     const target = div.querySelector('.type-target');
     typeShipNameSurgical(target, kill.ship);
     if (feed.children.length > MAX_FEED_SIZE) feed.lastChild.remove();
