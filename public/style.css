@@ -69,37 +69,6 @@ body::before {
     z-index: 9999; /* Sits at the very top */
 }
 
-/* Layer 2: Tactical HUD Brackets */
-body::after {
-    content: "";
-    position: fixed;
-    inset: 10px; /* Gap from the edge of the screen */
-    border: 2px solid rgba(63, 185, 80, 0.1);
-    /* Create the 'Brackets' by masking the border */
-    -webkit-mask: 
-        linear-gradient(to right, #000 40px, transparent 0) 0 0,
-        linear-gradient(to left, #000 40px, transparent 0) 100% 0,
-        linear-gradient(to right, #000 40px, transparent 0) 0 100%,
-        linear-gradient(to left, #000 40px, transparent 0) 100% 100%,
-        linear-gradient(to bottom, #000 40px, transparent 0) 0 0,
-        linear-gradient(to bottom, #000 40px, transparent 0) 100% 0,
-        linear-gradient(to top, #000 40px, transparent 0) 0 100%,
-        linear-gradient(to top, #000 40px, transparent 0) 100% 100%;
-    mask: 
-        linear-gradient(to right, #000 40px, transparent 0) 0 0,
-        linear-gradient(to left, #000 40px, transparent 0) 100% 0,
-        linear-gradient(to right, #000 40px, transparent 0) 0 100%,
-        linear-gradient(to left, #000 40px, transparent 0) 100% 100%,
-        linear-gradient(to bottom, #000 40px, transparent 0) 0 0,
-        linear-gradient(to bottom, #000 40px, transparent 0) 100% 0,
-        linear-gradient(to top, #000 40px, transparent 0) 0 100%,
-        linear-gradient(to top, #000 40px, transparent 0) 100% 100%;
-    -webkit-mask-repeat: no-repeat;
-    mask-repeat: no-repeat;
-    pointer-events: none;
-    z-index: 9998; /* Sits just below the top glow */
-    animation: hud-pulse 4s ease-in-out infinite;
-}
 /* Core Terminal Input Class */
 .terminal-input-field {
     background: transparent;
