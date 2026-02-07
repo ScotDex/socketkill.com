@@ -159,6 +159,37 @@ body::after {
     padding: env(safe-area-inset-top) 10px calc(env(safe-area-inset-bottom, 20px)) 10px;
 }
 
+
+#crt-screen::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    /* Layer 1: The Aperture Grille (Sub-pixels) 
+       Layer 2: Static Noise (The 'Film Grain') */
+    background: 
+        repeating-linear-gradient(90deg, rgba(255, 0, 0, 0.03) 0px, rgba(255, 0, 0, 0.03) 1px, transparent 1px, transparent 3px),
+        repeating-linear-gradient(0deg, rgba(0, 0, 0, 0.1) 0px, rgba(0, 0, 0, 0.1) 1px, transparent 1px, transparent 2px);
+    pointer-events: none;
+    z-index: -1;
+    opacity: 0.6;
+}
+
+/* The 'Signal Noise' Overlay */
+.signal-noise {
+    position: fixed;
+    inset: 0;
+    background-image: url('https://upload.wikimedia.org/wikipedia/commons/7/76/White_noise.png');
+    opacity: 0.02; /* Extremely subtle */
+    pointer-events: none;
+    z-index: -1;
+    animation: noise-shift 0.2s steps(4) infinite;
+}
+
+@keyframes noise-shift {
+    0% { background-position: 0 0; }
+    100% { background-position: 100% 100%; }
+}
+
 /* === FEED CONTAINER === */
 #feed {
     background: radial-gradient(circle at center, rgba(22, 27, 34, 0.7) 0%, rgba(10, 12, 16, 0.9) 100%);

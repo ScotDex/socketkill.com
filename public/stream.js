@@ -285,8 +285,6 @@ updateNPCTicker();
 // Refresh every 5 minutes (300,000ms)
 setInterval(updateNPCTicker, 300000);
 
-
-
 /* --- 4. Unified Bootloader --- */
 const initApp = () => {
     typeTitle('socket-title', 'Socket.Kill', 150);
