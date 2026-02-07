@@ -159,6 +159,13 @@ socket.on('gatekeeper-stats', (data) => {
     if (counterElement && data.totalScanned) {
         counterElement.innerText = data.totalScanned.toLocaleString();
     }
+    if (data.totalIsk){
+        totalIskDestroyed = data.totalIsk;
+        const ticker = document.getElementById("isk-ticker-val")
+        if (ticker){
+            ticker.innerText = formatIskShorthand(totalIskDestroyed);
+        }
+    }
 });
 
 socket.on('player-count', (data) => {

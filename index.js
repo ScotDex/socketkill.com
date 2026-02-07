@@ -41,7 +41,9 @@ io.on("connection", async (socket) => {
   }
   const regions = Array.from(esi.cache.regions.values()).sort();
   socket.emit("region-list", regions);
-  socket.emit("gatekeeper-stats", { totalScanned: statsManager.getTotal() });
+  socket.emit("gatekeeper-stats", { totalScanned: statsManager.getTotal(),
+    totalIsk:statsManager.totalIsk
+   });
   const currentStatus = await utils.getPlayerCount();
   socket.emit("player-count", currentStatus);
 });

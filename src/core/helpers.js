@@ -5,6 +5,7 @@ const path = require ("path");
 
 // Use process.cwd() to stay inside the /usr/src/app folder
 const DATA_PATH = path.join(process.cwd(), "data", "stats.json");
+const FIN_PATH = path.join(process.cwd(), "data", "financials.json");
 
 class utils {
 
@@ -113,7 +114,36 @@ static loadPersistentStats() {
         console.error("❌ [STORAGE] Critical error loading stats:", err.message);
         return 0;
     }
+
+    
 }
+
+static loadPersistentIsk() {
+        try {
+            if (!fs.existsSync(FIN_PATH)) return 0;
+            const rawData = fs.readFileSync(FIN_PATH, "utf8");
+            if (!rawData) return 0;
+            
+            const data = JSON.parse(rawData);
+            return Number(data.totalIsk) || 0;
+        } catch (err) {
+            console.error("❌ [STORAGE] Error loading ISK stats:", err.message);
+            return 0;
+        }
+    }
+
+    static async savePersistentIsk(total) {
+        try {
+            const payload = JSON.stringify({ 
+                totalIsk: total,
+                lastUpdate: new Date().toISOString() 
+            });
+            await fs.promises.writeFile(FIN_PATH, payload);
+        } catch (err) {
+            console.error("❌ [STORAGE] Error saving ISK total:", err.message);
+        }
+    }
+
 
 static async savePersistentStats(count) {
         try {

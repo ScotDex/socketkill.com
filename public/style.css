@@ -35,6 +35,25 @@ body {
     transition: all 0.3s ease;
 }
 
+/* --- HUD Label Fix --- */
+.notif-content .tracking-widest,
+.notif-content .ms-1 {
+    color: #2a7e36 !important; /* Solid dim green to avoid white-out */
+    opacity: 0.8;
+    text-transform: uppercase;
+}
+
+/* Ensure the numbers themselves always glow green */
+#isk-ticker-val, #player-count {
+    color: var(--neon-green) !important;
+    text-shadow: 0 0 8px rgba(63, 185, 80, 0.5);
+}
+
+/* Fix the card border so it matches the terminal theme */
+.player-count-card {
+    border: 1px solid rgba(63, 185, 80, 0.3) !important;
+    background: rgba(10, 12, 16, 0.9) !important;
+}
 
 /* Layer 1: Top Status Glow (Moved to ::before) */
 body::before {

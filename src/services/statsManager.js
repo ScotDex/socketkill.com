@@ -8,9 +8,11 @@ class StatsManager {
     constructor() {
         // Initialize from persistent storage
         this.totalScanned = utils.loadPersistentStats() || 0;
+        this.totalIsk = utils.loadPersistentIsk() || 0;
         
         // Session-specific metrics
         this.sessionScanned = 0;
+        this.sessionIsk = 0;
         this.startTime = new Date();
     }
 
@@ -18,10 +20,16 @@ class StatsManager {
      * Increment both session and lifetime counters
      * Returns the new total
      */
-    increment() {
+    increment(iskValue = 0) {
+        const val = Number(iskValue) || 0;
         this.totalScanned++;
         this.sessionScanned++;
-        return this.totalScanned;
+        this.totalIsk += val;
+        this.sessionIsk += val;
+        return {
+            total: this.totalScanned,
+            isk: this.totalIsk
+        };
     }
 
     /**
@@ -53,6 +61,7 @@ class StatsManager {
      */
     save() {
         utils.savePersistentStats(this.totalScanned);
+        utils.savePersistentIsk(this.totalIsk);
     }
 }
 
