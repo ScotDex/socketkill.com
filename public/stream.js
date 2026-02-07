@@ -193,12 +193,11 @@ socket.on('nebula-update', (data) => {
 let totalIskDestroyed = 0;
 
 socket.on('raw-kill', (kill) => {
-
-    totalIskDestroyed += data.kill;
+    const val = Number(kill.val) || 0;
+    totalIskDestroyed += val;
     const ticker = document.getElementById("isk-ticker-val")
     if (ticker){
         ticker.innerText = formatIskShorthand(totalIskDestroyed);
-
         ticker.classList.remove('counter-update');
         void ticker.offsetWidth; 
         ticker.classList.add('counter-update');
@@ -212,8 +211,6 @@ if (counterElement && kill.totalScanned) {
         void counterElement.offsetWidth; 
         counterElement.classList.add('counter-update');
     }
-
-    const val = Number(kill.val);
     const div = document.createElement('div');
     div.className = `kill-row justify-content-between ${val >= 10000000000 ? 'whale' : ''}`;
     
