@@ -27,6 +27,13 @@ const cycleSupporters = () => {
     supporterIndex = (supporterIndex + 1) % SUPPORTERS.length;
 };
 
+function formatIskShorthand(value) {
+    if (value >= 1e12) return (value / 1e12).toFixed(2) + "T";
+    if (value >= 1e9) return (value / 1e9).toFixed(2) + "B";
+    if (value >= 1e6) return (value / 1e6).toFixed(1) + "M";
+    return value.toLocaleString();
+}
+
 /**
  * Formats raw ISK numbers into readable terminal shorthand (M/B)
  */
@@ -182,13 +189,19 @@ socket.on('nebula-update', (data) => {
 /**
  * Main Killmail Processor: Handles dynamic injection and memory management
  */
+
+let totalIskDestroyed = 0;
+
 socket.on('raw-kill', (kill) => {
 
-    const oscWave = document.querySelector('.osc-wave');
-    if (oscWave) {
-        oscWave.classList.add('osc-active');
-        // Reset the spike after 800ms to mimic a signal pulse
-        setTimeout(() => oscWave.classList.remove('osc-active'), 800);
+    totalIskDestroyed += data.kill;
+    const ticker = document.getElementById("isk-ticker-val")
+    if (ticker){
+        ticker.innerText = formatIskShorthand(totalIskDestroyed);
+
+        ticker.classList.remove('counter-update');
+        void ticker.offsetWidth; 
+        ticker.classList.add('counter-update');
     }
     const emptyState = document.getElementById('empty-state');
     if (emptyState) emptyState.remove();
