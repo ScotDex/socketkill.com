@@ -40,7 +40,8 @@ module.exports = (esi, mapper, io, statsManager) => {
 
             const finalVictimName = (charName == "Unknown" || !charName ) ? corpName : charName;
 
-            statsManager.increment();
+            // Pass the ISK value into the incrementer so it can update totalIsk
+            statsManager.increment(rawValue);
 
             const systemName = systemDetails?.name || "Unknown System";
             const regionName = systemDetails?.region_id 
