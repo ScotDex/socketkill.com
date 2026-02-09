@@ -5,7 +5,7 @@ class EmbedFactory {
         const totalValue = helpers.formatIsk(zkb.totalValue)
         const shipIcon = `https://images.evetech.net/types/${kill.victim.ship_type_id}/render?size=128`;
         return {
-            username: "Chain Intel", 
+            username: "Chain Intel Monitor", 
             avatar_url: "https://images.evetech.net/types/605/icon",
             embeds: [{
                 author: {
