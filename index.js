@@ -61,70 +61,89 @@ async function refreshNebulaBackground() {
   }
 }
 
+// --- Configuration ---
+const POLLING_CONFIG = {
+    CATCHUP_SPEED: 75,    // Snappy ingest to match zKill
+    STALL_DELAY: 1000,    // Slow down for ghost files
+    ERROR_BACKOFF: 5000,  // Standard retry
+    PANIC_DELAY: 120000   // 2-minute Cloudflare quiet period
+};
+
 async function r2BackgroundWorker() {
-  try {
-    const res = await talker.get(SEQUENCE_CACHE_URL, { timeout: 5000 });
-    if (res.data && res.data.sequence) {
-      currentSequence = parseInt(res.data.sequence) - 5;
-      console.log(
-        `🚀 R2_WORKER: Primed and ready at sequence ${currentSequence}`,
-      );
-    } else {
-      throw new Error("Invalid sequence data");
-    }
-  } catch (e) {
-    const status = e.response?.status;
-    lastErrorStatus = status;
-
-    if (status === 429) {
-      console.error(`🛑 R2_PRIMER: 429 Throttled. Waiting 60s...`);
-      setTimeout(r2BackgroundWorker, 60000);
-    } else {
-      console.error(`❌ R2_WORKER: Priming failed (${e.message}). Retrying in 10s...`);
-      setTimeout(r2BackgroundWorker, 10000);
+    // 1. Priming Phase
+    try {
+        const res = await talker.get(SEQUENCE_CACHE_URL, { timeout: 5000 });
+        if (res.data?.sequence) {
+            currentSequence = parseInt(res.data.sequence) - 5;
+            console.log(`🚀 R2_WORKER: Primed at sequence ${currentSequence}`);
+        } else {
+            throw new Error("Invalid sequence data");
+        }
+    } catch (e) {
+        const status = e.response?.status;
+        lastErrorStatus = status;
+        const wait = status === 429 ? POLLING_CONFIG.PANIC_DELAY : 10000;
+        console.error(`❌ Priming failed. Retrying in ${wait/1000}s...`);
+        return setTimeout(r2BackgroundWorker, wait);
     }
 
-    return;
-  }
+    // 2. The Centralized Recursive Tick
+    const poll = async () => {
+        if (isThrottled) return;
 
+        // Cache-buster ONLY active during 404/Stall recovery
+        const url = `${R2_BASE_URL}/${currentSequence}.json${consecutive404s > 0 ? `?cb=${Date.now()}` : ''}`;
+        let nextTick = POLLING_CONFIG.CATCHUP_SPEED;
 
-while (true) {
-  let response;
-  const url = `${R2_BASE_URL}/${currentSequence}.json?cb=${Date.now()}`;
+        try {
+            const response = await talker.get(url, { timeout: 2000 });
+            const r2Package = normalizer.fromR2(response.data);
 
-  try {
-    response = await talker.get(url, { timeout: 2000 });
-    isThrottled = false;
-    lastErrorStatus = 200;
-    lastSuccessfulIngest = Date.now();
-  } catch (err) {
-    const status = err.response?.status;
-    lastErrorStatus = status;
+            if (r2Package?.killID) {
+                processor.processPackage(r2Package);
+                currentSequence++;
+                consecutive404s = 0;
+                lastSuccessfulIngest = Date.now();
+                lastErrorStatus = 200;
+                isThrottled = false;
+            } else {
+                // DATA GAP: File exists but normalize failed or no kill data
+                consecutive404s++;
+                nextTick = POLLING_CONFIG.STALL_DELAY;
+                
+                if (consecutive404s >= 5) {
+                    console.warn(`⏭️ [SKIP] Seq ${currentSequence} is ghost data. Skipping to next.`);
+                    currentSequence++;
+                    consecutive404s = 0;
+                }
+            }
+        } catch (err) {
+            const status = err.response?.status;
+            lastErrorStatus = status;
 
-    if (status === 429) {
-      isThrottled = true;
-      console.error(`🛑 [429] Rate Limited. Cool down: 60s`);
-      await new Promise(r => setTimeout(r, 60000));
-      continue;
-    }
+            if (status === 429) {
+                isThrottled = true;
+                console.error("🛑 [429] Rate Limited. Entering 2m quiet period.");
+                setTimeout(() => { isThrottled = false; poll(); }, POLLING_CONFIG.PANIC_DELAY);
+                return; // Break recursion until timeout finishes
+            }
 
-    const is404 = err.response?.status === 404;
-    consecutive404s = is404 ? consecutive404s + 1 : 0;
-    const backoff = is404 ? 12000 : 5000;
-    if (is404 && consecutive404s >= 30) return r2BackgroundWorker();
-    await new Promise(r => setTimeout(r, backoff));
-    continue;
-  }
-  const r2Package = normalizer.fromR2(response.data);
-  if (r2Package?.killID) {
-    console.log(`[R2_INGEST] Captured Kill ${r2Package.killID}`);
-    processor.processPackage(r2Package);
-    currentSequence++;
-    consecutive404s = 0;
-    await new Promise(r => setTimeout(r, 150));
-  }
+            const is404 = status === 404;
+            consecutive404s = is404 ? consecutive404s + 1 : 0;
+            nextTick = is404 ? 12000 : POLLING_CONFIG.ERROR_BACKOFF;
+
+            if (is404 && consecutive404s >= 30) {
+                console.warn("🔄 [RE-SYNC] 404 limit reached. Re-priming...");
+                return r2BackgroundWorker();
+            }
+        }
+
+        setTimeout(poll, nextTick);
+    };
+
+    poll();
 }
-}
+
 (async () => {
   console.log("Initializing Socket.Kill...");
   await esi.loadSystemCache("./data/systems.json");
