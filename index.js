@@ -37,6 +37,8 @@ async function syncPlayerCount() {
 }
 
 io.on("connection", async (socket) => {
+  const clientCount = io.engine.clientsCount;
+  console.log(`🔌 [NETWORK] New connection: ${socket.id} | Total Active: ${clientCount}`);
   if (currentSpaceBg) {
     socket.emit("nebula-update", currentSpaceBg);
   } else {
@@ -63,10 +65,10 @@ async function refreshNebulaBackground() {
 
 // --- Configuration ---
 const POLLING_CONFIG = {
-    CATCHUP_SPEED: 75,    // Snappy ingest to match zKill
-    STALL_DELAY: 1000,    // Slow down for ghost files
-    ERROR_BACKOFF: 5000,  // Standard retry
-    PANIC_DELAY: 120000   // 2-minute Cloudflare quiet period
+    CATCHUP_SPEED: 75,    
+    STALL_DELAY: 1000,    
+    ERROR_BACKOFF: 5000,  
+    PANIC_DELAY: 120000   
 };
 
 async function r2BackgroundWorker() {
@@ -100,7 +102,10 @@ async function r2BackgroundWorker() {
             const r2Package = normalizer.fromR2(response.data);
 
             if (r2Package?.killID) {
-                console.log(`[INGEST] Seq: ${currentSequence} | Kill: ${r2Package.killID} | Latency: ${Date.now() - r2Package.time}ms`);
+                const killTimestamp = new Date(r2Package.time).getTime();
+                const latency = Date.now() - killTimestamp;
+    
+                console.log(`[INGEST] Seq: ${currentSequence} | Kill: ${r2Package.killID} | Latency: ${isNaN(latency) ? 'ERR' : latency}ms`);
                 processor.processPackage(r2Package);
                 currentSequence++;
                 consecutive404s = 0;
