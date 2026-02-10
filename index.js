@@ -19,6 +19,9 @@ const SEQUENCE_CACHE_URL = `${R2_BASE_URL}/sequence.json`;
 
 let currentSequence = 0;
 let consecutive404s = 0;
+let lastSuccessfulIngest = Date.now();
+let lastErrorStatus = null;
+let isThrottled = false;
 
 const startMonitor = require("./src/network/monitor"); 
 startMonitor(750);
@@ -70,34 +73,55 @@ async function r2BackgroundWorker() {
       throw new Error("Invalid sequence data");
     }
   } catch (e) {
-    console.error(
-      `❌ R2_WORKER: Priming failed (${e.message}). Retrying in 10s...`,
-    );
-    setTimeout(r2BackgroundWorker, 10000);
+    const status = e.response?.status;
+    lastErrorStatus = status;
+
+    if (status === 429) {
+      console.error(`🛑 R2_PRIMER: 429 Throttled. Waiting 60s...`);
+      setTimeout(r2BackgroundWorker, 60000);
+    } else {
+      console.error(`❌ R2_WORKER: Priming failed (${e.message}). Retrying in 10s...`);
+      setTimeout(r2BackgroundWorker, 10000);
+    }
+
     return;
   }
 
+
 while (true) {
-        let response;
-        const url = `${R2_BASE_URL}/${currentSequence}.json?cb=${Date.now()}`;
-        try {
-            response = await talker.get(url, { timeout: 2000 });
-        } catch (err) {
-            const is404 = err.response?.status === 404;
-            consecutive404s = is404 ? consecutive404s + 1 : 0;
-            const backoff = is404 ? 12000 : 5000; 
-            if (is404 && consecutive404s >= 30) return r2BackgroundWorker(); 
-            await new Promise(r => setTimeout(r, backoff));
-            continue; 
-        }
-        const r2Package = normalizer.fromR2(response.data);
-        if (r2Package?.killID) {
-            console.log(`[R2_INGEST] Captured Kill ${r2Package.killID}`);
-            processor.processPackage(r2Package);
-            currentSequence++;
-            consecutive404s = 0;
-        }
+  let response;
+  const url = `${R2_BASE_URL}/${currentSequence}.json?cb=${Date.now()}`;
+
+  try {
+    response = await talker.get(url, { timeout: 2000 });
+    isThrottled = false;
+    lastErrorStatus = 200;
+    lastSuccessfulIngest = Date.now();
+  } catch (err) {
+    const status = err.response?.status;
+    lastErrorStatus = status;
+
+    if (status === 429) {
+      isThrottled = true;
+      console.error(`🛑 [429] Rate Limited. Cool down: 60s`);
+      await new Promise(r => setTimeout(r, 60000));
+      continue;
     }
+
+    const is404 = err.response?.status === 404;
+    consecutive404s = is404 ? consecutive404s + 1 : 0;
+    const backoff = is404 ? 12000 : 5000;
+    if (is404 && consecutive404s >= 30) return r2BackgroundWorker();
+    await new Promise(r => setTimeout(r, backoff));
+    continue;
+  }
+  const r2Package = normalizer.fromR2(response.data);
+  if (r2Package?.killID) {
+    console.log(`[R2_INGEST] Captured Kill ${r2Package.killID}`);
+    processor.processPackage(r2Package);
+    currentSequence++;
+    consecutive404s = 0;
+  }
 }
 
 (async () => {
