@@ -123,7 +123,7 @@ while (true) {
     consecutive404s = 0;
   }
 }
-
+}
 (async () => {
   console.log("Initializing Socket.Kill...");
   await esi.loadSystemCache("./data/systems.json");
