@@ -121,6 +121,7 @@ while (true) {
     processor.processPackage(r2Package);
     currentSequence++;
     consecutive404s = 0;
+    await new Promise(r => setTimeout(r, 150));
   }
 }
 }
