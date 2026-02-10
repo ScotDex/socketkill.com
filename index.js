@@ -100,6 +100,7 @@ async function r2BackgroundWorker() {
             const r2Package = normalizer.fromR2(response.data);
 
             if (r2Package?.killID) {
+                console.log(`[INGEST] Seq: ${currentSequence} | Kill: ${r2Package.killID} | Latency: ${Date.now() - r2Package.time}ms`);
                 processor.processPackage(r2Package);
                 currentSequence++;
                 consecutive404s = 0;
@@ -109,6 +110,7 @@ async function r2BackgroundWorker() {
             } else {
                 // DATA GAP: File exists but normalize failed or no kill data
                 consecutive404s++;
+                if (consecutive404s === 1) console.log(`❓ [GAP] Potential ghost file at ${currentSequence}. Retrying...`);
                 nextTick = POLLING_CONFIG.STALL_DELAY;
                 
                 if (consecutive404s >= 5) {
