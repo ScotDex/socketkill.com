@@ -102,10 +102,12 @@ async function r2BackgroundWorker() {
             const r2Package = normalizer.fromR2(response.data);
 
             if (r2Package?.killID) {
-                const killTimestamp = new Date(r2Package.time).getTime();
-                const latency = Date.now() - killTimestamp;
+// R2 time is often a ISO string; parsing it safely here
+    const killTime = Date.parse(r2Package.time); 
+    const latency = Date.now() - killTime;
     
-                console.log(`[INGEST] Seq: ${currentSequence} | Kill: ${r2Package.killID} | Latency: ${isNaN(latency) ? 'ERR' : latency}ms`);
+    // Log with a fallback to '??' if parsing fails
+    console.log(`[INGEST] Seq: ${currentSequence} | Kill: ${r2Package.killID} | Latency: ${isNaN(latency) ? '??' : latency}ms`);
                 processor.processPackage(r2Package);
                 currentSequence++;
                 consecutive404s = 0;
