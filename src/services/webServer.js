@@ -37,7 +37,6 @@ function startWebServer(esi, statsManager, getState) {
 
     app.get ('/api/health', (req, res) => {
         const mem = process.memoryUsage();
-        const state = getState();
         const healthData = {
             status: isThrottled ? "DEGRADED" : "OPERATIONAL",
             uptime: Math.round((Date.now() - statsManager.startTime) / 1000),
