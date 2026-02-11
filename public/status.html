@@ -2,36 +2,57 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>S.K // SYSTEM_STATUS</title>
+    <link rel="stylesheet" href="/css/consolidated.css">
     <style>
-        body { background: #0d1117; color: #3fb950; font-family: monospace; padding: 20px; }
-        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; }
-        .stat-card { border: 1px solid #3fb950; padding: 15px; border-radius: 4px; background: rgba(63, 185, 80, 0.05); }
-        .value { font-size: 1.5rem; font-weight: bold; color: #fff; display: block; }
-        .label { font-size: 0.75rem; opacity: 0.7; text-transform: uppercase; }
-        .status-up { color: #3fb950; }
-        .status-down { color: #f85149; animation: blink 1s infinite; }
-        @keyframes blink { 50% { opacity: 0; } }
+        /* Essential grid layout - using your variables */
+        body { 
+            padding: 20px; 
+            background-color: var(--dark-bg); 
+        }
+        .status-grid { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); 
+            gap: 15px; 
+            margin-top: 20px;
+        }
     </style>
 </head>
-<body>
-    <h2>[ SOCKET.KILL // CORE_HEALTH ]</h2>
-    <div class="grid">
-        <div class="stat-card">
-            <span class="label">System Status</span>
-            <span id="status" class="value">LOADING...</span>
-        </div>
-        <div class="stat-card">
-            <span class="label">Active Ingest Seq</span>
-            <span id="sequence" class="value">---</span>
-        </div>
-        <div class="stat-card">
-            <span class="label">Memory (RSS)</span>
-            <span id="rss" class="value">---</span>
-        </div>
-        <div class="stat-card">
-            <span class="label">Connected Pilots</span>
-            <span id="clients" class="value">---</span>
+<body id="crt-screen">
+    <div class="signal-noise"></div>
+    
+    <div class="container-fluid">
+        <h2 class="typewriter" id="socket-title">SYSTEM_DIAGNOSTICS_V2.0</h2>
+        
+        <div class="status-grid">
+            <div class="kill-row player-count-card">
+                <div class="flex-grow-1">
+                    <div class="location-label tracking-widest">INGEST_INTEGRITY</div>
+                    <div id="status" class="ship-name">LOADING...</div>
+                </div>
+            </div>
+
+            <div class="kill-row player-count-card">
+                <div class="flex-grow-1">
+                    <div class="location-label tracking-widest">CURRENT_SEQUENCE</div>
+                    <div id="sequence" class="isk-million">---</div>
+                </div>
+            </div>
+
+            <div class="kill-row player-count-card">
+                <div class="flex-grow-1">
+                    <div class="location-label tracking-widest">MEMORY_RESERVATION</div>
+                    <div id="rss" class="ship-name">---</div>
+                </div>
+            </div>
+
+            <div class="kill-row player-count-card">
+                <div class="flex-grow-1">
+                    <div class="location-label tracking-widest">ACTIVE_UPLINKS</div>
+                    <div id="clients" class="isk-million">---</div>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -41,16 +62,27 @@
                 const res = await fetch('/api/health');
                 const data = await res.json();
                 
-                document.getElementById('status').innerText = data.status;
-                document.getElementById('status').className = data.status === 'OPERATIONAL' ? 'value status-up' : 'value status-down';
+                const statusEl = document.getElementById('status');
+                statusEl.innerText = data.status;
+                
+                // Use existing CRT colors for status
+                if (data.status === 'OPERATIONAL') {
+                    statusEl.style.color = "var(--neon-green)";
+                } else {
+                    statusEl.style.color = "#ff0000"; // Red Alert
+                }
+
                 document.getElementById('sequence').innerText = data.system.sequence;
                 document.getElementById('rss').innerText = data.system.rss;
                 document.getElementById('clients').innerText = data.stats.activeClients;
+                
             } catch (e) {
                 document.getElementById('status').innerText = 'OFFLINE';
-                document.getElementById('status').className = 'value status-down';
+                document.getElementById('status').style.color = '#ff0000';
             }
         }
+
+        // Refresh heartbeat
         setInterval(updateHealth, 5000);
         updateHealth();
     </script>
