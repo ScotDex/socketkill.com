@@ -49,10 +49,10 @@ function startWebServer(esi, statsManager, getState) {
             system: {
                 rss: `${Math.round(mem.rss / 1024 / 1024)}MB`,
                 heapUsed: `${Math.round(mem.heapUsed / 1024 / 1024)}MB`,
-                sequence: currentSequence
+                sequence: getState.currentSequence
             }
         };
-        res.status(isThrottled ? 299 : 200).json(healthData);
+        res.status(getState.isThrottled ? 299 : 200).json(healthData);
     }
 
 )
