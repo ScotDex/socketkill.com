@@ -10,12 +10,19 @@ const utils = require("./src/core/helpers");
 const statsManager = require("./src/services/statsManager");
 const ProcessorFactory = require("./src/core/processor");
 const esi = new ESIClient("Contact: @ScottishDex");
-const { io } = startWebServer(esi);
+
 const mapper = new MapperService(process.env.WINGSPAN_API);
 
 const ROTATION_SPEED = 10 * 60 * 1000;
 const R2_BASE_URL = process.env.R2_BASE_URL
 const SEQUENCE_CACHE_URL = `${R2_BASE_URL}/sequence.json`;
+
+const sharedState = {
+    isThrottled: false,
+    currentSequence: 0
+};
+
+const { io } = startWebServer(esi, statsManager, sharedState);
 
 let currentSequence = 0;
 let consecutive404s = 0;
@@ -76,7 +83,7 @@ async function r2BackgroundWorker() {
     try {
         const res = await talker.get(SEQUENCE_CACHE_URL, { timeout: 5000 });
         if (res.data?.sequence) {
-            currentSequence = parseInt(res.data.sequence) - 5;
+            sharedState.currentSequence = parseInt(res.data.sequence) - 5;
             console.log(`🚀 R2_WORKER: Primed at sequence ${currentSequence}`);
         } else {
             throw new Error("Invalid sequence data");
@@ -94,7 +101,7 @@ async function r2BackgroundWorker() {
         if (isThrottled) return;
 
         // Cache-buster ONLY active during 404/Stall recovery
-        const url = `${R2_BASE_URL}/${currentSequence}.json${consecutive404s > 0 ? `?cb=${Date.now()}` : ''}`;
+        const url = `${R2_BASE_URL}/${sharedState.currentSequence}.json${consecutive404s > 0 ? `?cb=${Date.now()}` : ''}`;
         let nextTick = POLLING_CONFIG.CATCHUP_SPEED;
 
         try {
@@ -103,7 +110,7 @@ async function r2BackgroundWorker() {
 
             if (r2Package?.killID) {
                 processor.processPackage(r2Package);
-                currentSequence++;
+                sharedState.currentSequence++;
                 consecutive404s = 0;
                 lastSuccessfulIngest = Date.now();
                 lastErrorStatus = 200;
@@ -116,7 +123,7 @@ async function r2BackgroundWorker() {
                 
                 if (consecutive404s >= 5) {
                     console.warn(`⏭️ [SKIP] Seq ${currentSequence} is ghost data. Skipping to next.`);
-                    currentSequence++;
+                    sharedState.currentSequence++;
                     consecutive404s = 0;
                 }
             }
@@ -125,7 +132,7 @@ async function r2BackgroundWorker() {
             lastErrorStatus = status;
 
             if (status === 429) {
-                isThrottled = true;
+                sharedState.isThrottled = true;
                 console.error("🛑 [429] Rate Limited. Entering 2m quiet period.");
                 setTimeout(() => { isThrottled = false; poll(); }, POLLING_CONFIG.PANIC_DELAY);
                 return; // Break recursion until timeout finishes
