@@ -213,7 +213,18 @@ terminal-header:focus-within .terminal-button-prompt,
     pointer-events: none;
 }
 
-
+/* === FEED ROWS === */
+.kill-row {
+    will-change: transform, opacity;
+    border-bottom: 1px solid #1c2128;
+    padding: 8px 15px;
+    min-height: 64px;
+    display: flex;
+    align-items: center;
+    background-color: rgba(22, 27, 34, 0.6);
+    animation: slideIn 0.15s ease-out forwards, borderPulse 2s ease-out;
+    transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275), background 0.1s ease;
+}
 
 .kill-row:hover {
     background-color: #1c2128;
