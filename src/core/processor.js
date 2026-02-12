@@ -56,7 +56,9 @@ module.exports = (esi, mapper, io, statsManager) => {
             
 
             // 3. Dispatch to Web Front-end
-            io.emit("gatekeeper-stats", { totalScanned: statsManager.getTotal() });
+            io.emit("gatekeeper-stats", { totalScanned: statsManager.getTotal(),
+                totalisk: statsManager.totalIsk
+            });
             io.emit("raw-kill", {
                 id: killID,
                 val: rawValue,
@@ -69,7 +71,7 @@ module.exports = (esi, mapper, io, statsManager) => {
                 locationLabel: `System: ${systemName} | Region: ${regionName} | Corporation: ${corpName}`,
                 zkillUrl: `https://zkillboard.com/kill/${killID}/`,
                 victimName: finalVictimName,
-                totalScanned: statsManager.getTotal(),
+                //totalScanned: statsManager.getTotal(),
                 shipImageUrl: `https://api.socketkill.com/render/ship/${killmail.victim.ship_type_id}`,
                 corpImageUrl: `https://api.socketkill.com/render/corp/${killmail.victim.corporation_id}`
             });

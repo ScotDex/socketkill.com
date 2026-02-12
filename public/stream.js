@@ -197,18 +197,18 @@ socket.on('nebula-update', (data) => {
  * Main Killmail Processor: Handles dynamic injection and memory management
  */
 
-let totalIskDestroyed = 0;
+// let totalIskDestroyed = 0;
 
 socket.on('raw-kill', (kill) => {
     const val = Number(kill.val) || 0;
-    totalIskDestroyed += val;
-    const ticker = document.getElementById("isk-ticker-val")
-    if (ticker){
-        ticker.innerText = formatIskShorthand(totalIskDestroyed);
-        ticker.classList.remove('counter-update');
-        void ticker.offsetWidth; 
-        ticker.classList.add('counter-update');
-    }
+   // totalIskDestroyed += val;
+   // const ticker = document.getElementById("isk-ticker-val")
+   //  if (ticker){
+    //    ticker.innerText = formatIskShorthand(totalIskDestroyed);
+      //  ticker.classList.remove('counter-update');
+        //void ticker.offsetWidth; 
+        //ticker.classList.add('counter-update');
+    //}
     const emptyState = document.getElementById('empty-state');
     if (emptyState) emptyState.remove();
 
