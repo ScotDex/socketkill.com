@@ -46,21 +46,21 @@ const formatIskValue = (value) => {
 /**
  * Surgically types text into an element
  */
-const typeShipNameSurgical = (el, text, speed = 2) => {
+const typeShipNameSurgical = (el, text) => {
     let i = 0;
-    const final = text
+    const startTime = performance.now(); // TWEAK: Capture the "Birth" of this row
     el.classList.add('typewriter-cursor');
 
     const render = () => {
-        if (i < final.length) {
-            // Add characters every X frames for a steady "data-write" feel
-            if (Math.floor(performance.now() / 5000) > i) { 
-                el.innerText += final[i];
+        if (i < text.length) {
+            // TWEAK: Subtract startTime so the "clock" resets for this kill
+            // Now, 300 will actually mean 300ms per character.
+            if (Math.floor((performance.now() - startTime) / 300) > i) { 
+                el.innerText += text[i];
                 i++;
             }
             requestAnimationFrame(render);
         } else {
-            // Keep the cursor for 2 seconds after finishing, then fade it
             setTimeout(() => el.classList.remove('typewriter-cursor'), 2000);
         }
     };
