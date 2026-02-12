@@ -69,6 +69,16 @@ body::before {
     z-index: 9999; /* Sits at the very top */
 }
 
+body::after {
+    content: "";
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    /* A very subtle white/blue gradient */
+    background: linear-gradient(135deg, rgba(255,255,255,0.03) 0%, transparent 50%, rgba(255,255,255,0.01) 100%);
+    pointer-events: none;
+    z-index: 10000;
+}
+
 /* Core Terminal Input Class */
 .terminal-input-field {
     background: transparent;
