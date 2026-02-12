@@ -15,7 +15,7 @@ const MAX_FEED_SIZE = 50;
 let isTyping = false; 
 let regionCache = []; // Internal search index to prevent duplication bugs
 
-const SUPPORTERS = ["Shaftmaster Mastershafts", "Romulus", "Pheonix Venom", "Zoey Deninardes", "Himo Naerth"];
+const SUPPORTERS = ["Shaftmaster Mastershafts", "Romulus", "Pheonix Venom", "Zoey Deninardes", "Himo Naerth", "Shaayaa"];
 let supporterIndex = 0;
 
 
