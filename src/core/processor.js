@@ -4,25 +4,16 @@ const EmbedFactory = require("../services/embedFactory");
 const TwitterService = require("../network/twitterService");
 module.exports = (esi, mapper, io, statsManager) => {
     
-    // Constants
     const THERA_ID = 31000005;
     const WHALE_THRESHOLD = 20000000000;
-
-    // Helper: Identify Wormhole space
     const isWormholeSystem = (systemId) => systemId >= 31000001 && systemId <= 32000000;
 
-    /**
-     * Primary entry point for every killmail from the stream
-     */
     async function processPackage(packageData) {
         const startProcessing = process.hrtime.bigint();
         const { zkb, killID, isR2, esiData } = packageData;
 
         try {
-            // 1. Resolve Killmail and Core Identity in Parallel
-            // We use the raw zkb.href to get full details not present in the RedisQ package
             let killmail;
-
             if (isR2 && esiData){
                 killmail = esiData;
             } else {
@@ -30,7 +21,6 @@ module.exports = (esi, mapper, io, statsManager) => {
                 killmail = esiResponse.data;
             }
             const rawValue = Number(zkb.totalValue) || 0;
-
             const [systemDetails, shipName, charName, corpName] = await Promise.all([
                 esi.getSystemDetails(killmail.solar_system_id),
                 esi.getTypeName(killmail.victim.ship_type_id),
@@ -39,8 +29,6 @@ module.exports = (esi, mapper, io, statsManager) => {
             ]);
 
             const finalVictimName = (charName == "Unknown" || !charName ) ? corpName : charName;
-
-            // Pass the ISK value into the incrementer so it can update totalIsk
             statsManager.increment(rawValue);
 
             const systemName = systemDetails?.name || "Unknown System";
@@ -50,12 +38,6 @@ module.exports = (esi, mapper, io, statsManager) => {
 
             const durationMs = Number(process.hrtime.bigint() - startProcessing) / 1_000_000;
             console.log(`[PERF] Kill ${killID} | Latency: ${durationMs.toFixed(3)}ms`);
-
-          
-            // 2. Update Stats
-            
-
-            // 3. Dispatch to Web Front-end
             io.emit("gatekeeper-stats", { totalScanned: statsManager.getTotal(),
                 totalisk: statsManager.totalIsk
             });
@@ -71,15 +53,10 @@ module.exports = (esi, mapper, io, statsManager) => {
                 locationLabel: `System: ${systemName} | Region: ${regionName} | Corporation: ${corpName}`,
                 zkillUrl: `https://zkillboard.com/kill/${killID}/`,
                 victimName: finalVictimName,
-                //totalScanned: statsManager.getTotal(),
                 shipImageUrl: `https://api.socketkill.com/render/ship/${killmail.victim.ship_type_id}`,
                 corpImageUrl: `https://api.socketkill.com/render/corp/${killmail.victim.corporation_id}`
             });
 
-            // 4. Performance Benchmarking
-            
-
-            // 5. Intel Gating Logic
             const isWhale = rawValue >= WHALE_THRESHOLD;
             const isRelevantWH = isWormholeSystem(killmail.solar_system_id) && 
                                killmail.solar_system_id !== THERA_ID && 

@@ -112,7 +112,6 @@ regionSearch.addEventListener('input', (e) => {
         return;
     }
 
-    // Surgical Filter: Limit to top 5 matches
     const matches = regionCache
         .filter(r => r.toLowerCase().includes(term))
         .slice(0, 5); 
@@ -127,7 +126,6 @@ regionSearch.addEventListener('input', (e) => {
             item.onclick = () => {
                 regionSearch.value = match;
                 autocompleteBox.classList.add('d-none');
-                // Force a re-trigger to filter the live feed by the full selection
                 regionSearch.dispatchEvent(new Event('input')); 
             };
             suggestionList.appendChild(item);
@@ -148,11 +146,9 @@ socket.on('disconnect', () => {
     status.className = "badge bg-danger";
 });
 
-/**
- * Updates the internal region index from server-side cache
- */
+
 socket.on('region-list', (regionNames) => {
-    regionCache = regionNames; // Direct overwrite prevents duplication bug
+    regionCache = regionNames; 
 });
 
 socket.on('gatekeeper-stats', (data) => {
@@ -193,22 +189,13 @@ socket.on('nebula-update', (data) => {
     }
 });
 
-/**
- * Main Killmail Processor: Handles dynamic injection and memory management
- */
-
-// let totalIskDestroyed = 0;
-
 socket.on('raw-kill', (kill) => {
+
+    const prefetchShip = new Image();
+    const prefetchCorp = new Image();
+    prefetchShip.src = kill.shipImageUrl;
+    prefetchCorp.src = kill.corpImageUrl;
     const val = Number(kill.val) || 0;
-   // totalIskDestroyed += val;
-   // const ticker = document.getElementById("isk-ticker-val")
-   //  if (ticker){
-    //    ticker.innerText = formatIskShorthand(totalIskDestroyed);
-      //  ticker.classList.remove('counter-update');
-        //void ticker.offsetWidth; 
-        //ticker.classList.add('counter-update');
-    //}
     const emptyState = document.getElementById('empty-state');
     if (emptyState) emptyState.remove();
 
