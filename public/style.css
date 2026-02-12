@@ -213,33 +213,7 @@ terminal-header:focus-within .terminal-button-prompt,
     pointer-events: none;
 }
 
-.kill-row {
-    will-change: transform, opacity;
-    margin: 8px 12px;           /* Floating card look */
-    padding: 10px 18px;
-    min-height: 70px;
-    display: flex;
-    align-items: center;
-    
-    /* The 2026 "Glass" Look */
-    background: linear-gradient(135deg, rgba(22, 27, 34, 0.4) 0%, rgba(10, 12, 16, 0.6) 100%);
-    backdrop-filter: blur(12px); /* Deep frosted glass */
-    -webkit-backdrop-filter: blur(12px);
-    
-    /* Structural Framing */
-    border: 1px solid rgba(63, 185, 80, 0.15);
-    border-left: 3px solid var(--neon-green); /* Visual "Threat Level" indicator */
-    border-radius: 4px;
-    
-    /* Depth */
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4), inset 0 0 10px rgba(63, 185, 80, 0.05);
-    
-    /* Animations */
-    animation: slideIn 0.2s cubic-bezier(0.1, 0.9, 0.2, 1) forwards;
-    transition: all 0.2s ease;
-    position: relative;
-    overflow: hidden;
-}
+
 
 .kill-row:hover {
     background-color: #1c2128;
