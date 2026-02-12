@@ -54,7 +54,7 @@ const typeShipNameSurgical = (el, text, speed = 2) => {
     const render = () => {
         if (i < final.length) {
             // Add characters every X frames for a steady "data-write" feel
-            if (Math.floor(performance.now() / 2000) > i) { 
+            if (Math.floor(performance.now() / 5000) > i) { 
                 el.innerText += final[i];
                 i++;
             }
