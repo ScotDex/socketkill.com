@@ -23,7 +23,7 @@ function startWebServer(esi, statsManager, getState) {
     const io = new Server(server, {
         pingTimeout: 2000,
         pingInterval: 5000,
-        cors: { origin: ["https://socketkill.com", "https://killstream.voidspark.org"],
+        cors: { origin: ["https://socketkill.com", "https://killstream.voidspark.org", "https://socketkilldev.themadlyscientific.workers.dev/"],
         methods: ["GET", "POST"],
         },
         transports: ['websocket', 'polling'],
