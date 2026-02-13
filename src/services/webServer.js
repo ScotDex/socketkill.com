@@ -23,13 +23,13 @@ function startWebServer(esi, statsManager, getState) {
     const io = new Server(server, {
         pingTimeout: 2000,
         pingInterval: 5000,
-        cors: { origin: "*",
+        cors: { origin: ["https://socketkill.com", "https://killstream.voidspark.org"],
         methods: ["GET", "POST"],
         },
         transports: ['websocket', 'polling'],
     });
 
-    const PORT = process.env.PORT || 80;
+    const PORT = process.env.PORT 
 
     app.use(cors());
     app.use(express.json());
