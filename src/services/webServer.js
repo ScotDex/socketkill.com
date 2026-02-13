@@ -42,7 +42,7 @@ const CF_ZONE_ID = process.env.CF_ZONE_ID;
 
 async function getCloudflareStats() {
     const query = `
-    query GetStats($zoneTag: string) {
+    query GetStats($zoneTag: String!) {
       viewer {
         zones(filter: { zoneTag: $zoneTag }) {
           httpRequests1dGroups(limit: 1, orderBy: [date_DESC]) {
