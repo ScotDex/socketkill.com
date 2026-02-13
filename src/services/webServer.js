@@ -67,6 +67,7 @@ async function getCloudflareStats() {
         });
 
         const result = await response.json();
+        console.log('CF API Raw Result:', JSON.stringify(result));
         const stats = result.data.viewer.zones[0].httpRequests1dGroups[0].sum;
         
         return {
