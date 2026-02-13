@@ -41,11 +41,17 @@ const CF_API_TOKEN = process.env.CF_API_TOKEN;
 const CF_ZONE_ID = process.env.CF_ZONE_ID;
 
 async function getCloudflareStats() {
+    // We get the date for "today" to satisfy the mandatory filter
+    const today = new Date().toISOString().split('T')[0];
+
     const query = `
-    query GetStats($zoneTag: String!) {
+    query GetStats($zoneTag: String!, $date: Date!) {
       viewer {
         zones(filter: { zoneTag: $zoneTag }) {
-          httpRequests1dGroups(limit: 1, orderBy: [date_DESC]) {
+          httpRequests1dGroups(
+            limit: 1, 
+            filter: { date: $date }
+          ) {
             sum {
               requests
               cachedRequests
@@ -66,23 +72,27 @@ async function getCloudflareStats() {
             body: JSON.stringify({ 
                 query: query, 
                 variables: { 
-                    zoneTag: CF_ZONE_ID 
+                    zoneTag: CF_ZONE_ID,
+                    date: today 
                 } 
             })
         });
 
         const result = await response.json();
+        
         if (!result.data || !result.data.viewer || !result.data.viewer.zones[0]) {
-            console.error('CF API Detailed Error:', JSON.stringify(result.errors || "No data returned"));
+            console.error('CF API Detailed Error:', JSON.stringify(result.errors || "Empty Response"));
             return { shield: "ERR", throughput: "ERR" };
         }
+
         const stats = result.data.viewer.zones[0].httpRequests1dGroups[0].sum;
         
         return {
-            shield: ((stats.cachedRequests / stats.requests) * 100).toFixed(1) + "%",
+            shield: stats.requests > 0 ? ((stats.cachedRequests / stats.requests) * 100).toFixed(1) + "%" : "0.0%",
             throughput: (stats.edgeResponseBytes / 1024 / 1024).toFixed(2) + " MB"
         };
     } catch (err) {
+        console.error('Network Error:', err);
         return { shield: "---", throughput: "---" };
     }
 }
