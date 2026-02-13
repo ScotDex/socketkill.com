@@ -1,19 +1,15 @@
-/* ========================================
-   Socket.Kill - Core Terminal Logic
-   ======================================== */
 
-/* --- Configuration & State --- */
 const socket = io();
 const feed = document.getElementById('feed');
 const status = document.getElementById('status');
 const counterElement = document.getElementById('kill-counter');
 const regionSearch = document.getElementById('regionSearch');
-const autocompleteBox = document.getElementById('terminal-autocomplete'); // New
-const suggestionList = document.getElementById('suggestion-list');     // New
+const autocompleteBox = document.getElementById('terminal-autocomplete'); 
+const suggestionList = document.getElementById('suggestion-list');     
 
 const MAX_FEED_SIZE = 50;
 let isTyping = false; 
-let regionCache = []; // Internal search index to prevent duplication bugs
+let regionCache = []; 
 
 const SUPPORTERS = ["Shaftmaster Mastershafts", "Romulus", "Pheonix Venom", "Zoey Deninardes", "Himo Naerth", "Shaayaa"];
 let supporterIndex = 0;
@@ -34,27 +30,21 @@ function formatIskShorthand(value) {
     return value.toLocaleString();
 }
 
-/**
- * Formats raw ISK numbers into readable terminal shorthand (M/B)
- */
+
 const formatIskValue = (value) => {
     const num = Number(value);
     if (num >= 1000000000) return (num / 1000000000).toFixed(2) + "B";
     return (num / 1000000).toFixed(2) + "M";
 };
 
-/**
- * Surgically types text into an element
- */
+
 const typeShipNameSurgical = (el, text) => {
     let i = 0;
-    const startTime = performance.now(); // TWEAK: Capture the "Birth" of this row
+    const startTime = performance.now(); 
     el.classList.add('typewriter-cursor');
 
     const render = () => {
         if (i < text.length) {
-            // TWEAK: Subtract startTime so the "clock" resets for this kill
-            // Now, 300 will actually mean 300ms per character.
             if (Math.floor((performance.now() - startTime) / 300) > i) { 
                 el.innerText += text[i];
                 i++;
