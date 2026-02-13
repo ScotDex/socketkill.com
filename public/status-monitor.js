@@ -1,3 +1,5 @@
+const socket = io();
+
 async function updateHealth() {
     try {
         const res = await fetch('/api/health');
@@ -14,6 +16,25 @@ async function updateHealth() {
         document.getElementById('rss').innerText = data.system?.rss || '---';
         document.getElementById('clients').innerText = data.stats?.activeClients || '0';
         document.getElementById('heap-ratio').innerText = data.system?.heapRatio || '---';
+
+        socket.on('gatekeeper-stats', (data) => {
+    // This updates the card instantly every time a kill is counted
+    const counterElement = document.getElementById('kill-counter'); // Ensure this ID exists in your HTML
+    if (counterElement && data.totalScanned) {
+        counterElement.innerText = data.totalScanned.toLocaleString();
+        
+        // Bonus: Add a "pulse" effect so it looks alive on the CRT
+        counterElement.style.color = "var(--neon-green)";
+        setTimeout(() => counterElement.style.color = "", 100);
+    }
+});
+
+socket.on('player-count', (data) => {
+    const clientsEl = document.getElementById('clients');
+    if (clientsEl && data.count) {
+        clientsEl.innerText = data.count.toLocaleString();
+    }
+});
         
 // FIXED PATHING: Your backend sends it as data.stats.cf
 if (data.stats && data.stats.cf) {
