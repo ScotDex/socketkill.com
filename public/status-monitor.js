@@ -14,11 +14,14 @@ async function updateHealth() {
         document.getElementById('rss').innerText = data.system?.rss || '---';
         document.getElementById('clients').innerText = data.stats?.activeClients || '0';
         
-        // Add the new Cloudflare mappings here too
-        if(data.cf) {
-            document.getElementById('shield').innerText = data.stats.cf.shield;
-            document.getElementById('bandwidth').innerText = data.stats.cf.throughput;
-        }
+// FIXED PATHING: Your backend sends it as data.stats.cf
+if (data.stats && data.stats.cf) {
+    const shieldEl = document.getElementById('shield');
+    const bandwidthEl = document.getElementById('bandwidth');
+
+    if (shieldEl) shieldEl.innerText = data.stats.cf.shield || '0%';
+    if (bandwidthEl) bandwidthEl.innerText = data.stats.cf.throughput || '0 MB';
+}
         
     } catch (e) {
         const statusEl = document.getElementById('status');
