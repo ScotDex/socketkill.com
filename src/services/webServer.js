@@ -42,8 +42,12 @@ const CF_ZONE_ID = process.env.CF_ZONE_ID;
 
 async function getCloudflareStats() {
     // Cloudflare uses UTC dates
+    console.log(">> CF_STATS_FETCH_START");
     const today = new Date().toISOString().split('T')[0];
-
+    if (!CF_API_TOKEN || !CF_ZONE_ID) {
+        console.error(">> MISSING_CF_KEYS_IN_ENV");
+        return { shield: "KEYS?", throughput: "KEYS?" };
+    }
     const query = `
     query GetStats($zoneTag: String!, $date: Date!) {
       viewer {

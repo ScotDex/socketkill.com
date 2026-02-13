@@ -16,8 +16,8 @@ async function updateHealth() {
         
         // Add the new Cloudflare mappings here too
         if(data.cf) {
-            document.getElementById('shield').innerText = data.cf.shield;
-            document.getElementById('bandwidth').innerText = data.cf.throughput;
+            document.getElementById('shield').innerText = data.stats.cf.shield;
+            document.getElementById('bandwidth').innerText = data.stats.cf.throughput;
         }
         
     } catch (e) {
