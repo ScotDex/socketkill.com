@@ -41,7 +41,7 @@ const CF_API_TOKEN = process.env.CF_API_TOKEN;
 const CF_ZONE_ID = process.env.CF_ZONE_ID;
 
 async function getCloudflareStats() {
-    // We get the date for "today" to satisfy the mandatory filter
+    // Cloudflare uses UTC dates
     const today = new Date().toISOString().split('T')[0];
 
     const query = `
@@ -55,7 +55,7 @@ async function getCloudflareStats() {
             sum {
               requests
               cachedRequests
-              edgeResponseBytes
+              bytes
             }
           }
         }
@@ -85,10 +85,18 @@ async function getCloudflareStats() {
             return { shield: "ERR", throughput: "ERR" };
         }
 
-        const stats = result.data.viewer.zones[0].httpRequests1dGroups[0].sum;
+        const groups = result.data.viewer.zones[0].httpRequests1dGroups;
+        
+        if (groups.length === 0) {
+            return { shield: "0%", throughput: "0.00 MB" };
+        }
+
+        const stats = groups[0].sum;
         
         return {
-            shield: stats.requests > 0 ? ((stats.cachedRequests / stats.requests) * 100).toFixed(1) + "%" : "0.0%",
+            shield: stats.requests > 0 
+                ? ((stats.cachedRequests / stats.requests) * 100).toFixed(1) + "%" 
+                : "0.0%",
             throughput: (stats.bytes / 1024 / 1024).toFixed(2) + " MB"
         };
     } catch (err) {
@@ -96,7 +104,6 @@ async function getCloudflareStats() {
         return { shield: "---", throughput: "---" };
     }
 }
-
     app.get ('/api/health', async (req, res) => {
         const mem = process.memoryUsage();
         const cfStats = await getCloudflareStats();
