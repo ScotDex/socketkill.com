@@ -89,7 +89,7 @@ async function getCloudflareStats() {
         
         return {
             shield: stats.requests > 0 ? ((stats.cachedRequests / stats.requests) * 100).toFixed(1) + "%" : "0.0%",
-            throughput: (stats.edgeResponseBytes / 1024 / 1024).toFixed(2) + " MB"
+            throughput: (stats.bytes / 1024 / 1024).toFixed(2) + " MB"
         };
     } catch (err) {
         console.error('Network Error:', err);
