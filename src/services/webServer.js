@@ -1,3 +1,5 @@
+
+require('dotenv').config();
 const express = require('express');
 const https = require('https');
 const { Server } = require('socket.io');
@@ -35,15 +37,58 @@ function startWebServer(esi, statsManager, getState) {
     app.use(express.json());
     app.use(express.static(path.join(__dirname, '..', '..', 'public')));
 
-    app.get ('/api/health', (req, res) => {
+const CF_API_TOKEN = process.env.CF_API_TOKEN;
+const CF_ZONE_ID = process.env.CF_ZONE_ID;
+
+async function getCloudflareStats() {
+    const query = `
+    query GetStats($zoneTag: string) {
+      viewer {
+        zones(filter: { zoneTag: $zoneTag }) {
+          httpRequests1dGroups(limit: 1, orderBy: [date_DESC]) {
+            sum {
+              requests
+              cachedRequests
+              edgeResponseBytes
+            }
+          }
+        }
+      }
+    }`;
+
+    try {
+        const response = await fetch('https://api.cloudflare.com/client/v4/graphql', {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${CF_API_TOKEN}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ query, variables: { zoneTag: CF_ZONE_ID } })
+        });
+
+        const result = await response.json();
+        const stats = result.data.viewer.zones[0].httpRequests1dGroups[0].sum;
+        
+        return {
+            shield: ((stats.cachedRequests / stats.requests) * 100).toFixed(1) + "%",
+            throughput: (stats.edgeResponseBytes / 1024 / 1024).toFixed(2) + " MB"
+        };
+    } catch (err) {
+        return { shield: "---", throughput: "---" };
+    }
+}
+
+    app.get ('/api/health', async (req, res) => {
         const mem = process.memoryUsage();
+        const cfStats = await getCloudflareStats();
         const healthData = {
             status: getState.isThrottled ? "DEGRADED" : "OPERATIONAL",
             uptime: Math.round((Date.now() - statsManager.startTime) / 1000),
             stats: {
                 killsProcessed: statsManager.totalKills,
                 iskDestroyed: statsManager.totalIsk,
-                activeClients: io.engine.clientsCount
+                activeClients: io.engine.clientsCount,
+                cf: cfStats
             },
 
             system: {

@@ -48,6 +48,20 @@
                 </div>
             </div>
 
+                        <div class="kill-row player-count-card">
+                <div class="flex-grow-1">
+                    <div class="location-label tracking-widest">SHIELD_EFFICIENCY</div>
+                    <div id="rss" class="ship-name">---</div>
+                </div>
+            </div>
+
+                        <div class="kill-row player-count-card">
+                <div class="flex-grow-1">
+                    <div class="location-label tracking-widest">EDGE_THROUGHPUT</div>
+                    <div id="rss" class="ship-name">---</div>
+                </div>
+            </div>
+
             <div class="kill-row player-count-card">
                 <div class="flex-grow-1">
                     <div class="location-label tracking-widest">ACTIVE_UPLINKS</div>
@@ -57,35 +71,6 @@
         </div>
     </div>
 
-    <script>
-        async function updateHealth() {
-            try {
-                const res = await fetch('/api/health');
-                const data = await res.json();
-                
-                const statusEl = document.getElementById('status');
-                statusEl.innerText = data.status;
-                
-                // Use existing CRT colors for status
-                if (data.status === 'OPERATIONAL') {
-                    statusEl.style.color = "var(--neon-green)";
-                } else {
-                    statusEl.style.color = "#ff0000"; // Red Alert
-                }
-
-                document.getElementById('sequence').innerText = data.system.sequence;
-                document.getElementById('rss').innerText = data.system.rss;
-                document.getElementById('clients').innerText = data.stats.activeClients;
-                
-            } catch (e) {
-                document.getElementById('status').innerText = 'OFFLINE';
-                document.getElementById('status').style.color = '#ff0000';
-            }
-        }
-
-        // Refresh heartbeat
-        setInterval(updateHealth, 5000);
-        updateHealth();
-    </script>
+<script src="/status-monitor.js"></script>
 </body>
 </html>
