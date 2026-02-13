@@ -13,6 +13,7 @@ async function updateHealth() {
         document.getElementById('sequence').innerText = data.system?.sequence || '---';
         document.getElementById('rss').innerText = data.system?.rss || '---';
         document.getElementById('clients').innerText = data.stats?.activeClients || '0';
+        document.getElementById('heap-ratio').innerText = data.system?.heapRatio || '---';
         
 // FIXED PATHING: Your backend sends it as data.stats.cf
 if (data.stats && data.stats.cf) {

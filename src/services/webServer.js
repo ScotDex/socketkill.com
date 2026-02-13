@@ -8,6 +8,9 @@ const path = require('path');
 const helmet = require('helmet');
 const fs = require('fs');
 
+let cachedCfData = null;
+let lastFetchTime = 0;
+
 function startWebServer(esi, statsManager, getState) {
     const app = express();
 
@@ -43,6 +46,10 @@ const CF_ZONE_ID = process.env.CF_ZONE_ID;
 async function getCloudflareStats() {
     // Cloudflare uses UTC dates
     console.log(">> CF_STATS_FETCH_START");
+    const now = Date.now();
+    if (cachedCfData && (now - lastFetchTime < 60000)) {
+        return cachedCfData;
+    }
     const today = new Date().toISOString().split('T')[0];
     if (!CF_API_TOKEN || !CF_ZONE_ID) {
         console.error(">> MISSING_CF_KEYS_IN_ENV");
@@ -96,21 +103,24 @@ async function getCloudflareStats() {
         }
 
         const stats = groups[0].sum;
-        
-        return {
+        cachedCfData = {
             shield: stats.requests > 0 
                 ? ((stats.cachedRequests / stats.requests) * 100).toFixed(1) + "%" 
                 : "0.0%",
             throughput: (stats.bytes / 1024 / 1024).toFixed(2) + " MB"
         };
+        lastFetchTime = now;
+
+        return cachedCfData;
     } catch (err) {
         console.error('Network Error:', err);
-        return { shield: "---", throughput: "---" };
+        return cachedCfData || { shield: "---", throughput: "---" };
     }
 }
     app.get ('/api/health', async (req, res) => {
         const mem = process.memoryUsage();
         const cfStats = await getCloudflareStats();
+        const heapRatio = ((mem.heapUsed / mem.heapTotal) * 100).toFixed(1) + "%";
         const healthData = {
             status: getState.isThrottled ? "DEGRADED" : "OPERATIONAL",
             uptime: Math.round((Date.now() - statsManager.startTime) / 1000),
@@ -124,6 +134,7 @@ async function getCloudflareStats() {
             system: {
                 rss: `${Math.round(mem.rss / 1024 / 1024)}MB`,
                 heapUsed: `${Math.round(mem.heapUsed / 1024 / 1024)}MB`,
+                heapRatio: heapRatio,
                 sequence: getState.currentSequence
             }
         };
