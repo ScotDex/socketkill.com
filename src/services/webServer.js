@@ -63,11 +63,19 @@ async function getCloudflareStats() {
                 'Authorization': `Bearer ${CF_API_TOKEN}`,
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ query, variables: { zoneTag: CF_ZONE_ID } })
+            body: JSON.stringify({ 
+                query: query, 
+                variables: { 
+                    zoneTag: CF_ZONE_ID 
+                } 
+            })
         });
 
         const result = await response.json();
-        console.log('CF API Raw Result:', JSON.stringify(result));
+        if (!result.data || !result.data.viewer || !result.data.viewer.zones[0]) {
+            console.error('CF API Detailed Error:', JSON.stringify(result.errors || "No data returned"));
+            return { shield: "ERR", throughput: "ERR" };
+        }
         const stats = result.data.viewer.zones[0].httpRequests1dGroups[0].sum;
         
         return {
