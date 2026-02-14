@@ -192,9 +192,9 @@ if (counterElement && kill.totalScanned) {
                 <img src="${kill.shipImageUrl}" alt="Ship Render" class="ship-render" loading="lazy">
             </div>
             <div class="kill-info">
-                <div>
+                <div><strong class="ship-name">
                     <span class="timestamp">${timestamp}</span>
-                    <strong class="ship-name">${kill.victimName || "Unknown"} lost
+                    ${kill.victimName || "Unknown"} lost
                     <span class="article-target"></span><span class="type-target ship-name-container"></span></strong>
                 </div>
                 <div class="small">
