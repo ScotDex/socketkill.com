@@ -389,7 +389,7 @@ terminal-header:focus-within .terminal-button-prompt,
 .isk-million {
     color: #3fb950;
     font-weight: bold;
-    font-family: 'Roboto Mono', monospace;
+    font-family: 'Share Tech Mono', monospace;
     font-size: 1.1rem;
     text-shadow: 0 0 3px rgba(63, 185, 80, 0.2);
 }
@@ -397,7 +397,7 @@ terminal-header:focus-within .terminal-button-prompt,
 .isk-billion {
     color: #ff0000;
     font-weight: 800;
-    font-family: 'Roboto Mono', monospace;
+    font-family: 'Share Tech Mono', monospace;
     font-size: 1.2rem;
     text-shadow: 0 0 8px rgba(242, 204, 96, 0.2), 0 0 3px rgba(63, 185, 80, 0.2);
 }
