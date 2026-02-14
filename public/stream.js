@@ -289,6 +289,10 @@ if (counterElement && kill.totalScanned) {
             </div>
         </div>
     `;
+
+    // In your kill handler
+div.classList.add('fresh');
+setTimeout(() => div.classList.remove('fresh'), 300);
     const overlay = document.querySelector('body');
     overlay.style.opacity = '0.9';
     setTimeout(() => overlay.style.opacity = '1', 50);
