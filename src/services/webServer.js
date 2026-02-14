@@ -72,6 +72,7 @@ function startWebServer(esi, statsManager, getState) {
     // Socket.io connection logging
     io.on('connection', (socket) => {
         console.log(`🔌 Client connected to Intel Stream: ${socket.id}`);
+        const clientCount = io.engine.clientsCount;
             const ip = socket.handshake.address;
     const userAgent = socket.handshake.headers['user-agent'];
     
