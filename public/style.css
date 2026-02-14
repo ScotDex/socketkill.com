@@ -26,6 +26,9 @@ body {
     transition: background 2s ease-in-out;
     animation: cathode-flicker 0.15s infinite, slowDrift 120s linear infinite;
     background-repeat: no-repeat;
+    text-rendering: geometricPrecision;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
 }
 
 .supporter-readout {
