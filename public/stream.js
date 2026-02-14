@@ -15,31 +15,46 @@ let supporterIndex = 0;
 
 // ADD THE AUDIO CODE HERE ========================================
 let audioEnabled = localStorage.getItem('audio-enabled') === 'true';
-const ambientHum = new Audio('/audio/nostromo.wav'); // Update path to your file
-ambientHum.volume = 0.15; // Quiet background hum
-ambientHum.loop = true;
+const ambientHum1 = new Audio('/audio/nostromo.wav'); // Update path to your file
+const ambientHum2 = new Audio('/audio/nostromo.wav'); // Update path to your file
+ambientHum1.volume = 0.15; // Quiet background hum
+ambientHum2.volume = 0.15; // Quiet background hum
 
-const audioToggle = document.getElementById('audio-toggle');
-if (audioToggle) {
-    audioToggle.textContent = audioEnabled ? '🔊' : '🔇';
-}
+let currentHum = ambientHum1;
+let nextHum = ambientHum2;
 
-// Start ambient hum if already enabled
+ambientHum1.addEventListener('ended', () => {
+    ambientHum2.currentTime = 0;
+    ambientHum2.play();
+    currentHum = ambientHum2;
+    nextHum = ambientHum1;
+});
+
+ambientHum2.addEventListener('ended', () => {
+    ambientHum1.currentTime = 0;
+    ambientHum1.play();
+    currentHum = ambientHum1;
+    nextHum = ambientHum2;
+});
+
+// Start if enabled
 if (audioEnabled) {
-    ambientHum.play().catch(() => {});
+    currentHum.play().catch(() => {});
 }
 
-// Toggle audio on/off
+
 audioToggle?.addEventListener('click', () => {
     audioEnabled = !audioEnabled;
     localStorage.setItem('audio-enabled', audioEnabled);
     
     if (audioEnabled) {
-        ambientHum.play().catch(err => console.log('Audio blocked:', err));
+        currentHum.play().catch(err => console.log('Audio blocked:', err));
         audioToggle.textContent = '🔊';
     } else {
-        ambientHum.pause();
-        ambientHum.currentTime = 0;
+        ambientHum1.pause();
+        ambientHum2.pause();
+        ambientHum1.currentTime = 0;
+        ambientHum2.currentTime = 0;
         audioToggle.textContent = '🔇';
     }
 });
