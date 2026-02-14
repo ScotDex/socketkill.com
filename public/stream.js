@@ -102,9 +102,7 @@ if (document.readyState === 'loading') {
     typeBootSequence();
 }
 
-// In your kill handler
-div.classList.add('fresh');
-setTimeout(() => div.classList.remove('fresh'), 300);
+
 
 
 const formatIskValue = (value) => {
