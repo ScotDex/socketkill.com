@@ -354,6 +354,14 @@ ambientHum2.volume = 0.15; // Quiet background hum
 let currentHum = ambientHum1;
 let nextHum = ambientHum2;
 
+const audioToggle = document.getElementById('audio-toggle');
+
+// Set initial button state
+if (audioToggle) {
+    audioToggle.textContent = audioEnabled ? '🔊 AUDIO' : '🔇 AUDIO';
+}
+
+
 ambientHum1.addEventListener('ended', () => {
     ambientHum2.currentTime = 0;
     ambientHum2.play();
