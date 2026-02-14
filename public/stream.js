@@ -347,31 +347,64 @@ if (document.readyState === 'loading') {
 let audioEnabled = localStorage.getItem('audio-enabled') === 'true';
 const ambientHum = new Audio('/audio/nostromo.wav');
 ambientHum.volume = 0.15;
-ambientHum.loop = true; // This makes it loop seamlessly
+
+// Create AudioContext for gapless looping
+const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+let sourceNode = null;
+let audioBuffer = null;
+
+// Load and decode the audio
+fetch('/audio/nostromo.wav')
+    .then(response => response.arrayBuffer())
+    .then(arrayBuffer => audioContext.decodeAudioData(arrayBuffer))
+    .then(buffer => {
+        audioBuffer = buffer;
+        if (audioEnabled) {
+            playLoop();
+        }
+    });
+
+function playLoop() {
+    if (sourceNode) {
+        sourceNode.stop();
+    }
+    
+    sourceNode = audioContext.createBufferSource();
+    sourceNode.buffer = audioBuffer;
+    sourceNode.loop = true;
+    
+    const gainNode = audioContext.createGain();
+    gainNode.gain.value = 0.15;
+    
+    sourceNode.connect(gainNode);
+    gainNode.connect(audioContext.destination);
+    sourceNode.start(0);
+}
+
+function stopLoop() {
+    if (sourceNode) {
+        sourceNode.stop();
+        sourceNode = null;
+    }
+}
 
 const audioToggle = document.getElementById('audio-toggle');
 
-// Set initial button state
 if (audioToggle) {
     audioToggle.textContent = audioEnabled ? '🔊 AUDIO' : '🔇 AUDIO';
 }
 
-// Start if enabled
-if (audioEnabled) {
-    ambientHum.play().catch(() => {});
-}
-
-// Toggle
 audioToggle?.addEventListener('click', () => {
     audioEnabled = !audioEnabled;
     localStorage.setItem('audio-enabled', audioEnabled);
     
     if (audioEnabled) {
-        ambientHum.play().catch(err => console.log('Audio blocked:', err));
+        if (audioBuffer) {
+            playLoop();
+        }
         audioToggle.textContent = '🔊 AUDIO';
     } else {
-        ambientHum.pause();
-        ambientHum.currentTime = 0;
+        stopLoop();
         audioToggle.textContent = '🔇 AUDIO';
     }
 });
