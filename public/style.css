@@ -357,7 +357,7 @@ terminal-header:focus-within .terminal-button-prompt,
 }
 
 .timestamp {
-    color: rgba(63, 185, 80, 0.4);
+    color: rgba(63, 185, 80, 0.25);
     font-size: 0.75rem;
     font-family: 'Share Tech Mono', monospace;
     margin-right: 6px;
