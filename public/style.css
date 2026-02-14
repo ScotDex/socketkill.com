@@ -786,8 +786,10 @@ terminal-header:focus-within .terminal-button-prompt,
 
     /* 4. Optimize the Rows (Save vertical space) */
     .kill-row {
+        mix-blend-mode: screen;
         padding: 5px 10px;
         min-height: 50px;
+        transition: backdrop-filter 0.3s;
     }
 
     .ship-icon-container, .corp-square-container {
@@ -798,6 +800,7 @@ terminal-header:focus-within .terminal-button-prompt,
 
     .ship-name {
         font-size: 0.9rem;
+        mix-blend-mode: lighten;
     }
 
     /* 5. Force the search bar to be more prominent */
