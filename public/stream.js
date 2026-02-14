@@ -344,15 +344,10 @@ if (document.readyState === 'loading') {
 } else {
     initApp();
 
-    // ADD THE AUDIO CODE HERE ========================================
 let audioEnabled = localStorage.getItem('audio-enabled') === 'true';
-const ambientHum1 = new Audio('/audio/nostromo.wav'); // Update path to your file
-const ambientHum2 = new Audio('/audio/nostromo.wav'); // Update path to your file
-ambientHum1.volume = 0.15; // Quiet background hum
-ambientHum2.volume = 0.15; // Quiet background hum
-
-let currentHum = ambientHum1;
-let nextHum = ambientHum2;
+const ambientHum = new Audio('/audio/nostromo.wav');
+ambientHum.volume = 0.15;
+ambientHum.loop = true; // This makes it loop seamlessly
 
 const audioToggle = document.getElementById('audio-toggle');
 
@@ -361,40 +356,23 @@ if (audioToggle) {
     audioToggle.textContent = audioEnabled ? '🔊 AUDIO' : '🔇 AUDIO';
 }
 
-
-ambientHum1.addEventListener('ended', () => {
-    ambientHum2.currentTime = 0;
-    ambientHum2.play();
-    currentHum = ambientHum2;
-    nextHum = ambientHum1;
-});
-
-ambientHum2.addEventListener('ended', () => {
-    ambientHum1.currentTime = 0;
-    ambientHum1.play();
-    currentHum = ambientHum1;
-    nextHum = ambientHum2;
-});
-
 // Start if enabled
 if (audioEnabled) {
-    currentHum.play().catch(() => {});
+    ambientHum.play().catch(() => {});
 }
 
-
+// Toggle
 audioToggle?.addEventListener('click', () => {
     audioEnabled = !audioEnabled;
     localStorage.setItem('audio-enabled', audioEnabled);
     
     if (audioEnabled) {
-        currentHum.play().catch(err => console.log('Audio blocked:', err));
-        audioToggle.textContent = '🔊';
+        ambientHum.play().catch(err => console.log('Audio blocked:', err));
+        audioToggle.textContent = '🔊 AUDIO';
     } else {
-        ambientHum1.pause();
-        ambientHum2.pause();
-        ambientHum1.currentTime = 0;
-        ambientHum2.currentTime = 0;
-        audioToggle.textContent = '🔇';
+        ambientHum.pause();
+        ambientHum.currentTime = 0;
+        audioToggle.textContent = '🔇 AUDIO';
     }
 });
 }
