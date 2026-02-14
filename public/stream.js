@@ -13,51 +13,7 @@ let regionCache = [];
 const SUPPORTERS = ["Shaftmaster Mastershafts", "Romulus", "Pheonix Venom", "Zoey Deninardes", "Himo Naerth", "Shaayaa"];
 let supporterIndex = 0;
 
-// ADD THE AUDIO CODE HERE ========================================
-let audioEnabled = localStorage.getItem('audio-enabled') === 'true';
-const ambientHum1 = new Audio('/audio/nostromo.wav'); // Update path to your file
-const ambientHum2 = new Audio('/audio/nostromo.wav'); // Update path to your file
-ambientHum1.volume = 0.15; // Quiet background hum
-ambientHum2.volume = 0.15; // Quiet background hum
 
-let currentHum = ambientHum1;
-let nextHum = ambientHum2;
-
-ambientHum1.addEventListener('ended', () => {
-    ambientHum2.currentTime = 0;
-    ambientHum2.play();
-    currentHum = ambientHum2;
-    nextHum = ambientHum1;
-});
-
-ambientHum2.addEventListener('ended', () => {
-    ambientHum1.currentTime = 0;
-    ambientHum1.play();
-    currentHum = ambientHum1;
-    nextHum = ambientHum2;
-});
-
-// Start if enabled
-if (audioEnabled) {
-    currentHum.play().catch(() => {});
-}
-
-
-audioToggle?.addEventListener('click', () => {
-    audioEnabled = !audioEnabled;
-    localStorage.setItem('audio-enabled', audioEnabled);
-    
-    if (audioEnabled) {
-        currentHum.play().catch(err => console.log('Audio blocked:', err));
-        audioToggle.textContent = '🔊';
-    } else {
-        ambientHum1.pause();
-        ambientHum2.pause();
-        ambientHum1.currentTime = 0;
-        ambientHum2.currentTime = 0;
-        audioToggle.textContent = '🔇';
-    }
-});
 
 const cycleSupporters = () => {
     const display = document.getElementById('active-supporter');
@@ -387,4 +343,50 @@ if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', initApp);
 } else {
     initApp();
+
+    // ADD THE AUDIO CODE HERE ========================================
+let audioEnabled = localStorage.getItem('audio-enabled') === 'true';
+const ambientHum1 = new Audio('/audio/nostromo.wav'); // Update path to your file
+const ambientHum2 = new Audio('/audio/nostromo.wav'); // Update path to your file
+ambientHum1.volume = 0.15; // Quiet background hum
+ambientHum2.volume = 0.15; // Quiet background hum
+
+let currentHum = ambientHum1;
+let nextHum = ambientHum2;
+
+ambientHum1.addEventListener('ended', () => {
+    ambientHum2.currentTime = 0;
+    ambientHum2.play();
+    currentHum = ambientHum2;
+    nextHum = ambientHum1;
+});
+
+ambientHum2.addEventListener('ended', () => {
+    ambientHum1.currentTime = 0;
+    ambientHum1.play();
+    currentHum = ambientHum1;
+    nextHum = ambientHum2;
+});
+
+// Start if enabled
+if (audioEnabled) {
+    currentHum.play().catch(() => {});
+}
+
+
+audioToggle?.addEventListener('click', () => {
+    audioEnabled = !audioEnabled;
+    localStorage.setItem('audio-enabled', audioEnabled);
+    
+    if (audioEnabled) {
+        currentHum.play().catch(err => console.log('Audio blocked:', err));
+        audioToggle.textContent = '🔊';
+    } else {
+        ambientHum1.pause();
+        ambientHum2.pause();
+        ambientHum1.currentTime = 0;
+        ambientHum2.currentTime = 0;
+        audioToggle.textContent = '🔇';
+    }
+});
 }
