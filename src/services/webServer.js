@@ -41,7 +41,6 @@ function startWebServer(esi, statsManager, getState) {
 
     app.get ('/api/health', async (req, res) => {
         const mem = process.memoryUsage();
-        const cfStats = await getCloudflareStats();
         const heapRatio = ((mem.heapUsed / mem.heapTotal) * 100).toFixed(1) + "%";
         const healthData = {
             status: getState.isThrottled ? "DEGRADED" : "OPERATIONAL",
@@ -50,7 +49,6 @@ function startWebServer(esi, statsManager, getState) {
                 killsProcessed: statsManager.totalKills,
                 iskDestroyed: statsManager.totalIsk,
                 activeClients: io.engine.clientsCount,
-                cf: cfStats
             },
 
             system: {
@@ -72,14 +70,6 @@ function startWebServer(esi, statsManager, getState) {
     // Socket.io connection logging
     io.on('connection', (socket) => {
         console.log(`🔌 Client connected to Intel Stream: ${socket.id}`);
-        const clientCount = io.engine.clientsCount;
-            const ip = socket.handshake.address;
-    const userAgent = socket.handshake.headers['user-agent'];
-    
-    console.log(`🔌 [NETWORK] New connection: ${socket.id} | Total Active: ${clientCount}`);
-    console.log(`   IP: ${ip}`);
-    console.log(`   User-Agent: ${userAgent}`);
-    console.log(`   Connected at: ${new Date().toISOString()}`);
         socket.on('disconnect', () => console.log('❌ Client disconnected'));
 
     });

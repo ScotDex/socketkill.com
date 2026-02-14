@@ -27,6 +27,52 @@ function formatIskShorthand(value) {
     return value.toLocaleString();
 }
 
+function typeBootSequence() {
+    const bootLines = [
+        '> INITIALIZING GRID MONITOR...',
+        '> CONNECTING TO ESI DATASOURCE...',
+        '> PARSING ZKILLBOARD STREAM...',
+        '> UPLINK ESTABLISHED',
+        '> AWAITING KILL DATA'
+    ];
+    const bootDisplay = document.querySelector('.boot-sequence');
+    if (!bootDisplay) return;
+
+    bootDisplay.innerHTML = ''; 
+    let lineIndex = 0;
+    let charIndex = 0;
+
+    function typeChar() {
+        if (lineIndex < bootLines.length) {
+            if (charIndex < bootLines[lineIndex].length) {
+                bootDisplay.innerHTML += bootLines[lineIndex][charIndex];
+                charIndex++;
+                setTimeout(typeChar, 30);
+            } else {
+                bootDisplay.innerHTML += '<br>';
+                lineIndex++;
+                charIndex = 0;
+                if (lineIndex < bootLines.length) {
+                    setTimeout(typeChar, 200);
+                } else {
+
+                    bootDisplay.innerHTML+= '<span class="dot-pulse"></span>'
+
+            }
+        }
+    }
+
+}
+
+typeChar();
+}
+
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', typeBootSequence);
+} else {
+    typeBootSequence();
+}
+
 
 const formatIskValue = (value) => {
     const num = Number(value);
