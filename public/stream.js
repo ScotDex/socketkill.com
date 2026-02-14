@@ -345,7 +345,7 @@ if (document.readyState === 'loading') {
     initApp();
 
 let audioEnabled = localStorage.getItem('audio-enabled') === 'true';
-const ambientHum = new Audio('/audio/nostromo.wav');
+const ambientHum = new Audio('/audio/nostromo.mp3');
 ambientHum.volume = 0.15;
 
 // Create AudioContext for gapless looping
@@ -354,7 +354,7 @@ let sourceNode = null;
 let audioBuffer = null;
 
 // Load and decode the audio
-fetch('/audio/nostromo.wav')
+fetch('/audio/nostromo.mp3')
     .then(response => response.arrayBuffer())
     .then(arrayBuffer => audioContext.decodeAudioData(arrayBuffer))
     .then(buffer => {
