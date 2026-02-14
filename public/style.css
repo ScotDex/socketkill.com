@@ -223,6 +223,20 @@ terminal-header:focus-within .terminal-button-prompt,
     pointer-events: none;
 }
 
+.zkill-link {
+    color: rgba(63, 185, 80, 0.6);
+    text-decoration: none;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.7rem;
+    letter-spacing: 1px;
+    transition: color 0.2s, text-shadow 0.2s;
+}
+
+.zkill-link:hover {
+    color: var(--neon-green);
+    text-shadow: 0 0 5px rgba(63, 185, 80, 0.5);
+}
+
 /* === FEED ROWS === */
 .kill-row {
     will-change: transform, opacity;
@@ -231,15 +245,16 @@ terminal-header:focus-within .terminal-button-prompt,
     min-height: 64px;
     display: flex;
     align-items: center;
-    background-color: rgba(22, 27, 34, 0.6);
+    background: transparent;
     animation: slideIn 0.15s ease-out forwards, borderPulse 2s ease-out;
     transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275), background 0.1s ease;
 }
 
 .kill-row:hover {
-    background-color: #1c2128;
+    background: transparent;
     transform: scale(1.01) translateY(-1px);
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+    border-bottom-color: rgba(63, 185, 80, 0.5);
     z-index: 10;
 }
 
