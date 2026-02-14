@@ -12,6 +12,38 @@ let isTyping = false;
 let regionCache = []; 
 const SUPPORTERS = ["Shaftmaster Mastershafts", "Romulus", "Pheonix Venom", "Zoey Deninardes", "Himo Naerth", "Shaayaa"];
 let supporterIndex = 0;
+
+// ADD THE AUDIO CODE HERE ========================================
+let audioEnabled = localStorage.getItem('audio-enabled') === 'true';
+const ambientHum = new Audio('/audio/nostromo.wav'); // Update path to your file
+ambientHum.volume = 0.15; // Quiet background hum
+ambientHum.loop = true;
+
+const audioToggle = document.getElementById('audio-toggle');
+if (audioToggle) {
+    audioToggle.textContent = audioEnabled ? '🔊' : '🔇';
+}
+
+// Start ambient hum if already enabled
+if (audioEnabled) {
+    ambientHum.play().catch(() => {});
+}
+
+// Toggle audio on/off
+audioToggle?.addEventListener('click', () => {
+    audioEnabled = !audioEnabled;
+    localStorage.setItem('audio-enabled', audioEnabled);
+    
+    if (audioEnabled) {
+        ambientHum.play().catch(err => console.log('Audio blocked:', err));
+        audioToggle.textContent = '🔊';
+    } else {
+        ambientHum.pause();
+        ambientHum.currentTime = 0;
+        audioToggle.textContent = '🔇';
+    }
+});
+
 const cycleSupporters = () => {
     const display = document.getElementById('active-supporter');
     if (!display || SUPPORTERS.length === 0) return;
