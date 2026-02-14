@@ -72,7 +72,15 @@ function startWebServer(esi, statsManager, getState) {
     // Socket.io connection logging
     io.on('connection', (socket) => {
         console.log(`🔌 Client connected to Intel Stream: ${socket.id}`);
+            const ip = socket.handshake.address;
+    const userAgent = socket.handshake.headers['user-agent'];
+    
+    console.log(`🔌 [NETWORK] New connection: ${socket.id} | Total Active: ${clientCount}`);
+    console.log(`   IP: ${ip}`);
+    console.log(`   User-Agent: ${userAgent}`);
+    console.log(`   Connected at: ${new Date().toISOString()}`);
         socket.on('disconnect', () => console.log('❌ Client disconnected'));
+
     });
 
     server.listen(PORT, () => {
