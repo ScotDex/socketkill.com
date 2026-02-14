@@ -208,7 +208,7 @@ if (counterElement && kill.totalScanned) {
             </div>
             <div class="text-end" style="width: 100px;">
                 <div class="${val >= 1000000000 ? 'isk-billion' : 'isk-million'} fw-bold">${formatIskValue(val)}</div>
-                <a href="${kill.zkillUrl}" target="_blank" class="zkill-link">→ ZKILL</a>
+                <a href="${kill.zkillUrl}" target="_blank" class="zkill-link">DETAILS</a>
             </div>
         </div>
     `;
