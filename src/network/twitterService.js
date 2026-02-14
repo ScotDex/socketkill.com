@@ -1,8 +1,5 @@
 require(`dotenv`).config();
 const { TwitterApi } = require(`twitter-api-v2`)
-
-// Kick off twitter client
-
 const twitterClient = new TwitterApi({
   appKey: process.env.TWITTER_API_KEY,
   appSecret: process.env.TWITTER_API_SECRET,

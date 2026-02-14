@@ -161,13 +161,11 @@ async function r2BackgroundWorker() {
   await mapper.refreshChain(esi.getSystemDetails.bind(esi));
   refreshNebulaBackground();
   processor = ProcessorFactory(esi, mapper, io, statsManager);
-  console.log("🌌 Universe Map, Background & Chain Loaded.");
   syncPlayerCount();
   setInterval(() => mapper.refreshChain(esi.getSystemDetails.bind(esi)), 60000);
   setInterval(refreshNebulaBackground, ROTATION_SPEED);
   setInterval(() => {
     statsManager.save();
-    console.log(`💾 [AUTO-SAVE] Stats: ${statsManager.getTotal()}`);
   }, 60000);
   setInterval(
     () => {
@@ -182,6 +180,5 @@ async function r2BackgroundWorker() {
     },
     24 * 60 * 60 * 1000,
   );
-  console.log("Web Server Module Ready.");
   r2BackgroundWorker();
 })();

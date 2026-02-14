@@ -2,8 +2,6 @@ require("dotenv").config();
 const axios = require("../network/agent");
 const fs = require ("fs");
 const path = require ("path");
-
-// Use process.cwd() to stay inside the /usr/src/app folder
 const DATA_PATH = path.join(process.cwd(), "data", "stats.json");
 const FIN_PATH = path.join(process.cwd(), "data", "financials.json");
 

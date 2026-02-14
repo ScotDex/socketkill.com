@@ -10,11 +10,8 @@ const suggestionList = document.getElementById('suggestion-list');
 const MAX_FEED_SIZE = 50;
 let isTyping = false; 
 let regionCache = []; 
-
 const SUPPORTERS = ["Shaftmaster Mastershafts", "Romulus", "Pheonix Venom", "Zoey Deninardes", "Himo Naerth", "Shaayaa"];
 let supporterIndex = 0;
-
-
 const cycleSupporters = () => {
     const display = document.getElementById('active-supporter');
     if (!display || SUPPORTERS.length === 0) return;
@@ -57,9 +54,6 @@ const typeShipNameSurgical = (el, text) => {
     render();
 };
 
-/**
- * Retro-terminal typewriter effect for titles
- */
 const typeTitle = (elementId, text, speed = 150) => {
     if (isTyping) return;
     isTyping = true;
@@ -79,23 +73,14 @@ const typeTitle = (elementId, text, speed = 150) => {
     type();
 };
 
-/* --- 2. Global Event Listeners --- */
-
-/**
- * Unified Input Handler: Manages both Feed Filtering and Custom Autocomplete
- */
 regionSearch.addEventListener('input', (e) => {
     const term = e.target.value.toLowerCase().trim();
     const rows = document.querySelectorAll('.kill-row');
-
-    // 1. Feed Filtering Logic
     rows.forEach(row => {
         const locationText = row.querySelector('.location-label')?.textContent.toLowerCase() || "";
         row.hidden = term !== "" && !locationText.includes(term);
     });
-
-    // 2. Custom Autocomplete Engine
-    suggestionList.innerHTML = ''; // Purge old suggestions immediately
+    suggestionList.innerHTML = ''; 
     
     if (term.length < 2) {
         autocompleteBox.classList.add('d-none');
@@ -227,13 +212,9 @@ if (counterElement && kill.totalScanned) {
             </div>
         </div>
     `;
-
-    // Visual flicker effect on body
     const overlay = document.querySelector('body');
     overlay.style.opacity = '0.9';
     setTimeout(() => overlay.style.opacity = '1', 50);
-
-    // Filter Injection: Check if new kill matches active terminal filter
     const currentFilter = regionSearch.value.toLowerCase().trim();
     if (currentFilter !== "" && !kill.locationLabel.toLowerCase().includes(currentFilter)) {
         div.hidden = true; 
@@ -246,24 +227,16 @@ if (counterElement && kill.totalScanned) {
     typeShipNameSurgical(target, kill.ship);
     if (feed.children.length > MAX_FEED_SIZE) feed.lastChild.remove();
 });
-
-/**
- * Fetches and updates the NPC ticker in the footer
- */
 const updateNPCTicker = async () => {
     const npcDisplay = document.getElementById('npc-count');
     if (!npcDisplay) return;
 
     try {
-        // Direct hit to your background service on port 2053
         const response = await fetch('https://api.socketkill.com/stats/npc-kills');
         const data = await response.json();
 
         if (data && data.lifetimeTotal) {
-            // Use lifetimeTotal for the "Big Number" branding
             npcDisplay.innerText = data.lifetimeTotal.toLocaleString();
-            
-            // Optional: Add a subtle flicker to show it updated
             npcDisplay.style.opacity = "0.5";
             setTimeout(() => npcDisplay.style.opacity = "1", 200);
         }
@@ -272,20 +245,14 @@ const updateNPCTicker = async () => {
         npcDisplay.classList.replace('text-warning', 'text-danger');
     }
 };
-
-// Initial sync on page load
 updateNPCTicker();
-
-// Refresh every 5 minutes (300,000ms)
 setInterval(updateNPCTicker, 300000);
-
-/* --- 4. Unified Bootloader --- */
 const initApp = () => {
     typeTitle('socket-title', 'Socket.Kill', 150);
 
     if (SUPPORTERS.length > 0) {
-        cycleSupporters(); // Run once immediately
-        setInterval(cycleSupporters, 7000); // Cycle every 7 seconds
+        cycleSupporters(); 
+        setInterval(cycleSupporters, 7000); 
     }
 };
 if (document.readyState === 'loading') {

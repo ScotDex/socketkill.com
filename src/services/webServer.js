@@ -8,8 +8,6 @@ const path = require('path');
 const helmet = require('helmet');
 const fs = require('fs');
 
-let cachedCfData = null;
-let lastFetchTime = 0;
 
 function startWebServer(esi, statsManager, getState) {
     const app = express();
@@ -40,83 +38,7 @@ function startWebServer(esi, statsManager, getState) {
     app.use(express.json());
     app.use(express.static(path.join(__dirname, '..', '..', 'public')));
 
-const CF_API_TOKEN = process.env.CF_API_TOKEN;
-const CF_ZONE_ID = process.env.CF_ZONE_ID;
 
-async function getCloudflareStats() {
-    // Cloudflare uses UTC dates
-    console.log(">> CF_STATS_FETCH_START");
-    const now = Date.now();
-    if (cachedCfData && (now - lastFetchTime < 60000)) {
-        return cachedCfData;
-    }
-    const today = new Date().toISOString().split('T')[0];
-    if (!CF_API_TOKEN || !CF_ZONE_ID) {
-        console.error(">> MISSING_CF_KEYS_IN_ENV");
-        return { shield: "KEYS?", throughput: "KEYS?" };
-    }
-    const query = `
-    query GetStats($zoneTag: String!, $date: Date!) {
-      viewer {
-        zones(filter: { zoneTag: $zoneTag }) {
-          httpRequests1dGroups(
-            limit: 1, 
-            filter: { date: $date }
-          ) {
-            sum {
-              requests
-              cachedRequests
-              bytes
-            }
-          }
-        }
-      }
-    }`;
-
-    try {
-        const response = await fetch('https://api.cloudflare.com/client/v4/graphql', {
-            method: 'POST',
-            headers: {
-                'Authorization': `Bearer ${CF_API_TOKEN}`,
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ 
-                query: query, 
-                variables: { 
-                    zoneTag: CF_ZONE_ID,
-                    date: today 
-                } 
-            })
-        });
-
-        const result = await response.json();
-        
-        if (!result.data || !result.data.viewer || !result.data.viewer.zones[0]) {
-            console.error('CF API Detailed Error:', JSON.stringify(result.errors || "Empty Response"));
-            return { shield: "ERR", throughput: "ERR" };
-        }
-
-        const groups = result.data.viewer.zones[0].httpRequests1dGroups;
-        
-        if (groups.length === 0) {
-            return { shield: "0%", throughput: "0.00 MB" };
-        }
-
-        const stats = groups[0].sum;
-        cachedCfData = {
-            shield: stats.requests > 0 
-                ? ((stats.cachedRequests / stats.requests) * 100).toFixed(1) + "%" 
-                : "0.0%",
-            throughput: (stats.bytes / 1024 / 1024).toFixed(2) + " MB"
-        };
-        lastFetchTime = now;
-
-        return cachedCfData;
-    } catch (err) {
-        console.error('Network Error:', err);
-        return cachedCfData || { shield: "---", throughput: "---" };
-    }
-}
     app.get ('/api/health', async (req, res) => {
         const mem = process.memoryUsage();
         const cfStats = await getCloudflareStats();
@@ -156,13 +78,6 @@ async function getCloudflareStats() {
     server.listen(PORT, () => {
         console.log(`Web Module Loaded on ${PORT}`);
         }).on('error', (err) => {
-        if (err.code === 'EACCES') {
-            console.error(`❌ ERROR: Port ${PORT} requires root privileges! Try 'sudo node index.js'`);
-        } else if (err.code === 'EADDRINUSE') {
-            console.error(`❌ ERROR: Port ${PORT} is already in use by another app!`);
-        } else {
-            console.error(`❌ ERROR:`, err);
-        }
     });
     return { app, io };
 }
