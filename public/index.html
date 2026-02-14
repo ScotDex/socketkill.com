@@ -65,7 +65,7 @@
    
    <div class="d-flex align-items-center flex-shrink-0 me-2">
        <span class="terminal-button-text" style="font-size: 0.7rem; opacity: 0.7;">></span>
-       <span class="terminal-status-text" style="font-size: 0.85rem; letter-spacing: 1px; color: #3fb950;">READY</span>
+       <span class="terminal-status-text" style="font-size: 0.85rem; letter-spacing: 1px; color: #3fb950;">> READY</span>
    </div>
 
 
@@ -76,7 +76,9 @@
           class="terminal-input-field flex-grow-1" 
           placeholder="ENTER_REGION" 
           title="Enter a region to monitor that area for kills happening."
-          autocomplete="off">
+          autocomplete="on"
+          list="regionOptions"
+          >
    
    <datalist id="regionOptions"></datalist>
 </div>
