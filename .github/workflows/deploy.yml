@@ -20,5 +20,6 @@ jobs:
             set -e
             cd socket-kill
             git pull
+            docker compose down
             docker compose up -d --build
            
