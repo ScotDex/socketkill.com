@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "@tailwindcss/cli": "^4.1.18",
     "axios": "^1.13.5",
     "cors": "^2.8.5",
     "dotenv": "^17.2.3",
@@ -7,6 +8,7 @@
     "helmet": "^8.1.0",
     "io": "^1.5.7",
     "socket.io": "^4.8.3",
+    "tailwindcss": "^4.1.18",
     "twitter-api-v2": "^1.28.0"
   }
 }
