@@ -30,35 +30,6 @@ function formatIskShorthand(value) {
     return value.toLocaleString();
 }
 
-function randomScanline() {
-    const scanline = document.querySelector('.crt-scanline');
-    if (!scanline) return;
-    
-    // Random delay between 8-20 seconds
-    const delay = 8000 + Math.random() * 12000;
-    
-    setTimeout(() => {
-        // Random speed (6-12 seconds to traverse)
-        const duration = 6 + Math.random() * 6;
-        
-        scanline.style.top = '0';
-        scanline.style.opacity = '0.8';
-        scanline.style.transition = `top ${duration}s linear, opacity 0.3s ease`;
-        
-        // Trigger the sweep
-        setTimeout(() => {
-            scanline.style.top = '100%';
-        }, 50);
-        
-        // Reset and schedule next
-        setTimeout(() => {
-            scanline.style.opacity = '0';
-            randomScanline(); // Recursive call
-        }, duration * 1000 + 500);
-        
-    }, delay);
-}
-randomScanline();
 function typeBootSequence() {
     const bootLines = [
         '> INITIALIZING GRID MONITOR...',
