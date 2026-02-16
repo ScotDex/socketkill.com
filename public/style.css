@@ -22,9 +22,10 @@ body {
     font-family: 'Exo 2', 'Segoe UI', sans-serif;
     margin: 0;
     background-attachment: fixed;
-    background-position: top center;
+    background-position: center;
     transition: background 2s ease-in-out;
-    animation: cathode-flicker 0.15s infinite, slowDrift 120s linear infinite;
+    background-size: cover;
+    animation: cathode-flicker 0.15s infinite;
     background-repeat: no-repeat;
     text-rendering: geometricPrecision;
     -webkit-font-smoothing: antialiased;
@@ -64,12 +65,28 @@ body::before {
     position: fixed;
     top: 0;
     left: 0;
+    opacity: 0.03;
+    animation: grain 0.5s steps(10) infinite;
+    background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIzMDAiIGhlaWdodD0iMzAwIj48ZmlsdGVyIGlkPSJhIj48ZmVUdXJidWxlbmNlIGJhc2VGcmVxdWVuY3k9Ii43NSIgc3RpdGNoVGlsZXM9InN0aXRjaCIgdHlwZT0iZnJhY3RhbE5vaXNlIi8+PGZlQ29sb3JNYXRyaXggdHlwZT0ic2F0dXJhdGUiIHZhbHVlcz0iMCIvPjwvZmlsdGVyPjxwYXRoIGQ9Ik0wIDBoMzAwdjMwMEgweiIgZmlsdGVyPSJ1cmwoI2EpIiBvcGFjaXR5PSIuMDUiLz48L3N2Zz4=');
     width: 100%;
     height: 15px;
     background: rgba(63, 185, 80, 0.03);
     box-shadow: 0 0 8px rgba(63, 185, 80, 0.08);
     pointer-events: none;
-    z-index: 9999; /* Sits at the very top */
+    z-index: 1;
+}
+
+@keyframes grain {
+    0%, 100% { transform: translate(0, 0); }
+    10% { transform: translate(-5%, -5%); }
+    20% { transform: translate(-10%, 5%); }
+    30% { transform: translate(5%, -10%); }
+    40% { transform: translate(-10%, 10%); }
+    50% { transform: translate(10%, 0%); }
+    60% { transform: translate(0%, 10%); }
+    70% { transform: translate(-10%, 0%); }
+    80% { transform: translate(10%, -5%); }
+    90% { transform: translate(5%, 15%); }
 }
 
 body::after {
