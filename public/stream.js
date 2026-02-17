@@ -63,12 +63,17 @@ const typeTitle = (elementId, text, speed = 150) => {
     const element = document.getElementById(elementId);
     if (!element) return;
     element.innerHTML = "";
+    const glitchChars = '!@#$%^&*<>[]{}|/\\';
     let i = 0;
     function type() {
         if (i < text.length) {
-            element.innerHTML += text.charAt(i);
-            i++;
-            setTimeout(type, speed);
+            const glitch = glitchChars[Math.floor(Math.random() * glitchChars.length)];
+            element.innerHTML += text.substring(0, i) + glitch;
+            setTimeout(() => {
+                element.innerHTML = text.substring(0, i + 1);
+                i++;
+                setTimeout(type, speed);
+                 }, 60);
         } else {
             element.style.borderRight = "none";
         }
