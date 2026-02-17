@@ -25,6 +25,53 @@ body {
     -moz-osx-font-smoothing: grayscale;
 }
 
+.footer-link {
+    color: rgba(255, 255, 255, 0.4);
+    text-decoration: none;
+    font-size: 0.6rem;
+    font-family: var(--mono-font);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    transition: color 0.2s ease;
+}
+
+.footer-link:hover {
+    color: var(--neon-green);
+    text-shadow: 0 0 5px rgba(63, 185, 80, 0.5);
+}
+
+.footer-version {
+    color: rgba(255, 255, 255, 0.2);
+    font-size: 0.6rem;
+    font-family: var(--mono-font);
+    letter-spacing: 1px;
+}
+
+.footer-stat-label {
+    color: rgba(255, 255, 255, 0.3);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    opacity: 0.5;
+}
+
+.tech-spec {
+    font-size: 0.6rem;
+    color: rgba(255, 255, 255, 0.2);
+    font-family: var(--mono-font);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
+
+.credit-link {
+    color: rgba(255, 255, 255, 0.3);
+    text-decoration: none;
+    transition: color 0.2s;
+}
+
+.credit-link:hover {
+    color: var(--neon-green);
+}
+
 .footer-nav {
     display: flex;
     align-items: center;
@@ -895,9 +942,15 @@ terminal-header:focus-within .terminal-button-prompt,
         mix-blend-mode: lighten;
     }
 
-    /* 5. Force the search bar to be more prominent */
     .terminal-header {
-        padding: 4px 10px;
-    }
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    border: 1px solid rgba(63, 185, 80, 0.2);
+    background: rgba(10, 12, 16, 0.9);
+    padding: 6px 15px;
+    border-radius: 4px 4px 0 0;
+    border-bottom: none;
+}
 
 }
