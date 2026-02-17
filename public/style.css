@@ -368,7 +368,7 @@ body::after {
 }
 
 /* Suggestion dropdown container */
-.region-suggestions {
+#region-suggestions {
     position: absolute;
     top: 100%;
     left: 0;
@@ -379,13 +379,13 @@ body::after {
     border-radius: 0 0 4px 4px;
     max-height: 240px;
     overflow-y: auto;
-    z-index: 1000;
+    z-index: 10000;
     display: none;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
     margin-top: 1px;
 }
 
-.suggestion-dropdown.active {
+#region-suggestions.active {
     display: block;
 }
 
@@ -398,7 +398,6 @@ body::after {
     cursor: pointer;
     border-bottom: 1px solid rgba(63, 185, 80, 0.1);
     letter-spacing: 1px;
-    text-transform: uppercase;
     animation: suggestionSlide 0.08s ease-out forwards;
     opacity: 0;
     transition: background 0.1s ease, color 0.1s ease;
@@ -435,20 +434,20 @@ body::after {
 }
 
 /* Scrollbar styling for the dropdown */
-.region-suggestions::-webkit-scrollbar {
+#region-suggestions::-webkit-scrollbar {
     width: 8px;
 }
 
-.region-suggestions::-webkit-scrollbar-track {
+#region-suggestions::-webkit-scrollbar-track {
     background: rgba(0, 0, 0, 0.3);
 }
 
-.region-suggestions::-webkit-scrollbar-thumb {
+#region-suggestions::-webkit-scrollbar-thumb {
     background: rgba(63, 185, 80, 0.3);
     border-radius: 4px;
 }
 
-.region-suggestions::-webkit-scrollbar-thumb:hover {
+#region-suggestions::-webkit-scrollbar-thumb:hover {
     background: rgba(63, 185, 80, 0.5);
 }
 
