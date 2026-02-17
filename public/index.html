@@ -69,18 +69,15 @@
    </div> 
 
    
-   <input type="text" 
-          id="regionSearch"
-          aria-label="Filter kills by region"  
-          class="terminal-input-field flex-grow-1" 
-          placeholder="ENTER_REGION" 
-          title="Enter a region to monitor that area for kills happening."
-          autocomplete="on"
-          list="regionOptions"
-          >
-   
-   <datalist id="regionOptions"></datalist>
+<div class="terminal-input-wrapper flex-grow-1">
+    <input type="text" 
+           id="regionSearch"
+           class="terminal-input-field" 
+           placeholder="ENTER_REGION" 
+           autocomplete="off">
+    <div id="region-suggestions"></div>
 </div>
+    </div>
 
 <div id="empty-state">
 <div class="boot-sequence"></div>

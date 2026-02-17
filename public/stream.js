@@ -96,14 +96,112 @@ const typeShipNameSurgical = (el, text) => {
     render();
 };
 
+// Terminal Autocomplete
+let selectedIndex = -1;
+
+function showSuggestions(term) {
+    const dropdown = document.getElementById('region-suggestions');
+    const matches = regionCache
+        .filter(r => r.toLowerCase().includes(term))
+        .slice(0, 6);
+
+    if (matches.length === 0 || term.length < 2) {
+        dropdown.classList.remove('active');
+        selectedIndex = -1;
+        return;
+    }
+
+    dropdown.innerHTML = matches.map((region, idx) => 
+        `<div class="suggestion-item" data-region="${region}" data-idx="${idx}">${region}</div>`
+    ).join('');
+
+    dropdown.classList.add('active');
+    selectedIndex = -1;
+
+    // Click handler for suggestions
+    dropdown.querySelectorAll('.suggestion-item').forEach(item => {
+        item.addEventListener('click', () => {
+            regionSearch.value = item.dataset.region;
+            dropdown.classList.remove('active');
+            regionSearch.dispatchEvent(new Event('input'));
+            regionSearch.focus();
+        });
+    });
+}
+
+function selectSuggestion(direction) {
+    const dropdown = document.getElementById('region-suggestions');
+    const items = dropdown.querySelectorAll('.suggestion-item');
+    if (items.length === 0) return;
+
+    // Remove previous selection
+    items.forEach(item => item.classList.remove('selected'));
+
+    // Update index
+    if (direction === 'down') {
+        selectedIndex = (selectedIndex + 1) % items.length;
+    } else if (direction === 'up') {
+        selectedIndex = selectedIndex <= 0 ? items.length - 1 : selectedIndex - 1;
+    }
+
+    // Apply new selection
+    items[selectedIndex].classList.add('selected');
+    items[selectedIndex].scrollIntoView({ block: 'nearest' });
+}
+
+function selectCurrentSuggestion() {
+    const dropdown = document.getElementById('region-suggestions');
+    const selected = dropdown.querySelector('.suggestion-item.selected');
+    if (selected) {
+        regionSearch.value = selected.dataset.region;
+        dropdown.classList.remove('active');
+        regionSearch.dispatchEvent(new Event('input'));
+    }
+}
+
+// Input handler
 regionSearch.addEventListener('input', (e) => {
     const term = e.target.value.toLowerCase().trim();
+    
+    // Filter kill rows
     const rows = document.querySelectorAll('.kill-row');
     rows.forEach(row => {
         const locationText = row.querySelector('.location-label')?.textContent.toLowerCase() || "";
         row.hidden = term !== "" && !locationText.includes(term);
     });
+
+    // Show suggestions
+    showSuggestions(term);
 });
+
+// Keyboard navigation
+regionSearch.addEventListener('keydown', (e) => {
+    const dropdown = document.getElementById('region-suggestions');
+    if (!dropdown.classList.contains('active')) return;
+
+    if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        selectSuggestion('down');
+    } else if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        selectSuggestion('up');
+    } else if (e.key === 'Enter') {
+        e.preventDefault();
+        selectCurrentSuggestion();
+    } else if (e.key === 'Escape') {
+        dropdown.classList.remove('active');
+        selectedIndex = -1;
+    }
+});
+
+// Close dropdown when clicking outside
+document.addEventListener('click', (e) => {
+    if (!e.target.closest('.terminal-input-wrapper')) {
+        document.getElementById('region-suggestions').classList.remove('active');
+        selectedIndex = -1;
+    }
+});
+
 
 socket.on('connect', () => {
     status.innerText = "ONLINE";
