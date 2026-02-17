@@ -47,6 +47,32 @@ body {
     font-weight: 700;
 }
 
+.footer-center {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    white-space: nowrap;
+    min-width: 200px; /* Reserves fixed space */
+}
+
+.footer-stat {
+    display: flex;
+    gap: 0.4rem;
+    align-items: center;
+    font-size: 0.6rem;
+    font-family: var(--mono-font);
+    width: 100%;
+    justify-content: center;
+}
+
+/* Lock the value column width so text changes don't reflow */
+.footer-stat-value {
+    display: inline-block;
+    min-width: 120px;
+    text-align: left;
+}
+
 /* Header grid */
 .site-header {
     display: grid;
