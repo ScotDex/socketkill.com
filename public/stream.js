@@ -194,7 +194,7 @@ socket.on('player-count', (data) => {
     const display = document.getElementById('player-count');
     const toast = document.getElementById('player-toast');
     if (data && data.active) {
-        toast.classList.remove('d-none');
+        toast.classList.remove('hidden');
         display.innerText = data.count.toLocaleString();
     } else {
         display.innerText = "OFFLINE";
