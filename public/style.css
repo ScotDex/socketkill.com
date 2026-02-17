@@ -558,6 +558,8 @@ terminal-header:focus-within .terminal-button-prompt,
     opacity: 0.15; /* Barely visible 'ghost' text */
     transition: opacity 0.3s ease, color 0.3s ease;
     cursor: help;
+    font-size: 0.5rem;
+    white-space: nowrap;
 }
 
 .legal-footer:hover .ccp-notice {
