@@ -25,6 +25,21 @@ body {
     -moz-osx-font-smoothing: grayscale;
 }
 
+.footer-nav {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 1.25rem;    /* was 0.5rem - increase this */
+    flex-wrap: wrap;
+}
+
+.footer-link + .footer-link::before {
+    content: "·";
+    margin-right: 1.25rem;
+    color: rgba(255, 255, 255, 0.15);
+    pointer-events: none;
+}
+
 .footer-content {
     display: grid;
     grid-template-columns: 1fr auto 1fr;
