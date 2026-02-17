@@ -674,6 +674,29 @@ body::after {
     60%      { content: '...'; }
 }
 
+@keyframes char-land {
+    0%   { 
+        color: #ffffff;
+        text-shadow: 0 0 8px #ffffff, 0 0 15px var(--neon-green), 0 0 30px var(--neon-green);
+        filter: brightness(2);
+    }
+    40%  { 
+        color: var(--neon-green);
+        text-shadow: 0 0 10px var(--neon-green);
+        filter: brightness(1.5);
+    }
+    100% { 
+        color: var(--neon-green);
+        text-shadow: 0 0 8px rgba(63, 185, 80, 0.6);
+        filter: brightness(1);
+    }
+}
+
+.char-flash {
+    display: inline-block;
+    animation: char-land 0.4s ease-out forwards;
+}
+
 @keyframes spin {
     0%   { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }

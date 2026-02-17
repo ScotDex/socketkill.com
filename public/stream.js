@@ -63,24 +63,21 @@ const typeTitle = (elementId, text, speed = 150) => {
     const element = document.getElementById(elementId);
     if (!element) return;
     element.innerHTML = "";
-    const glitchChars = '!@#$%^&*<>[]{}|/\\';
     let i = 0;
-    function type() {
-        if (i < text.length) {
-            const glitch = glitchChars[Math.floor(Math.random() * glitchChars.length)];
-            element.innerHTML += text.substring(0, i) + glitch;
-            setTimeout(() => {
-                element.innerHTML = text.substring(0, i + 1);
-                i++;
-                setTimeout(type, speed);
-                 }, 60);
-        } else {
-            element.style.borderRight = "none";
-        }
+function type() {
+    if (i < text.length) {
+        const span = document.createElement('span');
+        span.className = 'char-flash';
+        span.textContent = text.charAt(i);
+        element.appendChild(span);
+        i++;
+        setTimeout(type, speed);
+    } else {
+        element.style.borderRight = "none";
     }
+}
     type();
 };
-
 const typeShipNameSurgical = (el, text) => {
     let i = 0;
     const startTime = performance.now();
