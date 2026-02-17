@@ -1,0 +1,72 @@
+# Socket.Kill Changelog
+
+## v1.5.0 - February 17, 2025
+### Added
+- Region autocomplete with keyboard navigation (2-char threshold, 6 results max)
+- Screen glitch effect on capital kills (1B+) and whale kills (10B+)
+- Atmospheric fog parallax animation for depth perception
+- Changelog page
+
+### Improved
+- ARIA labels and accessibility improvements for screen readers
+- Semantic HTML refactoring for better structure
+
+---
+
+## v1.4.0 - January 2025
+### Added
+- NPC death counter (global lifetime tracking - community first)
+- Stats manager backend service for kill aggregation
+- Webhook heartbeat monitoring for uptime tracking
+- Submitted application for partnership
+
+### Infrastructure
+- Migrated to R2 bucket feed from RedisQ (courtesy of Squizz)
+- Persistent HTTP agent for improved connection stability
+- Data normalizer for consistent kill payload formatting
+
+---
+
+## v1.3.0 - December 2024
+### Added
+- Public API documentation and endpoints (api.socketkill.com)
+- Cloudflare CDN integration for global performance
+- SSL/TLS encryption across all services
+
+### Visual
+- Background image proxy with 200+ EVE screenshots by Rixx Javix
+- Dynamic nebula rotation system
+
+---
+
+## v1.2.0 - November 2024
+### Tested & Removed
+- Ambient audio loop (browser compatibility issues, user feedback negative)
+- Performance stats report UI (cluttered interface, low user interest)
+
+---
+
+## v1.1.0 - October 2024
+### Added
+- Real-time WebSocket kill feed
+- ISK value formatting and whale kill detection (10B+)
+- Region filtering (text-based)
+- Killmail counter with pop animation
+
+---
+
+## v1.0.0 - September 2024
+### Initial Release
+- Live kill feed from zKillboard RedisQ
+- CRT terminal aesthetic (Alien franchise inspired)
+- EVE Online ship renders and corporation logos
+- Bootstrap 5 foundation
+- Mobile responsive design
+
+---
+
+**Credits:**
+- Kill data: R2 from zKillboard, CCP ESI
+- Backgrounds: @Rixxjavix photography
+- Built by: Dexomus Viliana
+

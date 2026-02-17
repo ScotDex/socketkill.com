@@ -275,6 +275,10 @@ socket.on('raw-kill', (kill) => {
 
     const div = document.createElement('div');
     div.className = `kill-row justify-content-between ${val >= 10000000000 ? 'whale' : ''}`;
+    if (val >= 10000000000) {
+        document.body.classList.add('signal-interference');
+        setTimeout(() => document.body.classList.remove('signal-interference'), 400);
+    }
 
     const now = new Date();
     const timestamp = `[${now.getUTCHours().toString().padStart(2, '0')}:${now.getUTCMinutes().toString().padStart(2, '0')}]`;
