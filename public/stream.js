@@ -122,6 +122,9 @@ socket.on('region-list', (regionNames) => {
 socket.on('gatekeeper-stats', (data) => {
     if (counterElement && data.totalScanned) {
         counterElement.innerText = data.totalScanned.toLocaleString();
+        counterElement.classList.remove('counter-update');
+        void counterElement.offsetWidth;
+        counterElement.classList.add('counter-update');
     }
     if (data.totalIsk) {
         const ticker = document.getElementById("isk-ticker-val");
