@@ -52,7 +52,6 @@ body {
     white-space: nowrap;
     font-size: 0.8rem;
     color: rgba(255,255,255,0.4);
-    font-family: var(--mono-font);
     letter-spacing: 1px;
     text-transform: uppercase;
 }
@@ -60,6 +59,13 @@ body {
     display: flex; 
     justify-content: flex-end; 
     min-width: 0; 
+}
+
+#kill-counter {
+    color: #ffffff;
+    font-weight: 700;
+    font-family: 'Exo 2', sans-serif;
+    font-size: 0.875rem;
 }
 
 
