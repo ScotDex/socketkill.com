@@ -33,12 +33,6 @@ body {
     flex-wrap: wrap;
 }
 
-.footer-link + .footer-link::before {
-    content: "·";
-    margin-right: 1.25rem;
-    color: rgba(255, 255, 255, 0.15);
-    pointer-events: none;
-}
 
 .footer-content {
     display: grid;
