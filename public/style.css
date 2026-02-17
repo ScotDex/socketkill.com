@@ -145,6 +145,7 @@ body::after {
     padding: 6px 15px;
     border-radius: 4px 4px 0 0;
     border-bottom: none;
+    overflow: visible;
 }
 
 .terminal-header:focus-within {
@@ -363,6 +364,7 @@ body::after {
 .terminal-input-wrapper {
     position: relative;
     flex-grow: 1;
+    overflow: visible;
 }
 
 /* Suggestion dropdown container */
@@ -380,6 +382,7 @@ body::after {
     z-index: 1000;
     display: none;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+    margin-top: 1px;
 }
 
 .suggestion-dropdown.active {
