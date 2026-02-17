@@ -368,7 +368,7 @@ body::after {
 }
 
 /* Suggestion dropdown container */
-.suggestion-dropdown {
+.region-suggestions {
     position: absolute;
     top: 100%;
     left: 0;
@@ -435,20 +435,20 @@ body::after {
 }
 
 /* Scrollbar styling for the dropdown */
-.suggestion-dropdown::-webkit-scrollbar {
+.region-suggestions::-webkit-scrollbar {
     width: 8px;
 }
 
-.suggestion-dropdown::-webkit-scrollbar-track {
+.region-suggestions::-webkit-scrollbar-track {
     background: rgba(0, 0, 0, 0.3);
 }
 
-.suggestion-dropdown::-webkit-scrollbar-thumb {
+.region-suggestions::-webkit-scrollbar-thumb {
     background: rgba(63, 185, 80, 0.3);
     border-radius: 4px;
 }
 
-.suggestion-dropdown::-webkit-scrollbar-thumb:hover {
+.region-suggestions::-webkit-scrollbar-thumb:hover {
     background: rgba(63, 185, 80, 0.5);
 }
 
