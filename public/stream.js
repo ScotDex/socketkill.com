@@ -4,8 +4,7 @@ const feed = document.getElementById('feed');
 const status = document.getElementById('status');
 const counterElement = document.getElementById('kill-counter');
 const regionSearch = document.getElementById('regionSearch');
-const autocompleteBox = document.getElementById('terminal-autocomplete'); 
-const suggestionList = document.getElementById('suggestion-list');     
+
 
 const MAX_FEED_SIZE = 50;
 let isTyping = false; 

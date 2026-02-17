@@ -580,46 +580,6 @@ terminal-header:focus-within .terminal-button-prompt,
     width: 120px;
 }
 
-/* === CONNECTION HUB === */
-#connection-hub {
-    position: fixed;
-    bottom: 20px;
-    right: 20px;
-    display: flex;
-    flex-direction: column;
-    align-items: flex-end;
-    gap: 10px;
-    z-index: 9999;
-    font-family: 'Share Tech Mono', 'Courier New', monospace;
-}
-
-.status-indicator {
-    background: rgba(0, 0, 0, 0.7);
-    border: 1px solid #222;
-    padding: 5px 12px;
-    border-radius: 3px;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    font-size: 11px;
-    color: #888;
-    letter-spacing: 1px;
-}
-
-.led-green {
-    width: 8px;
-    height: 8px;
-    background-color: #00ff88;
-    border-radius: 50%;
-    box-shadow: 0 0 5px #00ff88;
-    transition: transform 0.1s ease;
-}
-
-.pulse-blink {
-    transform: scale(1.5);
-    background-color: #ffffff;
-    box-shadow: 0 0 15px #ffffff;
-}
 
 .pulse-indicator {
     width: 6px;
@@ -628,24 +588,6 @@ terminal-header:focus-within .terminal-button-prompt,
     border-radius: 50%;
     box-shadow: 0 0 8px #198754;
     animation: heartbeat 2s infinite;
-}
-
-.feedback-link {
-    background: rgba(0, 212, 255, 0.1);
-    border: 1px solid rgba(0, 212, 255, 0.3);
-    color: #00d4ff;
-    text-decoration: none;
-    padding: 8px 15px;
-    font-size: 12px;
-    border-radius: 3px;
-    transition: all 0.2s ease;
-}
-
-.feedback-link:hover {
-    background: rgba(0, 212, 255, 0.8);
-    color: #000;
-    box-shadow: 0 0 20px rgba(0, 212, 255, 0.5);
-    transform: translateY(-2px);
 }
 
 /* === PLAYER COUNT CARD === */
@@ -736,15 +678,6 @@ terminal-header:focus-within .terminal-button-prompt,
     0% { opacity: 0.95; }
     50% { opacity: 1; }
     100% { opacity: 0.98; }
-}
-
-@keyframes glitch {
-    0% { transform: translate(0); }
-    20% { transform: translate(-1px, 1px); }
-    40% { transform: translate(-1px, -1px); }
-    60% { transform: translate(1px, 1px); }
-    80% { transform: translate(1px, -1px); }
-    100% { transform: translate(0); }
 }
 
 @keyframes blink-caret {
@@ -903,18 +836,6 @@ terminal-header:focus-within .terminal-button-prompt,
     pointer-events: none; /* Won't block clicks to the stream */
 }
 
-.footer-content {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    color: #444; /* Dim enough to not distract, bright enough to be legal */
-    font-size: 0.6rem;
-    font-family: 'Exo 2', sans-serif;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    pointer-events: auto;
-}
-
 .footer-meta {
     text-align: right;
     font-weight: 600;
@@ -925,11 +846,6 @@ terminal-header:focus-within .terminal-button-prompt,
     color: #222;
 }
 
-/* Red Team Fix: Ensure your HUD buttons sit above the footer */
-#hud-uplink, #hud-status {
-    bottom: 30px !important; 
-    transition: bottom 0.3s ease;
-}
 
 /* === MOBILE OPTIMIZATION: STREAM FOCUS === */
 @media (max-width: 768px) {
