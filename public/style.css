@@ -51,7 +51,7 @@ body {
     color: rgba(255, 255, 255, 0.3);
     text-transform: uppercase;
     letter-spacing: 1px;
-    opacity: 0.5;
+    opacity: 0.9;
 }
 
 .tech-spec {
@@ -558,7 +558,7 @@ terminal-header:focus-within .terminal-button-prompt,
     opacity: 0.15; /* Barely visible 'ghost' text */
     transition: opacity 0.3s ease, color 0.3s ease;
     cursor: help;
-    font-size: 0.5rem;
+    font-size: 0.95 rem;
     white-space: nowrap;
 }
 
