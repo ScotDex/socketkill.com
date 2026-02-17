@@ -38,15 +38,12 @@
 - Dynamic nebula rotation system
 
 ---
-
-## v1.2.0 - November 2024
 ### Tested & Removed
 - Ambient audio loop (browser compatibility issues, user feedback negative)
 - Performance stats report UI (cluttered interface, low user interest)
 
 ---
 
-## v1.1.0 - October 2024
 ### Added
 - Real-time WebSocket kill feed
 - ISK value formatting and whale kill detection (10B+)
@@ -55,7 +52,6 @@
 
 ---
 
-## v1.0.0 - September 2024
 ### Initial Release
 - Live kill feed from zKillboard RedisQ
 - CRT terminal aesthetic (Alien franchise inspired)
