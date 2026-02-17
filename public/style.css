@@ -880,7 +880,7 @@ terminal-header:focus-within .terminal-button-prompt,
     background: rgba(0, 0, 0, 0.8);
     backdrop-filter: blur(4px);
     border-top: 1px solid rgba(63, 185, 80, 0.2);
-    padding: 5px 20px;
+    padding: 3px 20px;
     z-index: 50; /* Sits behind your HUD buttons */
     pointer-events: none; /* Won't block clicks to the stream */
 }
