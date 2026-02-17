@@ -1,33 +1,25 @@
-
 const socket = io();
 const feed = document.getElementById('feed');
 const status = document.getElementById('status');
 const counterElement = document.getElementById('kill-counter');
 const regionSearch = document.getElementById('regionSearch');
 
-
 const MAX_FEED_SIZE = 50;
-let isTyping = false; 
-let regionCache = []; 
-const SUPPORTERS = ["Shaftmaster Mastershafts", "Romulus", "Pheonix Venom", "Zoey Deninardes", "Himo Naerth", "Shaayaa"];
-let supporterIndex = 0;
-
-
-
-const cycleSupporters = () => {
-    const display = document.getElementById('active-supporter');
-    if (!display || SUPPORTERS.length === 0) return;
-
-    display.innerText = SUPPORTERS[supporterIndex];
-    supporterIndex = (supporterIndex + 1) % SUPPORTERS.length;
-};
+let isTyping = false;
+let regionCache = [];
 
 function formatIskShorthand(value) {
     if (value >= 1e12) return (value / 1e12).toFixed(2) + "T";
-    if (value >= 1e9) return (value / 1e9).toFixed(2) + "B";
-    if (value >= 1e6) return (value / 1e6).toFixed(1) + "M";
+    if (value >= 1e9)  return (value / 1e9).toFixed(2) + "B";
+    if (value >= 1e6)  return (value / 1e6).toFixed(1) + "M";
     return value.toLocaleString();
 }
+
+const formatIskValue = (value) => {
+    const num = Number(value);
+    if (num >= 1000000000) return (num / 1000000000).toFixed(2) + "B";
+    return (num / 1000000).toFixed(2) + "M";
+};
 
 function typeBootSequence() {
     const bootLines = [
@@ -40,7 +32,7 @@ function typeBootSequence() {
     const bootDisplay = document.querySelector('.boot-sequence');
     if (!bootDisplay) return;
 
-    bootDisplay.innerHTML = ''; 
+    bootDisplay.innerHTML = '';
     let lineIndex = 0;
     let charIndex = 0;
 
@@ -57,59 +49,20 @@ function typeBootSequence() {
                 if (lineIndex < bootLines.length) {
                     setTimeout(typeChar, 200);
                 } else {
-
-                    bootDisplay.innerHTML+= '<span class="dot-pulse"></span>'
-
+                    bootDisplay.innerHTML += '<span class="dot-pulse"></span>';
+                }
             }
         }
     }
-
+    typeChar();
 }
-
-typeChar();
-}
-
-if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', typeBootSequence);
-} else {
-    typeBootSequence();
-}
-
-
-
-
-const formatIskValue = (value) => {
-    const num = Number(value);
-    if (num >= 1000000000) return (num / 1000000000).toFixed(2) + "B";
-    return (num / 1000000).toFixed(2) + "M";
-};
-
-
-const typeShipNameSurgical = (el, text) => {
-    let i = 0;
-    const startTime = performance.now(); 
-    el.classList.add('typewriter-cursor');
-
-    const render = () => {
-        if (i < text.length) {
-            if (Math.floor((performance.now() - startTime) / 300) > i) { 
-                el.innerText += text[i];
-                i++;
-            }
-            requestAnimationFrame(render);
-        } else {
-            setTimeout(() => el.classList.remove('typewriter-cursor'), 2000);
-        }
-    };
-    render();
-};
 
 const typeTitle = (elementId, text, speed = 150) => {
     if (isTyping) return;
     isTyping = true;
     const element = document.getElementById(elementId);
     if (!element) return;
-    element.innerHTML = ""; 
+    element.innerHTML = "";
     let i = 0;
     function type() {
         if (i < text.length) {
@@ -123,6 +76,24 @@ const typeTitle = (elementId, text, speed = 150) => {
     type();
 };
 
+const typeShipNameSurgical = (el, text) => {
+    let i = 0;
+    const startTime = performance.now();
+    el.classList.add('typewriter-cursor');
+    const render = () => {
+        if (i < text.length) {
+            if (Math.floor((performance.now() - startTime) / 300) > i) {
+                el.innerText += text[i];
+                i++;
+            }
+            requestAnimationFrame(render);
+        } else {
+            setTimeout(() => el.classList.remove('typewriter-cursor'), 2000);
+        }
+    };
+    render();
+};
+
 regionSearch.addEventListener('input', (e) => {
     const term = e.target.value.toLowerCase().trim();
     const rows = document.querySelectorAll('.kill-row');
@@ -130,36 +101,7 @@ regionSearch.addEventListener('input', (e) => {
         const locationText = row.querySelector('.location-label')?.textContent.toLowerCase() || "";
         row.hidden = term !== "" && !locationText.includes(term);
     });
-    suggestionList.innerHTML = ''; 
-    
-    if (term.length < 2) {
-        autocompleteBox.classList.add('d-none');
-        return;
-    }
-
-    const matches = regionCache
-        .filter(r => r.toLowerCase().includes(term))
-        .slice(0, 5); 
-
-    if (matches.length > 0) {
-        autocompleteBox.classList.remove('d-none');
-        matches.forEach(match => {
-            const item = document.createElement('div');
-            item.className = 'suggestion-item p-1 pointer';
-            item.innerHTML = `> ${match.toUpperCase()}`;
-            
-            item.onclick = () => {
-                regionSearch.value = match;
-                autocompleteBox.classList.add('d-none');
-                regionSearch.dispatchEvent(new Event('input')); 
-            };
-            suggestionList.appendChild(item);
-        });
-    } else {
-        autocompleteBox.classList.add('d-none');
-    }
 });
-
 
 socket.on('connect', () => {
     status.innerText = "ONLINE";
@@ -171,21 +113,17 @@ socket.on('disconnect', () => {
     status.className = "badge bg-danger";
 });
 
-
 socket.on('region-list', (regionNames) => {
-    regionCache = regionNames; 
+    regionCache = regionNames;
 });
 
 socket.on('gatekeeper-stats', (data) => {
     if (counterElement && data.totalScanned) {
         counterElement.innerText = data.totalScanned.toLocaleString();
     }
-    if (data.totalIsk){
-        totalIskDestroyed = data.totalIsk;
-        const ticker = document.getElementById("isk-ticker-val")
-        if (ticker){
-            ticker.innerText = formatIskShorthand(totalIskDestroyed);
-        }
+    if (data.totalIsk) {
+        const ticker = document.getElementById("isk-ticker-val");
+        if (ticker) ticker.innerText = formatIskShorthand(data.totalIsk);
     }
 });
 
@@ -196,6 +134,7 @@ socket.on('player-count', (data) => {
         toast.classList.remove('d-none');
         display.innerText = data.count.toLocaleString();
     } else {
+        toast.classList.add('d-none');
         display.innerText = "OFFLINE";
         display.classList.replace('text-success', 'text-danger');
     }
@@ -215,24 +154,25 @@ socket.on('nebula-update', (data) => {
 });
 
 socket.on('raw-kill', (kill) => {
-
     const prefetchShip = new Image();
     const prefetchCorp = new Image();
     prefetchShip.src = kill.shipImageUrl;
     prefetchCorp.src = kill.corpImageUrl;
+
     const val = Number(kill.val) || 0;
     const emptyState = document.getElementById('empty-state');
     if (emptyState) emptyState.remove();
 
-if (counterElement && kill.totalScanned) {
+    if (counterElement && kill.totalScanned) {
         counterElement.innerText = kill.totalScanned.toLocaleString();
         counterElement.classList.remove('counter-update');
-        void counterElement.offsetWidth; 
+        void counterElement.offsetWidth;
         counterElement.classList.add('counter-update');
     }
+
     const div = document.createElement('div');
     div.className = `kill-row justify-content-between ${val >= 10000000000 ? 'whale' : ''}`;
-    
+
     const now = new Date();
     const timestamp = `[${now.getUTCHours().toString().padStart(2, '0')}:${now.getUTCMinutes().toString().padStart(2, '0')}]`;
 
@@ -245,8 +185,8 @@ if (counterElement && kill.totalScanned) {
                 <div><strong class="ship-name">
                     <span class="timestamp">${timestamp}</span>
                     ${kill.victimName || "Unknown"} lost
-                    <span class="article-target"></span><span class="type-target ship-name-container"></span></strong>
-                </div>
+                    <span class="article-target"></span><span class="type-target ship-name-container"></span>
+                </strong></div>
                 <div class="small">
                     <span class="location-label">${kill.locationLabel}</span>
                 </div>
@@ -258,37 +198,35 @@ if (counterElement && kill.totalScanned) {
             </div>
             <div class="text-end" style="width: 100px;">
                 <div class="${val >= 1000000000 ? 'isk-billion' : 'isk-million'} fw-bold">${formatIskValue(val)}</div>
-                <a href="${kill.zkillUrl}" target="_blank" class="zkill-link">DETAILS</a>
+                <a href="${kill.zkillUrl}" target="_blank" rel="noopener" class="zkill-link">DETAILS</a>
             </div>
         </div>
     `;
 
-    // In your kill handler
-div.classList.add('fresh');
-setTimeout(() => div.classList.remove('fresh'), 300);
+    div.classList.add('fresh');
+    setTimeout(() => div.classList.remove('fresh'), 300);
+
     const overlay = document.querySelector('body');
     overlay.style.opacity = '0.9';
     setTimeout(() => overlay.style.opacity = '1', 50);
-    const currentFilter = regionSearch.value.toLowerCase().trim();
-    if (currentFilter !== "" && !kill.locationLabel.toLowerCase().includes(currentFilter)) {
-        div.hidden = true; 
+
+    if (regionSearch.value.toLowerCase().trim() !== "" && 
+        !kill.locationLabel.toLowerCase().includes(regionSearch.value.toLowerCase().trim())) {
+        div.hidden = true;
     }
 
     feed.prepend(div);
-    const articleTarget = div.querySelector('.article-target');
-    articleTarget.innerText = kill.article || "a";
-    const target = div.querySelector('.type-target');
-    typeShipNameSurgical(target, kill.ship);
+    div.querySelector('.article-target').innerText = kill.article || "a";
+    typeShipNameSurgical(div.querySelector('.type-target'), kill.ship);
     if (feed.children.length > MAX_FEED_SIZE) feed.lastChild.remove();
 });
+
 const updateNPCTicker = async () => {
     const npcDisplay = document.getElementById('npc-count');
     if (!npcDisplay) return;
-
     try {
         const response = await fetch('https://api.socketkill.com/stats/npc-kills');
         const data = await response.json();
-
         if (data && data.lifetimeTotal) {
             npcDisplay.innerText = data.lifetimeTotal.toLocaleString();
             npcDisplay.style.opacity = "0.5";
@@ -299,16 +237,14 @@ const updateNPCTicker = async () => {
         npcDisplay.classList.replace('text-warning', 'text-danger');
     }
 };
-updateNPCTicker();
-setInterval(updateNPCTicker, 300000);
+
 const initApp = () => {
     typeTitle('socket-title', 'Socket.Kill', 150);
-
-    if (SUPPORTERS.length > 0) {
-        cycleSupporters(); 
-        setInterval(cycleSupporters, 7000); 
-    }
+    typeBootSequence();
+    updateNPCTicker();
+    setInterval(updateNPCTicker, 300000);
 };
+
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', initApp);
 } else {
