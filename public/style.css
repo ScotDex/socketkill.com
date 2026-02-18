@@ -66,22 +66,6 @@ body::after {
     opacity: 0.8;
 }
 
-.kill-row:nth-child(3n) {
-    transform: translateZ(5px);
-}
-
-.kill-row:nth-child(3n+1) {
-    transform: translateZ(10px);
-}
-
-.kill-row:nth-child(3n+2) {
-    transform: translateZ(15px);
-}
-
-#feed {
-    perspective: 1000px;
-    transform-style: preserve-3d;
-}
 
 /* === CRT SCREEN === */
 #crt-screen {
@@ -353,7 +337,7 @@ body::after {
 }
 
 .timestamp {
-    color: rgba(63, 185, 80, 0.5);
+    color: rgba(63, 185, 80, 0.6);
     font-size: 0.75rem;
     font-family: var(--mono-font);
     margin-right: 6px;
@@ -362,8 +346,8 @@ body::after {
 }
 
 @keyframes timestamp-flicker {
-    0%, 90% { opacity: 0.25; }
-    95% { opacity: 0.15; }
+    0%, 90% { opacity: 0.1; }
+    95% { opacity: 0.5; }
     100% { opacity: 0.25; }
 }
 
