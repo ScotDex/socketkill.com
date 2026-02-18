@@ -66,6 +66,23 @@ body::after {
     opacity: 0.8;
 }
 
+.kill-row:nth-child(3n) {
+    transform: translateZ(5px);
+}
+
+.kill-row:nth-child(3n+1) {
+    transform: translateZ(10px);
+}
+
+.kill-row:nth-child(3n+2) {
+    transform: translateZ(15px);
+}
+
+#feed {
+    perspective: 1000px;
+    transform-style: preserve-3d;
+}
+
 /* === CRT SCREEN === */
 #crt-screen {
     animation: crt-boot 1.5s ease-out forwards;
@@ -341,6 +358,13 @@ body::after {
     font-family: var(--mono-font);
     margin-right: 6px;
     font-weight: 400;
+    animation: timestamp-flicker 4s steps(20) infinite;
+}
+
+@keyframes timestamp-flicker {
+    0%, 90% { opacity: 0.25; }
+    95% { opacity: 0.15; }
+    100% { opacity: 0.25; }
 }
 
 .location-label {
