@@ -353,12 +353,12 @@ body::after {
 }
 
 .timestamp {
-    color: rgba(63, 185, 80, 0.25);
+    color: rgba(63, 185, 80, 0.5);
     font-size: 0.75rem;
     font-family: var(--mono-font);
     margin-right: 6px;
     font-weight: 400;
-    animation: timestamp-flicker 4s steps(20) infinite;
+    animation: timestamp-flicker 6s steps(20) infinite;
 }
 
 @keyframes timestamp-flicker {
