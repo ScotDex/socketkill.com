@@ -66,6 +66,7 @@ body::after {
     opacity: 0.8;
 }
 
+
 /* === CRT SCREEN === */
 #crt-screen {
     animation: crt-boot 1.5s ease-out forwards;
@@ -336,11 +337,18 @@ body::after {
 }
 
 .timestamp {
-    color: rgba(63, 185, 80, 0.25);
+    color: rgba(63, 185, 80, 0.6);
     font-size: 0.75rem;
     font-family: var(--mono-font);
     margin-right: 6px;
     font-weight: 400;
+    animation: timestamp-flicker 6s steps(20) infinite;
+}
+
+@keyframes timestamp-flicker {
+    0%, 90% { opacity: 0.1; }
+    95% { opacity: 0.5; }
+    100% { opacity: 0.25; }
 }
 
 .location-label {
