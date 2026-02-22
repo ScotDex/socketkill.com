@@ -7,9 +7,9 @@ let heatmap = new Map(); // Kill tracking data
 let raycaster, mouse;
 
 // Constants
-const SCALE = 1e-12; // Scale EVE coordinates down
-const DECAY_TIME = 300000; // 5 minutes in ms
-const DECAY_INTERVAL = 10000; // Check every 10 seconds
+const SCALE = 1e-12; // 
+const DECAY_TIME = 300000; 
+const DECAY_INTERVAL = 10000; 
 
 // === SOCKET.IO CONNECTION ===
 const socket = io();
