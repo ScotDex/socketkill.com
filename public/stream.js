@@ -21,8 +21,8 @@ function counterSurge() {
     
     gsap.timeline()
         .to(counter, {
-            duration: 0.5,
-            scale: 2.5,
+            duration: 0.2,
+            scale: 1.5,
             textShadow: `
                 0 0 5px #fff,
                 0 0 10px #3fb950,
