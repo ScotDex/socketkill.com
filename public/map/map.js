@@ -24,8 +24,8 @@ socket.on('disconnect', () => {
     updateConnectionStatus('disconnected');
 });
 
-socket.on('killmail', (kill) => {
-    const systemId = kill.solar_system_id;
+socket.on('raw-kill', (kill) => {
+    const systemId = kill.system;
     
     // Update heatmap data
     const current = heatmap.get(systemId) || { 
