@@ -99,13 +99,24 @@ function updateStats() {
     });
 }
 
-// === UPDATE SYSTEM MARKER ===
 function updateSystemMarker(systemId, data) {
+    console.log('🔍 Looking for system:', {
+        systemId: systemId,
+        systemIdType: typeof systemId,
+        firstSystemId: systems[0]?.id,
+        firstSystemIdType: typeof systems[0]?.id,
+        totalSystems: systems.length
+    });
+    
     const system = systems.find(s => s.id === systemId);
+    
     if (!system) {
-        console.warn(`System ${systemId} not found in dataset`);
+        console.warn(`❌ System ${systemId} not found in dataset`);
+        console.warn('Sample system IDs from dataset:', systems.slice(0, 10).map(s => s.id));
         return;
     }
+    
+    console.log('✅ Found system:', system.name);
     
     const position = new THREE.Vector3(
         system.x * SCALE,
@@ -116,7 +127,6 @@ function updateSystemMarker(systemId, data) {
     let mesh = activeMeshes.get(systemId);
     
     if (!mesh) {
-        // Create new sphere for this active system
         const geometry = new THREE.SphereGeometry(100, 16, 16);
         const material = new THREE.MeshBasicMaterial({
             color: 0xff00ff,
@@ -135,10 +145,9 @@ function updateSystemMarker(systemId, data) {
         scene.add(mesh);
         activeMeshes.set(systemId, mesh);
         
-        console.log(`Created marker for ${system.name} (${data.count} kills)`);
+        console.log(`🎯 Created marker for ${system.name} (${data.count} kills)`);
     }
     
-    // Update size and intensity based on activity
     const intensity = Math.min(data.count / 10, 1);
     const baseSize = 100;
     const size = baseSize + (data.count * 20);
