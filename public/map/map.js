@@ -134,7 +134,7 @@ function updateSystemMarker(systemId, data) {
     let mesh = activeMeshes.get(systemId);
     
     if (!mesh) {
-        const geometry = new THREE.SphereGeometry(100, 16, 16);
+        const geometry = new THREE.SphereGeometry(5000, 16, 16);
         const material = new THREE.MeshBasicMaterial({
             color: 0xff00ff,
             transparent: true,
@@ -281,8 +281,8 @@ function initScene() {
     controls.dampingFactor = 0.05;
     controls.rotateSpeed = 0.5;
     controls.zoomSpeed = 1.2;
-    controls.minDistance = 1e12;
-    controls.maxDistance = 1e14;
+    controls.minDistance = 50000;
+    controls.maxDistance = 1000000;
     
     // Lights
     const ambientLight = new THREE.AmbientLight(0x404040, 0.5);
@@ -341,7 +341,7 @@ function renderSystems() {
     
     // Material
     const material = new THREE.PointsMaterial({
-        size: 50,
+        size: 2000,
         vertexColors: true,
         transparent: true,
         opacity: 0.6,
