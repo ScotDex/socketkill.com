@@ -461,7 +461,7 @@ body::after {
 }
 
 .timestamp {
-    color: rgba(63, 185, 80, 0.9);
+    color: rgba(63, 185, 80, 0.7);
     font-size: 0.75rem;
     font-family: var(--mono-font);
     margin-right: 6px;
