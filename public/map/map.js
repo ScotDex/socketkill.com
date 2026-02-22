@@ -35,7 +35,7 @@ socket.on('raw-kill', (kill) => {
     };
     
     current.count++;
-    current.value += kill.zkb.totalValue;
+    current.value += kill.val || 0;
     current.lastKill = Date.now();
     
     heatmap.set(systemId, current);
