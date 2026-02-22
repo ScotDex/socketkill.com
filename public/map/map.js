@@ -1,9 +1,4 @@
-// ========================================
-// Socket.Kill - Tactical Map
-// 3D Galaxy Visualization with Live Heatmap
-// ========================================
 
-// === GLOBALS ===
 let scene, camera, renderer, controls;
 let systems = [];
 let systemPoints; // The Points object for all systems
