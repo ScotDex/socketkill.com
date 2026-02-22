@@ -15,6 +15,30 @@ function formatIskShorthand(value) {
     return value.toLocaleString();
 }
 
+// === COUNTER SURGE EFFECT ===
+function counterSurge() {
+    const counter = document.getElementById('kill-counter');
+    
+    gsap.timeline()
+        .to(counter, {
+            duration: 0.2,
+            scale: 1.3,
+            textShadow: `
+                0 0 5px #fff,
+                0 0 10px #3fb950,
+                0 0 20px #3fb950,
+                0 0 40px #3fb950
+            `,
+            ease: 'back.out(2)'
+        })
+        .to(counter, {
+            duration: 0.3,
+            scale: 1,
+            textShadow: '0 0 8px rgba(63, 185, 80, 0.6)',
+            ease: 'power2.out'
+        });
+}
+
 const formatIskValue = (value) => {
     const num = Number(value);
     if (num >= 1000000000) return (num / 1000000000).toFixed(2) + "B";
@@ -242,6 +266,7 @@ socket.on('gatekeeper-stats', (data) => {
         counterElement.classList.remove('counter-update');
         void counterElement.offsetWidth;
         counterElement.classList.add('counter-update');
+        counterSurge(); 
     }
     if (data.totalIsk) {
         const ticker = document.getElementById("isk-ticker-val");
@@ -290,6 +315,7 @@ socket.on('raw-kill', (kill) => {
         counterElement.classList.remove('counter-update');
         void counterElement.offsetWidth;
         counterElement.classList.add('counter-update');
+        counterSurge(); 
     }
 
     const div = document.createElement('div');
