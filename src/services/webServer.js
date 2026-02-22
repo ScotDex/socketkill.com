@@ -34,11 +34,19 @@ function startWebServer(esi, statsManager, getState) {
 
     const PORT = process.env.PORT 
     const publicPath = path.join(__dirname, '..', '..', 'public');
-
-    console.log('🔍 __dirname:', __dirname);
-console.log('🔍 publicPath:', publicPath);
-console.log('🔍 systems.json should be at:', path.join(publicPath, 'map', 'data', 'systems.json'));
-console.log('🔍 File exists?', fs.existsSync(path.join(publicPath, 'map', 'data', 'systems.json')));
+app.get('/test-file-exists', (req, res) => {
+    const filePath = path.join(publicPath, 'map', 'data', 'systems.json');
+    const exists = fs.existsSync(filePath);
+    const stats = exists ? fs.statSync(filePath) : null;
+    
+    res.json({
+        publicPath,
+        filePath,
+        exists,
+        size: stats ? stats.size : null,
+        permissions: stats ? stats.mode.toString(8) : null
+    });
+});
     app.use(cors());
     app.use(express.json());
     app.use(express.static(path.join(__dirname, '..', '..', 'public')));
