@@ -15,6 +15,130 @@
                      0 0 1px rgba(255, 255, 255, 0.2);
 }
 
+/* Creator Awards Banner */
+.creator-awards-banner {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    width: 100vw;
+    background: rgba(0, 0, 0, 0.95);
+    border-bottom: 1px solid rgba(63, 185, 80, 0.4);
+    padding: 0px;
+    z-index: 10000;
+    display: none; /* Hidden by default, shown via JS */
+    backdrop-filter: blur(8px);
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.5);
+}
+
+.banner-content {
+    max-width: 1400px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px 20px;
+    gap: 15px;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.85rem;
+    letter-spacing: 1px;
+}
+
+.award-icon {
+    color: rgba(63, 185, 80, 0.9);
+    font-size: 1rem;
+    text-shadow: 0 0 8px rgba(63, 185, 80, 0.6);
+    animation: icon-pulse 2s ease-in-out infinite;
+}
+
+@keyframes icon-pulse {
+    0%, 100% { 
+        opacity: 0.9;
+        text-shadow: 0 0 8px rgba(63, 185, 80, 0.6);
+    }
+    50% { 
+        opacity: 1;
+        text-shadow: 0 0 15px rgba(63, 185, 80, 0.8);
+    }
+}
+
+.award-text {
+    color: rgba(63, 185, 80, 0.8);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+}
+
+.award-cta {
+    background: transparent;
+    border: 1px solid var(--neon-green);
+    color: var(--neon-green);
+    padding: 6px 18px;
+    text-decoration: none;
+    text-transform: uppercase;
+    font-weight: bold;
+    letter-spacing: 1px;
+    transition: all 0.2s ease;
+    font-size: 0.8rem;
+}
+
+.award-cta:hover {
+    background: rgba(63, 185, 80, 0.15);
+    box-shadow: 0 0 15px rgba(63, 185, 80, 0.4);
+    border-color: rgba(63, 185, 80, 0.8);
+}
+
+.award-dismiss {
+    background: transparent;
+    border: 1px solid rgba(63, 185, 80, 0.3);
+    color: rgba(63, 185, 80, 0.6);
+    font-size: 1.2rem;
+    width: 28px;
+    height: 28px;
+    cursor: pointer;
+    margin-left: 10px;
+    transition: all 0.2s;
+    font-family: 'Share Tech Mono', monospace;
+    line-height: 1;
+}
+
+.award-dismiss:hover {
+    background: rgba(63, 185, 80, 0.1);
+    border-color: var(--neon-green);
+    color: var(--neon-green);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .banner-content {
+        flex-direction: column;
+        gap: 10px;
+        text-align: center;
+        padding: 5px 0;
+    }
+    
+    .award-text {
+        font-size: 0.75rem;
+        line-height: 1.4;
+    }
+    
+    .award-dismiss {
+        position: absolute;
+        top: 8px;
+        right: 8px;
+    }
+}
+
+/* Push content down when banner is visible */
+body.awards-banner-visible {
+    padding-top: 50px;
+}
+
+@media (max-width: 768px) {
+    body.awards-banner-visible {
+        padding-top: 80px;
+    }
+}
+
 /* === BASE === */
 body {
     color: #c9d1d9;
@@ -50,7 +174,7 @@ body::after {
     top: 0; left: 0; width: 100%; height: 100%;
     background: linear-gradient(135deg, rgba(255,255,255,0.03) 0%, transparent 50%, rgba(255,255,255,0.01) 100%);
     pointer-events: none;
-    z-index: 10000;
+    z-index: 5;
 }
 
 /* === ATMOSPHERE === */
@@ -337,7 +461,7 @@ body::after {
 }
 
 .timestamp {
-    color: rgba(63, 185, 80, 0.6);
+    color: rgba(63, 185, 80, 0.7);
     font-size: 0.75rem;
     font-family: var(--mono-font);
     margin-right: 6px;
@@ -346,9 +470,9 @@ body::after {
 }
 
 @keyframes timestamp-flicker {
-    0%, 90% { opacity: 0.1; }
-    95% { opacity: 0.5; }
-    100% { opacity: 0.25; }
+    0%, 90% { opacity: 0.7; }
+    95% { opacity: 0.85; }
+    100% { opacity: 0.75; }
 }
 
 .location-label {
@@ -643,7 +767,7 @@ body.signal-interference {
     backdrop-filter: blur(4px);
     border-top: 1px solid rgba(63, 185, 80, 0.2);
     padding: 3px 20px;
-    z-index: 50;
+    z-index: 9999;
     pointer-events: none;
 }
 

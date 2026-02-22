@@ -21,6 +21,25 @@ const formatIskValue = (value) => {
     return (num / 1000000).toFixed(2) + "M";
 };
 
+(function() {
+    const banner = document.getElementById('awards-banner');
+    const dismissBtn = document.getElementById('dismiss-banner');
+    const storageKey = 'creator-awards-banner-dismissed';
+    
+    // Check if user already dismissed
+    if (!localStorage.getItem(storageKey)) {
+        banner.style.display = 'block';
+        document.body.classList.add('awards-banner-visible');
+    }
+    
+    // Dismiss permanently
+    dismissBtn?.addEventListener('click', () => {
+        localStorage.setItem(storageKey, 'true');
+        banner.style.display = 'none';
+        document.body.classList.remove('awards-banner-visible');
+    });
+})();
+
 function typeBootSequence() {
     const bootLines = [
         '> INITIALIZING GRID MONITOR...',
