@@ -246,7 +246,7 @@ function initScene() {
         1,
         1e15
     );
-    camera.position.set(5e13, 5e13, 5e13);
+    camera.position.set(200000, 200000, 200000);
     camera.lookAt(0, 0, 0);
     
     // Create renderer
