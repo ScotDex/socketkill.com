@@ -25,7 +25,8 @@ socket.on('disconnect', () => {
 });
 
 socket.on('raw-kill', (kill) => {
-    const systemId = kill.system;
+    const systemName = kill.system;
+    const system = systems.find(s => s.name === systemName);
     
     // Update heatmap data
     const current = heatmap.get(systemId) || { 
@@ -38,6 +39,8 @@ socket.on('raw-kill', (kill) => {
     current.value += kill.val || 0;
     current.lastKill = Date.now();
     
+    const systemId = system.id; 
+
     heatmap.set(systemId, current);
     
     // Update visual marker
