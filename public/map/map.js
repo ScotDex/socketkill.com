@@ -401,25 +401,27 @@ function onWindowResize() {
     renderer.setSize(window.innerWidth, window.innerHeight);
 }
 
-// === MOUSE MOVE (HOVER) ===
 function onMouseMove(event) {
     mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
     mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
     
-    // Raycast to find hovered system
+    // Set raycaster threshold for Points (not just meshes)
+    raycaster.params.Points.threshold = 1000;  // ✅ Detect points within 1000 units
+    
     raycaster.setFromCamera(mouse, camera);
     
+    // Check active combat zones first (meshes)
     const meshArray = Array.from(activeMeshes.values());
-    const intersects = raycaster.intersectObjects(meshArray);
+    const meshIntersects = raycaster.intersectObjects(meshArray);
     
     const tooltip = document.getElementById('tooltip');
     
-    if (intersects.length > 0) {
-        const mesh = intersects[0].object;
+    if (meshIntersects.length > 0) {
+        // Hovering over active combat zone
+        const mesh = meshIntersects[0].object;
         const system = mesh.userData.system;
         const data = heatmap.get(system.id);
         
-        // Update tooltip content
         const tooltipContent = `
             <div class="tooltip-content">
                 <div class="system-name">${system.name}</div>
@@ -445,8 +447,39 @@ function onMouseMove(event) {
         tooltip.style.left = event.clientX + 15 + 'px';
         tooltip.style.top = event.clientY + 15 + 'px';
         tooltip.classList.add('visible');
+        
     } else {
-        tooltip.classList.remove('visible');
+        // Check if hovering over regular system points
+        const pointIntersects = raycaster.intersectObject(systemPoints);
+        
+        if (pointIntersects.length > 0) {
+            // Get the index of the intersected point
+            const index = pointIntersects[0].index;
+            const system = systems[index];
+            
+            if (system) {
+                const tooltipContent = `
+                    <div class="tooltip-content">
+                        <div class="system-name">${system.name}</div>
+                        <div class="system-info">
+                            <span class="info-item">
+                                <span class="info-label">Security:</span> 
+                                <span class="info-value">${system.security.toFixed(1)}</span>
+                            </span>
+                        </div>
+                    </div>
+                `;
+                
+                tooltip.innerHTML = tooltipContent;
+                tooltip.style.left = event.clientX + 15 + 'px';
+                tooltip.style.top = event.clientY + 15 + 'px';
+                tooltip.classList.add('visible');
+            } else {
+                tooltip.classList.remove('visible');
+            }
+        } else {
+            tooltip.classList.remove('visible');
+        }
     }
 }
 
