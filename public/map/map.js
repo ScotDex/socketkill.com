@@ -25,10 +25,12 @@ socket.on('disconnect', () => {
 });
 
 socket.on('raw-kill', (kill) => {
-    const systemId = system.id; 
     const systemName = kill.system;
     
     const system = systems.find(s => s.name === systemName);
+    
+    const systemId = system.id; 
+    
     
     // Update heatmap data
     const current = heatmap.get(systemId) || { 
