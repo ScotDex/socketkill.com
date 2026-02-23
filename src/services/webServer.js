@@ -9,7 +9,7 @@ const helmet = require('helmet');
 const fs = require('fs');
 
 
-function startWebServer(esi, statsManager, getState) {
+function startWebServer() {
     const app = express();
 
     const options = {
@@ -34,47 +34,11 @@ function startWebServer(esi, statsManager, getState) {
 
     const PORT = process.env.PORT 
     const publicPath = path.join(__dirname, '..', '..', 'public');
-app.get('/test-file-exists', (req, res) => {
-    const filePath = path.join(publicPath, 'map', 'data', 'systems.json');
-    const exists = fs.existsSync(filePath);
-    const stats = exists ? fs.statSync(filePath) : null;
-    
-    res.json({
-        publicPath,
-        filePath,
-        exists,
-        size: stats ? stats.size : null,
-        permissions: stats ? stats.mode.toString(8) : null
-    });
-});
+
     app.use(cors());
     app.use(express.json());
     app.use(express.static(path.join(__dirname, '..', '..', 'public')));
 
-
-    app.get ('/api/health', async (req, res) => {
-        const mem = process.memoryUsage();
-        const heapRatio = ((mem.heapUsed / mem.heapTotal) * 100).toFixed(1) + "%";
-        const healthData = {
-            status: getState.isThrottled ? "DEGRADED" : "OPERATIONAL",
-            uptime: Math.round((Date.now() - statsManager.startTime) / 1000),
-            stats: {
-                killsProcessed: statsManager.totalKills,
-                iskDestroyed: statsManager.totalIsk,
-                activeClients: io.engine.clientsCount,
-            },
-
-            system: {
-                rss: `${Math.round(mem.rss / 1024 / 1024)}MB`,
-                heapUsed: `${Math.round(mem.heapUsed / 1024 / 1024)}MB`,
-                heapRatio: heapRatio,
-                sequence: getState.currentSequence
-            }
-        };
-        res.status(getState.isThrottled ? 299 : 200).json(healthData);
-    }
-
-)
     
     app.get('/', (req, res) => {
         res.sendFile(path.join(publicPath, 'index.html'));
