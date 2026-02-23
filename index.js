@@ -101,25 +101,29 @@ async function r2BackgroundWorker() {
     let lastKnownSequence = sharedState.currentSequence;
     const processedKills = new Set();
     const poll = async () => {
-        if (isThrottled) return;
-        
-        // Cache-buster ONLY active during 404/Stall recovery
-        const isNewSequence = sharedState.currentSequence > lastKnownSequence
-        const url = `${R2_BASE_URL}/${sharedState.currentSequence}.json${isNewSequence  ? `?cb=${Date.now()}` : ''}`;
-        let nextTick = 0;
+      if (isThrottled) return;
 
-        try {
-            const response = await talker.get(url, { timeout: 2000 });
-            const r2Package = normalizer.fromR2(response.data);
+      // Cache-buster ONLY active during 404/Stall recovery
+      const isNewSequence = sharedState.currentSequence > lastKnownSequence
+      const url = `${R2_BASE_URL}/${sharedState.currentSequence}.json${isNewSequence ? `?cb=${Date.now()}` : ''}`;
+      let nextTick = 0;
 
-            if (r2Package?.killID) {
+      try {
+        const response = await talker.get(url, { timeout: 2000 });
+        const r2Package = normalizer.fromR2(response.data);
 
-                if (!processedKills.has(r2Package.killID)) {  
-                processedKills.add(r2Package.killID);      
-                processor.processPackage(r2Package);
-                if (processedKills.size > 1000) processedKills.clear(); 
-            }                                              
-                
+        if (r2Package?.killID) {
+
+          if (!processedKills.has(r2Package.killID)) {
+            processedKills.add(r2Package.killID);
+            processor.processPackage(r2Package);
+            if (processedKills.size > 1000) processedKills.clear();
+
+            const killTime = new Date(r2Package.esiData?.killmail_time).getTime();
+            const ingestDelay = Date.now() - killTime;
+            console.log(`[INGEST] Kill ${r2Package.killID} | Age: ${(ingestDelay / 1000).toFixed(1)}s`);
+          }
+
                 lastKnownSequence = sharedState.currentSequence;
                 sharedState.currentSequence++;
                 consecutive404s = 0;
