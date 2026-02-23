@@ -115,6 +115,19 @@ async function r2BackgroundWorker() {
                 lastSuccessfulIngest = Date.now();
                 lastErrorStatus = 200;
                 isThrottled = false;
+                if (r2Package?.sequenceUpdated) {
+                  try {
+                    const updatedRes = await talker.get (`${R2_BASE_URL}/${r2Package.sequenceUpdated}.json`, { timeout: 2000 });
+                    const updatedPackage = normalizer.fromR2(updatedRes.data);
+                    if (updatedPackage?.killID){
+                      processor.processPackage(updatedPackage);
+                      console.log(`🔄 Reprocessed updated sequence ${r2Package.sequenceUpdated}`);
+                    }
+                  } catch (e) {
+                    console.error(`Failed to refetch updated sequence ${r2Package.sequenceUpdated}:`, e);
+                  }
+                }
+
             } else {
                 // DATA GAP: File exists but normalize failed or no kill data
                 consecutive404s++;
