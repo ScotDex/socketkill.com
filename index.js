@@ -99,6 +99,7 @@ async function r2BackgroundWorker() {
     // 2. The Centralized Recursive Tick
 
     let lastKnownSequence = sharedState.currentSequence;
+    const processedKills = new Set();
     const poll = async () => {
         if (isThrottled) return;
         
@@ -112,26 +113,32 @@ async function r2BackgroundWorker() {
             const r2Package = normalizer.fromR2(response.data);
 
             if (r2Package?.killID) {
-                
+
+                if (!processedKills.has(r2Package.killID)) {  
+                processedKills.add(r2Package.killID);      
                 processor.processPackage(r2Package);
+                if (processedKills.size > 1000) processedKills.clear(); 
+            }                                              
+                
                 lastKnownSequence = sharedState.currentSequence;
                 sharedState.currentSequence++;
                 consecutive404s = 0;
                 lastSuccessfulIngest = Date.now();
-                lastErrorStatus = 200;
-                isThrottled = false;
-                if (r2Package?.sequenceUpdated) {
-                  try {
-                    const updatedRes = await talker.get (`${R2_BASE_URL}/${r2Package.sequenceUpdated}.json`, { timeout: 2000 });
-                    const updatedPackage = normalizer.fromR2(updatedRes.data);
-                    if (updatedPackage?.killID){
-                      processor.processPackage(updatedPackage);
-                      console.log(`🔄 Reprocessed updated sequence ${r2Package.sequenceUpdated}`);
-                    }
-                  } catch (e) {
-                    console.error(`Failed to refetch updated sequence ${r2Package.sequenceUpdated}:`, e);
+              lastErrorStatus = 200;
+              isThrottled = false;
+              if (r2Package?.sequenceUpdated) {
+                try {
+                  const updatedRes = await talker.get(`${R2_BASE_URL}/${r2Package.sequenceUpdated}.json`, { timeout: 2000 });
+                  const updatedPackage = normalizer.fromR2(updatedRes.data);
+                  if (updatedPackage?.killID && !processedKills.has(updatedPackage.killID)) {
+                    processedKills.add(updatedPackage.killID);
+                    processor.processPackage(updatedPackage);
+                    console.log(`🔄 Reprocessed updated sequence ${r2Package.sequenceUpdated}`);
                   }
+                } catch (e) {
+                  console.error(`Failed to refetch updated sequence ${r2Package.sequenceUpdated}:`, e);
                 }
+              }
 
             } else {
                 // DATA GAP: File exists but normalize failed or no kill data
