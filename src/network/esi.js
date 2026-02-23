@@ -79,7 +79,7 @@ class ESIClient{
             this.cache.corporations = new Map(Object.entries(json.corporations || {}));
             this.cache.types = new Map(Object.entries(json.types || {}));
             this.cache.regions = new Map(Object.entries(json.regions || {}));
-            console.log("📂 Persistent cache loaded.");
+            console.log(`📂 Persistent cache loaded. Regions cached: ${this.cache.regions.size}`);
         } catch (err) {
             console.warn("⚠️ No cache file found, starting fresh.");
         }
