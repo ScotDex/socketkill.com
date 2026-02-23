@@ -80,11 +80,11 @@ const POLLING_CONFIG = {
 
 async function r2BackgroundWorker() {
     // 1. Priming Phase
+    
     try {
         const res = await talker.get(SEQUENCE_CACHE_URL, { timeout: 5000 });
         if (res.data?.sequence) {
             sharedState.currentSequence = parseInt(res.data.sequence) - 5;
-            console.log(`🚀 R2_WORKER: Primed at sequence ${currentSequence}`);
         } else {
             throw new Error("Invalid sequence data");
         }
@@ -97,11 +97,14 @@ async function r2BackgroundWorker() {
     }
 
     // 2. The Centralized Recursive Tick
+
+    let lastKnownSequence = sharedState.currentSequence;
     const poll = async () => {
         if (isThrottled) return;
-        let lastKnownSequence = sharedState.currentSequence;
+        
         // Cache-buster ONLY active during 404/Stall recovery
-        const url = `${R2_BASE_URL}/${sharedState.currentSequence}.json${consecutive404s > 0 ? `?cb=${Date.now()}` : ''}`;
+        const isNewSequence = sharedState.currentSequence > lastKnownSequence
+        const url = `${R2_BASE_URL}/${sharedState.currentSequence}.json${isNewSequence > 0 ? `?cb=${Date.now()}` : ''}`;
         let nextTick = 0;
 
         try {
@@ -109,7 +112,9 @@ async function r2BackgroundWorker() {
             const r2Package = normalizer.fromR2(response.data);
 
             if (r2Package?.killID) {
+                
                 processor.processPackage(r2Package);
+                lastKnownSequence = sharedState.currentSequence;
                 sharedState.currentSequence++;
                 consecutive404s = 0;
                 lastSuccessfulIngest = Date.now();
@@ -151,11 +156,6 @@ async function r2BackgroundWorker() {
                 return; // Break recursion until timeout finishes
             }
 
-          // BEFORE
-          const is404 = status === 404;
-          consecutive404s = is404 ? consecutive404s + 1 : 0;
-          nextTick = is404 ? 12000 : POLLING_CONFIG.ERROR_BACKOFF;
-
           // AFTER
           if (status === 404) {
             sharedState.currentSequence = lastKnownSequence;
@@ -164,7 +164,7 @@ async function r2BackgroundWorker() {
             nextTick = POLLING_CONFIG.ERROR_BACKOFF;
           }
 
-          if (is404 && consecutive404s >= 30) {
+          if (status === 404 && consecutive404s >= 30) {
             console.warn("🔄 [RE-SYNC] 404 limit reached. Re-priming...");
             return r2BackgroundWorker();
             }
