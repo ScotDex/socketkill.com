@@ -99,7 +99,7 @@ async function r2BackgroundWorker() {
     // 2. The Centralized Recursive Tick
     const poll = async () => {
         if (isThrottled) return;
-
+        let lastKnownSequence = sharedState.currentSequence;
         // Cache-buster ONLY active during 404/Stall recovery
         const url = `${R2_BASE_URL}/${sharedState.currentSequence}.json${consecutive404s > 0 ? `?cb=${Date.now()}` : ''}`;
         let nextTick = 0;
