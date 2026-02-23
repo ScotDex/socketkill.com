@@ -160,28 +160,33 @@ async function r2BackgroundWorker() {
             const status = err.response?.status;
             lastErrorStatus = status;
 
-            if (status === 429) {
-                sharedState.isThrottled = true;
-                console.error("🛑 [429] Rate Limited. Entering 2m quiet period.");
-                setTimeout(() => { isThrottled = false; poll(); }, POLLING_CONFIG.PANIC_DELAY);
-                return; // Break recursion until timeout finishes
-            }
-
-          // AFTER
-          if (status === 404) {
-            sharedState.currentSequence = lastKnownSequence;
-            nextTick = 6000;
-          } else {
-            nextTick = POLLING_CONFIG.ERROR_BACKOFF;
-          }
-
-          if (status === 404 && consecutive404s >= 30) {
-            console.warn("🔄 [RE-SYNC] 404 limit reached. Re-priming...");
-            return r2BackgroundWorker();
-            }
+        if (status === 429) {
+          sharedState.isThrottled = true;
+          console.error("🛑 [429] Rate Limited. Entering 2m quiet period.");
+          setTimeout(() => { isThrottled = false; poll(); }, POLLING_CONFIG.PANIC_DELAY);
+          return; // Break recursion until timeout finishes
         }
 
-        setTimeout(poll, nextTick);
+        // AFTER
+        if (status === 404) {
+          try {
+            const liveRes = await talker.get(SEQUENCE_CACHE_URL, { timeout: 5000 });
+            const liveSeq = liveRes.data?.sequence;
+            console.log(`[GAP] Current: ${sharedState.currentSequence} | Live: ${liveSeq} | Behind: ${liveSeq - sharedState.currentSequence} sequences`);
+          } catch (_) { }
+          sharedState.currentSequence = lastKnownSequence;
+          nextTick = 6000;
+        } else {
+          nextTick = POLLING_CONFIG.ERROR_BACKOFF;
+        }
+
+        if (status === 404 && consecutive404s >= 30) {
+          console.warn("🔄 [RE-SYNC] 404 limit reached. Re-priming...");
+          return r2BackgroundWorker();
+        }
+      }
+
+      setTimeout(poll, nextTick);
     };
 
     poll();
