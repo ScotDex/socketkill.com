@@ -102,7 +102,7 @@ async function r2BackgroundWorker() {
 
         // Cache-buster ONLY active during 404/Stall recovery
         const url = `${R2_BASE_URL}/${sharedState.currentSequence}.json${consecutive404s > 0 ? `?cb=${Date.now()}` : ''}`;
-        let nextTick = POLLING_CONFIG.CATCHUP_SPEED;
+        let nextTick = 0;
 
         try {
             const response = await talker.get(url, { timeout: 2000 });
@@ -138,13 +138,22 @@ async function r2BackgroundWorker() {
                 return; // Break recursion until timeout finishes
             }
 
-            const is404 = status === 404;
-            consecutive404s = is404 ? consecutive404s + 1 : 0;
-            nextTick = is404 ? 12000 : POLLING_CONFIG.ERROR_BACKOFF;
+          // BEFORE
+          const is404 = status === 404;
+          consecutive404s = is404 ? consecutive404s + 1 : 0;
+          nextTick = is404 ? 12000 : POLLING_CONFIG.ERROR_BACKOFF;
 
-            if (is404 && consecutive404s >= 30) {
-                console.warn("🔄 [RE-SYNC] 404 limit reached. Re-priming...");
-                return r2BackgroundWorker();
+          // AFTER
+          if (status === 404) {
+            sharedState.currentSequence = lastKnownSequence;
+            nextTick = 6000;
+          } else {
+            nextTick = POLLING_CONFIG.ERROR_BACKOFF;
+          }
+
+          if (is404 && consecutive404s >= 30) {
+            console.warn("🔄 [RE-SYNC] 404 limit reached. Re-priming...");
+            return r2BackgroundWorker();
             }
         }
 
