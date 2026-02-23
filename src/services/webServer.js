@@ -26,7 +26,7 @@ function startWebServer() {
     const io = new Server(server, {
         pingTimeout: 2000,
         pingInterval: 5000,
-        cors: { origin: "*",
+        cors:{  origin: ["https://socketkill.com", "https://pf.darkventure.space"] ,
         methods: ["GET", "POST"],
         },
         transports: ['websocket', 'polling'],
