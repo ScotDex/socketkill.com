@@ -44,8 +44,11 @@ async function syncPlayerCount() {
 }
 
 io.on("connection", async (socket) => {
-  const clientCount = io.engine.clientsCount;
-  console.log(`🔌 [NETWORK] New connection: ${socket.id} | Total Active: ${clientCount}`);
+    const ip = socket.handshake.headers['x-forwarded-for'] || socket.handshake.address;
+    const userAgent = socket.handshake.headers['user-agent'] || 'Unknown';
+    const referrer = socket.handshake.headers['referer'] || 'Direct';
+    console.log(`🔌 [NETWORK] New connection: ${socket.id} | IP: ${ip} | UA: ${userAgent} | Ref: ${referrer} | Total Active: ${io.engine.clientsCount}`)
+    
   if (currentSpaceBg) {
     socket.emit("nebula-update", currentSpaceBg);
   } else {
