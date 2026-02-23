@@ -104,7 +104,7 @@ async function r2BackgroundWorker() {
         
         // Cache-buster ONLY active during 404/Stall recovery
         const isNewSequence = sharedState.currentSequence > lastKnownSequence
-        const url = `${R2_BASE_URL}/${sharedState.currentSequence}.json${isNewSequence > 0 ? `?cb=${Date.now()}` : ''}`;
+        const url = `${R2_BASE_URL}/${sharedState.currentSequence}.json${isNewSequence  ? `?cb=${Date.now()}` : ''}`;
         let nextTick = 0;
 
         try {
