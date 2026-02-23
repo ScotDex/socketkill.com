@@ -127,7 +127,7 @@ const typeShipNameSurgical = (el, text) => {
     el.classList.add('typewriter-cursor');
     const render = () => {
         if (i < text.length) {
-            if (Math.floor((performance.now() - startTime) / 300) > i) {
+            if (Math.floor((performance.now() - startTime) / 100) > i) {
                 el.innerText += text[i];
                 i++;
             }
