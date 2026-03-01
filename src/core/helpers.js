@@ -35,7 +35,7 @@ class utils {
         active: true,
       };
     } catch (err) {
-      console.error("❌ [ESI] Status Check Failed:", err.message);
+      console.error("âŒ [ESI] Status Check Failed:", err.message);
       return { count: 0, version: "OFFLINE", active: false };
     }
   }
@@ -100,7 +100,7 @@ class utils {
       );
       return Number(data.totalKills) || 0;
     } catch (err) {
-      console.error("❌ [STORAGE] Critical error loading stats:", err.message);
+      console.error("âŒ [STORAGE] Critical error loading stats:", err.message);
       return 0;
     }
   }
@@ -114,7 +114,7 @@ class utils {
       const data = JSON.parse(rawData);
       return Number(data.totalIsk) || 0;
     } catch (err) {
-      console.error("❌ [STORAGE] Error loading ISK stats:", err.message);
+      console.error("âŒ [STORAGE] Error loading ISK stats:", err.message);
       return 0;
     }
   }
@@ -127,7 +127,7 @@ class utils {
       });
       await fs.promises.writeFile(FIN_PATH, payload);
     } catch (err) {
-      console.error("❌ [STORAGE] Error saving ISK total:", err.message);
+      console.error("âŒ [STORAGE] Error saving ISK total:", err.message);
     }
   }
 
@@ -137,9 +137,10 @@ class utils {
       const payload = JSON.stringify({ totalKills: Math.floor(count) });
       await fs.promises.writeFile(DATA_PATH, payload);
     } catch (err) {
-      console.error("❌ [STORAGE] Error saving stats count:", err.message);
+      console.error("âŒ [STORAGE] Error saving stats count:", err.message);
     }
   }
 }
 
 module.exports = utils;
+

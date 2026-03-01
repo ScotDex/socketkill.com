@@ -26,7 +26,7 @@ class EmbedFactory {
                         inline: true
                     }
                 ],
-                footer: { text: `WiNGSPAN Delivery Service • ${new Date().toLocaleTimeString()}` }
+                footer: { text: `WiNGSPAN Delivery Service â€¢ ${new Date().toLocaleTimeString()}` }
             }]
         };
     }

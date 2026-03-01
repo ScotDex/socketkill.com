@@ -1,7 +1,8 @@
-const axios = require("../network/agent"); // Use your existing configured agent
+const axios = require("../network/agent"); 
 const helpers = require("./helpers");
 const EmbedFactory = require("../services/embedFactory");
-const TwitterService = require("../network/twitterService");
+const { TwitterService, BlueSkyService } = require("../network/twitterService");
+const CorpIntelFactory = require("../services/corpIntelFactory");
 module.exports = (esi, mapper, io, statsManager) => {
     
     const THERA_ID = 31000005;
@@ -73,10 +74,35 @@ module.exports = (esi, mapper, io, statsManager) => {
                 });
             }
 
+            await handleCorpIntel(killmail, zkb, {
+                    shipName,
+                    systemName,
+                    charName,
+                    corpName,
+                    rawValue,
+                    regionName
+            })
+
         } catch (err) {
-            console.error(`❌ [PROCESSOR-ERR] Kill ${killID} failed: ${err.message}`);
+            console.error(`[PROCESSOR-ERR] Kill ${killID} failed: ${err.message}`);
         }
     }
+
+    // Blank Space Section - Potentially to be removed - to be added once hook is stable  - 
+    
+   
+    async function handleCorpIntel(kill, zkb, names) {
+        if (names.rawValue < WHALE_THRESHOLD) return;
+        const payload = CorpIntelFactory.createKillEmbed(kill, zkb, names);
+        try {
+            await axios.post(process.env.BLANKSPACE_HOOK, payload)
+            console.log (`ðŸ“¡ [CORP INTEL] Kill ${kill.killmail_id} posted`);
+        } catch (err) {
+            console.error(`âŒ [CORP INTEL] Webhook failed: ${err.message}`);
+        }
+        
+    }
+
     async function handlePrivateIntel(kill, zkb, identity) {
         const formattedValue = helpers.formatIsk(identity.rawValue);
         
@@ -101,9 +127,10 @@ module.exports = (esi, mapper, io, statsManager) => {
 
             if (identity.rawValue >= WHALE_THRESHOLD) {
                 TwitterService.postWhale(identity, formattedValue, kill.killmail_id);
+                BlueSkyService.postWhale(identity, formattedValue, kill.killmail_id);
             }
         } catch (err) {
-            console.error("❌ Error in handlePrivateIntel:", err.message);
+            console.error("âŒ Error in handlePrivateIntel:", err.message);
         }
     }
 

@@ -19,7 +19,7 @@ function startMonitor(thresholdMB = 750) {
         const timestamp = new Date().toLocaleTimeString();
         console.log(`[${timestamp}] RSS: ${metrics.rss}MB | Heap: ${metrics.heapUsed}/${metrics.heapLimit}MB`);
         if (metrics.heapUsed > thresholdMB) {
-            console.warn(`⚠️  ALERT: High Memory Usage! ${metrics.heapUsed}MB exceeds ${thresholdMB}MB limit.`);
+            console.warn(`âš ï¸  ALERT: High Memory Usage! ${metrics.heapUsed}MB exceeds ${thresholdMB}MB limit.`);
         }
     }, 10000); 
 }

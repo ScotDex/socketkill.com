@@ -15,15 +15,15 @@ agent.login({
     identifier: process.env.BLUESKY_IDENTIFIER,
     password: process.env.BLUESKY_APP_PASSWORD,
 }).then(() => {
-    console.log(`✅ [BLUESKY] Logged in as ${process.env.BLUESKY_IDENTIFIER}`);
+    console.log(`âœ… [BLUESKY] Logged in as ${process.env.BLUESKY_IDENTIFIER}`);
 }).catch((err) => {
-    console.error(`❌ [BLUESKY] Login failed: ${err.message}`);
+    console.error(`âŒ [BLUESKY] Login failed: ${err.message}`);
 });
 
 class TwitterService {
     static async postWhale (names, formattedValue, killId){
         try {
-            const status = `💥BOOM! ${names.shipName} destroyed! || ${formattedValue} ISK || https://zkillboard.com/kill/${killId}/ || #TweetFleet #EveOnline #SocketKill || https://socketkill.com/`;
+            const status = `ðŸ’¥BOOM! ${names.shipName} destroyed! || ${formattedValue} ISK || https://zkillboard.com/kill/${killId}/ || #TweetFleet #EveOnline #SocketKill || https://socketkill.com/`;
             await twitterClient.v2.tweet(status);
             console.log(`Tweet posted for Kill #${killId}`);
         } catch (err) {
@@ -36,7 +36,7 @@ class TwitterService {
 class BlueSkyService {
     static async postWhale (names, formattedValue, killId) {
         try {
-        const status = `💥BOOM! ${names.shipName} destroyed! || ${formattedValue} ISK || https://zkillboard.com/kill/${killId}/ || #TweetFleet #EveOnline #SocketKill || https://socketkill.com/`;
+        const status = `ðŸ’¥BOOM! ${names.shipName} destroyed! || ${formattedValue} ISK || https://zkillboard.com/kill/${killId}/ || #TweetFleet #EveOnline #SocketKill || https://socketkill.com/`;
         await agent.post({ text: status})
         console.log(`Bluesky post made for Kill #${killId}`);
     } catch (err) {

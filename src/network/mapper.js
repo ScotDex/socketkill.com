@@ -63,11 +63,11 @@ class MapperService {
             this.adjacencies = newAdjacencies; 
             
             if (namesFound.length > 0) {
-                console.log(`✅ Mapper Sync: Monitoring systems scanned`);
+                console.log(`âœ… Mapper Sync: Monitoring systems scanned`);
             }
             return true;
         } catch (err) {
-            console.error("❌ Mapper Sync Error:", err.message);
+            console.error("âŒ Mapper Sync Error:", err.message);
             return false;
         }
     }

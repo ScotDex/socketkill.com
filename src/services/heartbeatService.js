@@ -20,7 +20,7 @@ class HeartbeatService {
                     { name: "Total Cache Entries", value: `**${totalCacheSize.toLocaleString()}**`, inline: true },
                     { name: "Process RAM", value: `**${memUsage.toFixed(2)} MB**`, inline: true }
                 ],
-                footer: { text: `WiNGSPAN Intel Engine • ${new Date().toUTCString()}` }
+                footer: { text: `WiNGSPAN Intel Engine â€¢ ${new Date().toUTCString()}` }
             }]
         };
         try {
