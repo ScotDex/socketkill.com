@@ -203,7 +203,7 @@ async function r2BackgroundWorker() {
   refreshNebulaBackground();
   processor = ProcessorFactory(esi, mapper, io, statsManager);
   syncPlayerCount();
-  setInterval(() => mapper.refreshChain(esi.getSystemDetails.bind(esi)), 30 * 60 * 1000);
+  setInterval(() => mapper.refreshChain(esi.getSystemDetails.bind(esi)), 29 * 60 * 1000);
   setInterval(refreshNebulaBackground, ROTATION_SPEED);
   setInterval(() => {
     statsManager.save();
