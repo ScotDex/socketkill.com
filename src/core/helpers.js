@@ -81,7 +81,7 @@ class utils {
 
       // Check if file exists
       if (!fs.existsSync(DATA_PATH)) {
-        console.log("[STORAGE] No stats file found. Starting fresh.");
+        console.log("[STORAGE] No stats file found. Starting a new one.");
         return 0;
       }
 
