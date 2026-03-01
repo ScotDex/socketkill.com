@@ -16,10 +16,26 @@ jobs:
           host: ${{ secrets.HOST }}
           username: ${{ secrets.USERNAME }}
           password: ${{ secrets.PASSWORD }}
+          envs: TWITTER_API_KEY,TWITTER_API_SECRET,TWITTER_ACCESS_TOKEN,TWITTER_ACCESS_SECRET,BLUESKY_IDENTIFIER,BLUESKY_APP_PASSWORD,INTEL_WEBHOOK_URL,MON_WEBHOOK,WINGSPAN_API,BACKGROUND_API_URL,PORT,R2_BASE_URL,BLANKSPACE_HOOK,TRIPWIRE_URL
           script: |
             set -e
             cd socket-kill
+            cat > .env << EOF
+            TWITTER_API_KEY=$TWITTER_API_KEY
+            TWITTER_API_SECRET=$TWITTER_API_SECRET
+            TWITTER_ACCESS_TOKEN=$TWITTER_ACCESS_TOKEN
+            TWITTER_ACCESS_SECRET=$TWITTER_ACCESS_SECRET
+            BLUESKY_IDENTIFIER=$BLUESKY_IDENTIFIER
+            BLUESKY_APP_PASSWORD=$BLUESKY_APP_PASSWORD
+            INTEL_WEBHOOK_URL=$INTEL_WEBHOOK_URL
+            MON_WEBHOOK=$MON_WEBHOOK
+            WINGSPAN_API=$WINGSPAN_API
+            BACKGROUND_API_URL=$BACKGROUND_API_URL
+            PORT=$PORT
+            R2_BASE_URL=$R2_BASE_URL
+            BLANKSPACE_HOOK=$BLANKSPACE_HOOK
+            TRIPWIRE_URL=$TRIPWIRE_URL
+            EOF
             git pull
             docker compose down
             docker compose up -d --build
-           
