@@ -34,6 +34,7 @@ jobs:
             echo "R2_BASE_URL=$R2_BASE_URL" >> .env
             echo "BLANKSPACE_HOOK=$BLANKSPACE_HOOK" >> .env
             echo "TRIPWIRE_URL=$TRIPWIRE_URL" >> .env
+            cat .env
             git pull
             docker compose down
             docker compose up -d --build
