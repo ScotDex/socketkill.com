@@ -69,7 +69,7 @@ async function refreshNebulaBackground() {
   if (data) {
     currentSpaceBg = data;
     io.emit("nebula-update", data);
-    console.log(`✅ Background Synced: ${data.name}`);
+    console.log(`Background Synced: ${data.name}`);
   }
 }
 
@@ -140,7 +140,7 @@ async function r2BackgroundWorker() {
                   if (updatedPackage?.killID && !processedKills.has(updatedPackage.killID)) {
                     processedKills.add(updatedPackage.killID);
                     processor.processPackage(updatedPackage);
-                    console.log(`🔄 Reprocessed updated sequence ${r2Package.sequenceUpdated}`);
+                    console.log(`Reprocessed updated sequence ${r2Package.sequenceUpdated}`);
                   }
                 } catch (e) {
                   console.error(`Failed to refetch updated sequence ${r2Package.sequenceUpdated}:`, e);
@@ -154,7 +154,7 @@ async function r2BackgroundWorker() {
                 nextTick = POLLING_CONFIG.STALL_DELAY;
                 
                 if (consecutive404s >= 5) {
-                    console.warn(`⏭️ [SKIP] Seq ${currentSequence} is ghost data. Skipping to next.`);
+                    console.warn(`[SKIP] Seq ${currentSequence} is ghost data. Skipping to next.`);
                     sharedState.currentSequence++;
                     consecutive404s = 0;
                 }
@@ -165,7 +165,7 @@ async function r2BackgroundWorker() {
 
         if (status === 429) {
           sharedState.isThrottled = true;
-          console.error("🛑 [429] Rate Limited. Entering 2m quiet period.");
+          console.error("[429] Rate Limited. Entering 2m quiet period.");
           setTimeout(() => { isThrottled = false; poll(); }, POLLING_CONFIG.PANIC_DELAY);
           return; // Break recursion until timeout finishes
         }
@@ -184,7 +184,7 @@ async function r2BackgroundWorker() {
         }
 
         if (status === 404 && consecutive404s >= 30) {
-          console.warn("🔄 [RE-SYNC] 404 limit reached. Re-priming...");
+          console.warn("[RE-SYNC] 404 limit reached. Re-priming...");
           return r2BackgroundWorker();
         }
       }
