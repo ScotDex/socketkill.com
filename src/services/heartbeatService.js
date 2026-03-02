@@ -18,7 +18,7 @@ class HeartbeatService {
                     { name: "Total Cache Entries", value: `**${totalCacheSize.toLocaleString()}**`, inline: true },
                     { name: "Process RAM", value: `**${memUsage.toFixed(2)} MB**`, inline: true }
                 ],
-                footer: { text: `Site Monitor â€¢ ${new Date().toUTCString()}` }
+                footer: { text: `Site Monitor ${new Date().toUTCString()}` }
             }]
         };
         try {

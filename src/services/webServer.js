@@ -26,7 +26,7 @@ function startWebServer() {
     const io = new Server(server, {
         pingTimeout: 2000,
         pingInterval: 5000,
-        cors:{  origin: ["https://socketkill.com", "https://pf.darkventure.space"] ,
+        cors:{  origin: ["https://socketkill.com", "https://pf.darkventure.space"] , // Web Socket whitelist
         methods: ["GET", "POST"],
         },
         transports: ['websocket', 'polling'],
@@ -46,7 +46,7 @@ function startWebServer() {
 
     // Socket.io connection logging
     io.on('connection', (socket) => {
-        console.log(`ðŸ”Œ Client connected to Intel Stream: ${socket.id}`);
+        console.log(`Client connected to Intel Stream: ${socket.id}`);
         socket.on('disconnect', () => console.log('âŒ Client disconnected'));
 
     });

@@ -100,7 +100,7 @@ class utils {
       );
       return Number(data.totalKills) || 0;
     } catch (err) {
-      console.error("âŒ [STORAGE] Critical error loading stats:", err.message);
+      console.error("[STORAGE] Critical error loading stats:", err.message);
       return 0;
     }
   }
@@ -127,7 +127,7 @@ class utils {
       });
       await fs.promises.writeFile(FIN_PATH, payload);
     } catch (err) {
-      console.error("âŒ [STORAGE] Error saving ISK total:", err.message);
+      console.error("[STORAGE] Error saving ISK total:", err.message);
     }
   }
 
@@ -137,7 +137,7 @@ class utils {
       const payload = JSON.stringify({ totalKills: Math.floor(count) });
       await fs.promises.writeFile(DATA_PATH, payload);
     } catch (err) {
-      console.error("âŒ [STORAGE] Error saving stats count:", err.message);
+      console.error("[STORAGE] Error saving stats count:", err.message);
     }
   }
 }
