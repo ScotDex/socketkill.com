@@ -8,19 +8,17 @@ class HeartbeatService {
     .reduce((acc, map) => acc + (map instanceof Map ? map.size : 0), 0);
     const memUsage = process.memoryUsage().rss / 1024 / 1024;
     const payload = {
-            username: "Socket.Kill Heartbeat Monitor @Dex",
+            username: "Socket.Kill Heartbeat Monitor",
             avatar_url: "https://images.evetech.net/types/22430/icon",
             embeds: [{
                 title: "Daily System Heartbeat",
                 color: 0x2ecc71, 
                 fields: [
                     { name: "Uptime", value: `**${uptimeStr}**`, inline: true },
-                    { name: "Daily Scans", value: `**${stats.scanCount.toLocaleString()}**`, inline: true },
-                    { name: "Systems Monitored", value: `**${mapper.getSystemsCount()}**`, inline: true },
                     { name: "Total Cache Entries", value: `**${totalCacheSize.toLocaleString()}**`, inline: true },
                     { name: "Process RAM", value: `**${memUsage.toFixed(2)} MB**`, inline: true }
                 ],
-                footer: { text: `WiNGSPAN Intel Engine â€¢ ${new Date().toUTCString()}` }
+                footer: { text: `Site Monitor â€¢ ${new Date().toUTCString()}` }
             }]
         };
         try {
