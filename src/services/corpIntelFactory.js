@@ -5,7 +5,7 @@ class corpIntelFactory {
         const totalValue = helpers.formatIsk(zkb.totalValue)
         const corpIcon = `https://edge.socketkill.com/taylr/logo.png`;
         return {
-            username: "Blank Space (Beta)", 
+            username: "Blank Space", 
             avatar_url: corpIcon,
             embeds: [{
                 author: {

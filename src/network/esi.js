@@ -60,9 +60,9 @@ class ESIClient{
             };
             await fs.writeFile(filePath, JSON.stringify(persistData, null, 2));
             this.isDirty = false; // Reset flag after successful save
-            console.log("ðŸ’¾ Cache persisted to disk.");
+            console.log("Cache persisted to disk.");
         } catch (err) {
-            console.error("âŒ Save failed:", err.message);
+            console.error("Save failed:", err.message);
         }
     }
 
@@ -70,7 +70,7 @@ class ESIClient{
         try {
             const data = await fs.readFile(filePath, 'utf8');
             if (!data || data.trim() === "") {
-            console.warn("ðŸ“ Cache file is empty. Initializing default structure...");
+            console.warn("Cache file is empty. Initializing default structure...");
             this.isDirty = true; // Force a save later
             return;
         }
@@ -79,12 +79,12 @@ class ESIClient{
             this.cache.corporations = new Map(Object.entries(json.corporations || {}));
             this.cache.types = new Map(Object.entries(json.types || {}));
             this.cache.regions = new Map(Object.entries(json.regions || {}));
-            console.log(`ðŸ“‚ Persistent cache loaded. Regions cached: ${this.cache.regions.size}`);
+            console.log(`Persistent cache loaded. Regions cached: ${this.cache.regions.size}`);
             console.log(`Characters cached: ${this.cache.characters.size}`);
             console.log(`Corporations cached: ${this.cache.corporations.size}`);
             console.log(`Types cached: ${this.cache.types.size}`);
         } catch (err) {
-            console.warn("âš ï¸ No cache file found, starting fresh.");
+            console.warn("No cache file found, starting fresh.");
         }
     }
 

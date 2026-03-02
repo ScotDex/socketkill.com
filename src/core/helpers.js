@@ -114,7 +114,7 @@ class utils {
       const data = JSON.parse(rawData);
       return Number(data.totalIsk) || 0;
     } catch (err) {
-      console.error("âŒ [STORAGE] Error loading ISK stats:", err.message);
+      console.error("[STORAGE] Error loading ISK stats:", err.message);
       return 0;
     }
   }

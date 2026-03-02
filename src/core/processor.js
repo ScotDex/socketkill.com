@@ -88,17 +88,14 @@ module.exports = (esi, mapper, io, statsManager) => {
         }
     }
 
-    // Blank Space Section - Potentially to be removed - to be added once hook is stable  - 
-    
-   
     async function handleCorpIntel(kill, zkb, names) {
         if (names.rawValue < WHALE_THRESHOLD) return;
         const payload = CorpIntelFactory.createKillEmbed(kill, zkb, names);
         try {
             await axios.post(process.env.BLANKSPACE_HOOK, payload)
-            console.log (`ðŸ“¡ [CORP INTEL] Kill ${kill.killmail_id} posted`);
+            console.log (`[CORP INTEL] Kill ${kill.killmail_id} posted`);
         } catch (err) {
-            console.error(`âŒ [CORP INTEL] Webhook failed: ${err.message}`);
+            console.error(`[CORP INTEL] Webhook failed: ${err.message}`);
         }
         
     }
@@ -130,7 +127,7 @@ module.exports = (esi, mapper, io, statsManager) => {
                 BlueSkyService.postWhale(identity, formattedValue, kill.killmail_id);
             }
         } catch (err) {
-            console.error("âŒ Error in handlePrivateIntel:", err.message);
+            console.error("Error in handlePrivateIntel:", err.message);
         }
     }
 
