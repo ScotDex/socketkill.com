@@ -47,7 +47,7 @@ io.on("connection", async (socket) => {
     const ip = socket.handshake.headers['x-forwarded-for'] || socket.handshake.address;
     const userAgent = socket.handshake.headers['user-agent'] || 'Unknown';
     const referrer = socket.handshake.headers['referer'] || 'Direct';
-    console.log(`🔌 [NETWORK] New connection: ${socket.id} | IP: ${ip} | UA: ${userAgent} | Ref: ${referrer} | Total Active: ${io.engine.clientsCount}`)
+    console.log(`[NETWORK] New connection: ${socket.id} | IP: ${ip} | UA: ${userAgent} | Ref: ${referrer} | Total Active: ${io.engine.clientsCount}`)
     
   if (currentSpaceBg) {
     socket.emit("nebula-update", currentSpaceBg);
@@ -95,7 +95,7 @@ async function r2BackgroundWorker() {
         const status = e.response?.status;
         lastErrorStatus = status;
         const wait = status === 429 ? POLLING_CONFIG.PANIC_DELAY : 10000;
-        console.error(`❌ Priming failed. Retrying in ${wait/1000}s...`);
+        console.error(`Priming failed. Retrying in ${wait/1000}s...`);
         return setTimeout(r2BackgroundWorker, wait);
     }
 
