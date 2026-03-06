@@ -2,7 +2,7 @@
 
 A high-performance, real-time EVE Online killmail streaming platform. Socket.Kill ingests killmails from the zKillboard R2 feed and broadcasts them live to connected clients via WebSocket.
 
-Working towards making certain elements open source
+[![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/X7X21RDFR0)
 
 ## Features
 
