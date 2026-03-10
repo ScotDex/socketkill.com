@@ -95,7 +95,7 @@ async function r2BackgroundWorker() {
         const status = e.response?.status;
         lastErrorStatus = status;
         const wait = status === 429 ? POLLING_CONFIG.PANIC_DELAY : 10000;
-        console.error(`Priming failed. Retrying in ${wait/1000}s...`);
+        console.error(`Priming failed:`, e.response?.status, e.response?.data, e.message);
         return setTimeout(r2BackgroundWorker, wait);
     }
 
