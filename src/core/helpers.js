@@ -35,7 +35,7 @@ class utils {
         active: true,
       };
     } catch (err) {
-      console.error("âŒ [ESI] Status Check Failed:", err.message);
+      console.error("[ESI] Status Check Failed:", err.message);
       return { count: 0, version: "OFFLINE", active: false };
     }
   }
@@ -45,7 +45,7 @@ class utils {
       const url = process.env.BACKGROUND_API_URL; 
       return {
         url: url,
-        title: "EVE Online Nebula",
+        name: "EVE Online Nebula",
         media_type: "image",
       };
     } catch (err) {

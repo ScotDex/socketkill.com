@@ -78,7 +78,7 @@ const POLLING_CONFIG = {
     CATCHUP_SPEED: 75,    
     STALL_DELAY: 1000,    
     ERROR_BACKOFF: 5000,  
-    PANIC_DELAY: 120000   
+    PANIC_DELAY: 600000  
 };
 
 async function r2BackgroundWorker() {
@@ -157,7 +157,7 @@ async function r2BackgroundWorker() {
             } else {
                 // DATA GAP: File exists but normalize failed or no kill data
                 consecutive404s++;
-                if (consecutive404s === 1) console.log(`❓ [GAP] Potential ghost file at ${currentSequence}. Retrying...`);
+                if (consecutive404s === 1) console.log(`[GAP] Potential ghost file at ${currentSequence}. Retrying...`);
                 nextTick = POLLING_CONFIG.STALL_DELAY;
                 
                 if (consecutive404s >= 5) {
