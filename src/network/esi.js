@@ -61,6 +61,7 @@ class ESIClient{
             await fs.writeFile(filePath, JSON.stringify(persistData, null, 2));
             this.isDirty = false; // Reset flag after successful save
             console.log("Cache persisted to disk.");
+            await this.syncToR2(json);
         } catch (err) {
             console.error("Save failed:", err.message);
         }
