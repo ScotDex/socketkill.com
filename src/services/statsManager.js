@@ -1,4 +1,6 @@
 const utils = require("../core/helpers");
+const r2 = require('../network/r2writer');
+
 class StatsManager {
     constructor() {
         this.totalScanned = utils.loadPersistentStats() || 0;
@@ -33,7 +35,15 @@ class StatsManager {
     save() {
         utils.savePersistentStats(this.totalScanned);
         utils.savePersistentIsk(this.totalIsk);
-    }
+        r2.put('stats.json', {
+            totalKills: this.totalScanned,
+            lastUpdate: new Date().toISOString()
+    });
+
+     r2.put('financials.json', {
+            totalIsk: this.totalIsk,
+            lastUpdate: new Date().toISOString()
+    });
 }
 
 module.exports = new StatsManager();
