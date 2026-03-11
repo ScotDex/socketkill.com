@@ -45,5 +45,5 @@ class StatsManager {
             lastUpdate: new Date().toISOString()
     });
 }
-
+}
 module.exports = new StatsManager();
