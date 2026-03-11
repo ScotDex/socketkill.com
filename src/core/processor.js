@@ -4,9 +4,9 @@ const { TwitterService, BlueSkyService } = require("../network/twitterService");
 const CorpIntelFactory = require("../services/corpIntelFactory");
 module.exports = (esi, io, statsManager) => {
     
-    const THERA_ID = 31000005;
+    
     const WHALE_THRESHOLD = 20000000000;
-    const isWormholeSystem = (systemId) => systemId >= 31000001 && systemId <= 32000000;
+
 
     async function processPackage(packageData) {
         const startProcessing = process.hrtime.bigint();
@@ -59,9 +59,7 @@ module.exports = (esi, io, statsManager) => {
             });
 
             const isWhale = rawValue >= WHALE_THRESHOLD;
-            const isRelevantWH = isWormholeSystem(killmail.solar_system_id) && 
-                               killmail.solar_system_id !== THERA_ID && 
-                               mapper.isSystemRelevant(killmail.solar_system_id);
+                               
 
             if (isWhale || isRelevantWH) {
                 await handlePrivateIntel(killmail, zkb, {
@@ -99,36 +97,6 @@ module.exports = (esi, io, statsManager) => {
         
     }
 
-    async function handlePrivateIntel(kill, zkb, identity) {
-        const formattedValue = helpers.formatIsk(identity.rawValue);
-        
-        try {
-            if (mapper.isSystemRelevant(kill.solar_system_id)) {
-                const metadata = mapper.getSystemMetadata(kill.solar_system_id);
-                
-                const names = {
-                    ...identity,
-                    scoutName: metadata ? metadata.scannedBy : "Unknown Scout",
-                    isAdjacent: metadata ? metadata.isAdjacent : false
-                };
-                
-                const tripwireUrl = `${process.env.TRIPWIRE_URL}?system=${encodeURIComponent(identity.systemName)}`;
-                const payload = EmbedFactory.createKillEmbed(kill, zkb, names, tripwireUrl);
-
-                if (process.env.INTEL_WEBHOOK_URL) {
-                    axios.post(process.env.INTEL_WEBHOOK_URL, payload)
-                        .catch(e => console.error("Webhook Failed", e.message));
-                }
-            }
-
-            if (identity.rawValue >= WHALE_THRESHOLD) {
-                TwitterService.postWhale(identity, formattedValue, kill.killmail_id);
-                BlueSkyService.postWhale(identity, formattedValue, kill.killmail_id);
-            }
-        } catch (err) {
-            console.error("Error in handlePrivateIntel:", err.message);
-        }
-    }
 
     return { processPackage };
 };
