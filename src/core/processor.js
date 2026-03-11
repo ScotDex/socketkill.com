@@ -97,6 +97,19 @@ module.exports = (esi, io, statsManager) => {
         
     }
 
+    async function handlePrivateIntel(kill, zkb, identity) {
+        const formattedValue = helpers.formatIsk(identity.rawValue);
+        
+        try {
+
+            if (identity.rawValue >= WHALE_THRESHOLD) {
+                TwitterService.postWhale(identity, formattedValue, kill.killmail_id);
+                BlueSkyService.postWhale(identity, formattedValue, kill.killmail_id);
+            }
+        } catch (err) {
+            console.error("Error in handlePrivateIntel:", err.message);
+        }
+    }
 
     return { processPackage };
 };
