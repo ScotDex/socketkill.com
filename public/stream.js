@@ -341,7 +341,6 @@ div.innerHTML = `
         </div>
     </div>
     <div class="kill-meta">
-        <span class="final-blow-label">${kill.finalBlowCorp || "Unknown"}</span>
         <span class="final-blow-label">${kill.attackerCount} attackers</span>
     </div>
     <div class="d-flex align-items-center">
