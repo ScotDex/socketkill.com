@@ -354,8 +354,8 @@ div.innerHTML = `
     </div>
 `;
 
-    div.classList.add('fresh');
-    setTimeout(() => div.classList.remove('fresh'), 300);
+   // div.classList.add('fresh');
+   // setTimeout(() => div.classList.remove('fresh'), 300);
 
     const overlay = document.querySelector('body');
     overlay.style.opacity = '0.9';
@@ -369,6 +369,20 @@ div.innerHTML = `
     feed.prepend(div);
     div.querySelector('.article-target').innerText = kill.article || "a";
     typeShipNameSurgical(div.querySelector('.type-target'), kill.ship);
+
+    gsap.fromTo(div,
+    {
+        clipPath: 'inset(0 0 100% 0)',
+        opacity: 1,
+        filter: 'brightness(2)'
+    },
+    {
+        clipPath: 'inset(0 0 0% 0)',
+        filter: 'brightness(1)',
+        duration: 0.2,
+        ease: 'steps(8)'
+    }
+);
     if (feed.children.length > MAX_FEED_SIZE) feed.lastChild.remove();
 });
 
