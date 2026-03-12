@@ -221,6 +221,17 @@ body::after {
     color: rgba(63, 185, 80, 0.5);
 }
 
+.kill-meta {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    justify-content: center;
+    min-width: 150px;
+    padding-right: 1rem;
+    gap: 2px;
+}
+
+
 .container-fluid {
     max-width: 1200px;
     background-color: transparent !important;

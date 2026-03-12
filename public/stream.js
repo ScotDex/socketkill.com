@@ -324,34 +324,36 @@ socket.on('raw-kill', (kill) => {
     const now = new Date();
     const timestamp = `[${now.getUTCHours().toString().padStart(2, '0')}:${now.getUTCMinutes().toString().padStart(2, '0')}]`;
 
-    div.innerHTML = `
-        <div class="d-flex align-items-center" style="flex: 1;">
-            <div class="ship-icon-container">
-                <img src="${kill.shipImageUrl}" alt="Ship Render" class="ship-render" loading="lazy">
-            </div>
-            <div class="kill-info">
-                <div><strong class="ship-name">
-                    <span class="timestamp">${timestamp}</span>
-                    ${kill.victimName || "Unknown"} lost
-                    <span class="article-target"></span><span class="type-target ship-name-container"></span>
-                </strong></div>
-                <div class="small">
-                    <span class="location-label">${kill.locationLabel}</span>
-                </div>
+div.innerHTML = `
+    <div class="d-flex align-items-center" style="flex: 1;">
+        <div class="ship-icon-container">
+            <img src="${kill.shipImageUrl}" alt="Ship Render" class="ship-render" loading="lazy">
+        </div>
+        <div class="kill-info">
+            <div><strong class="ship-name">
+                <span class="timestamp">${timestamp}</span>
+                ${kill.victimName || "Unknown"} lost
+                <span class="article-target"></span><span class="type-target ship-name-container"></span>
+            </strong></div>
+            <div class="small">
+                <span class="location-label">${kill.locationLabel}</span>
             </div>
         </div>
-        <div class="d-flex align-items-center">
-            <div class="corp-square-container me-3">
-                <img src="${kill.corpImageUrl}" alt="Corporation Logo" class="corp-logo-square" loading="lazy">
-            </div>
-            <div class="text-end" style="width: 100px;">
-                <div class="${val >= 1000000000 ? 'isk-billion' : 'isk-million'} fw-bold">${formatIskValue(val)}</div>
-                <a href="${kill.zkillUrl}" target="_blank" rel="noopener" class="zkill-link">DETAILS</a>
-                <div class="final-blow-label">${kill.finalBlowCorp || "Unknown"}</div>
-                <div class="final-blow-label">${kill.attackerCount} attackers</div>
-            </div>
+    </div>
+    <div class="kill-meta">
+        <span class="final-blow-label">${kill.finalBlowCorp || "Unknown"}</span>
+        <span class="final-blow-label">${kill.attackerCount} attackers</span>
+    </div>
+    <div class="d-flex align-items-center">
+        <div class="corp-square-container me-3">
+            <img src="${kill.corpImageUrl}" alt="Corporation Logo" class="corp-logo-square" loading="lazy">
         </div>
-    `;
+        <div class="text-end" style="width: 100px;">
+            <div class="${val >= 1000000000 ? 'isk-billion' : 'isk-million'} fw-bold">${formatIskValue(val)}</div>
+            <a href="${kill.zkillUrl}" target="_blank" rel="noopener" class="zkill-link">DETAILS</a>
+        </div>
+    </div>
+`;
 
     div.classList.add('fresh');
     setTimeout(() => div.classList.remove('fresh'), 300);
