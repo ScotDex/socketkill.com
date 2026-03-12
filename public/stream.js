@@ -338,6 +338,9 @@ socket.on('raw-kill', (kill) => {
                 <div class="small">
                     <span class="location-label">${kill.locationLabel}</span>
                 </div>
+                <div class="small">
+                    <span class="location-label">Final Blow ${kill.finalBlowCorp}</span>
+                </div>
             </div>
         </div>
         <div class="d-flex align-items-center">

@@ -21,13 +21,16 @@ module.exports = (esi, io, statsManager) => {
                 killmail = esiResponse.data;
             }
             const rawValue = Number(zkb.totalValue) || 0;
-            const [systemDetails, shipName, charName, corpName] = await Promise.all([
+            const [systemDetails, shipName, charName, corpName, finalBlowCorp] = await Promise.all([
                 esi.getSystemDetails(killmail.solar_system_id),
                 esi.getTypeName(killmail.victim.ship_type_id),
                 esi.getCharacterName(killmail.victim?.character_id),
-                esi.getCorporationName(killmail.victim?.corporation_id)
+                esi.getCorporationName(killmail.victim?.corporation_id),
+                killmail.attackers?.find(a => a.final_blow)?.corporation_id
+                 ? esi.getCorporationName(killmail.attackers.find(a => a.final_blow)?.corporation_id)
+                 : Promise.resolve("Unknown")
             ]);
-
+            const attackerCount = killmail.attackers?.length || 0;
             const finalVictimName = (charName == "Unknown" || !charName ) ? corpName : charName;
             statsManager.increment(rawValue);
 
@@ -55,7 +58,9 @@ module.exports = (esi, io, statsManager) => {
                 zkillUrl: `https://zkillboard.com/kill/${killID}/`,
                 victimName: finalVictimName,
                 shipImageUrl: `https://api.socketkill.com/render/ship/${killmail.victim.ship_type_id}`,
-                corpImageUrl: `https://api.socketkill.com/render/corp/${killmail.victim.corporation_id}`
+                corpImageUrl: `https://api.socketkill.com/render/corp/${killmail.victim.corporation_id}`,
+                finalBlowCorp: finalBlowCorp,
+                attackerCount: attackerCount
             });
 
             const isWhale = rawValue >= WHALE_THRESHOLD;
