@@ -332,7 +332,7 @@ div.innerHTML = `
         <div class="kill-info">
             <div><strong class="ship-name">
                 <span class="timestamp">${timestamp}</span>
-                ${kill.victimName || "Unknown"} lost
+                ${kill.victimName || "Unknown"} of ${kill.corpName} lost
                 <span class="article-target"></span><span class="type-target ship-name-container"></span>
             </strong></div>
             <div class="small">

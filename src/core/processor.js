@@ -54,7 +54,7 @@ module.exports = (esi, io, statsManager) => {
                 article: helpers.getArticle(shipName),
                 shipId: killmail.victim.ship_type_id,
                 href: zkb.href,
-                locationLabel: `System: ${systemName} | Region: ${regionName} | Corporation: ${corpName} | Final Blow: ${finalBlowCorp}`,
+                locationLabel: `System: ${systemName} | Region: ${regionName} | Final Blow: ${finalBlowCorp}`,
                 zkillUrl: `https://zkillboard.com/kill/${killID}/`,
                 victimName: finalVictimName,
                 shipImageUrl: `https://api.socketkill.com/render/ship/${killmail.victim.ship_type_id}`,
