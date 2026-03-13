@@ -78,6 +78,7 @@
     padding: 6px 0;
     min-width: 160px;
     z-index: 99999;
+    pointer-events: auto;
 }
 
 #network-dropdown.active {
@@ -92,6 +93,7 @@
     font-size: 0.6rem;
     text-decoration: none;
     letter-spacing: 1px;
+    pointer-events: auto;
 }
 
 .network-link:hover {
@@ -814,6 +816,7 @@ body.signal-interference {
 }
 
 .footer-nav {
+    position: relative;
     display: flex;
     align-items: center;
     justify-content: flex-end;
