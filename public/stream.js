@@ -142,9 +142,7 @@ const typeShipNameSurgical = (el, text) => {
 // Terminal Autocomplete
 let selectedIndex = -1;
 
-document.getElementById('network-toggle').addEventListener('click', () => {
-    document.getElementById('network-dropdown').classList.toggle('active');
-});
+
 
 function showSuggestions(term) {
     const dropdown = document.getElementById('region-suggestions');
@@ -412,6 +410,19 @@ const initApp = () => {
     typeBootSequence();
     updateNPCTicker();
     setInterval(updateNPCTicker, 300000);
+
+    // Network dropdown
+    document.getElementById('network-toggle').addEventListener('click', (e) => {
+        e.stopPropagation();
+        document.getElementById('network-dropdown').classList.toggle('active');
+    });
+
+    // Close when clicking outside
+    document.addEventListener('click', (e) => {
+        if (!e.target.closest('#network-toggle') && !e.target.closest('#network-dropdown')) {
+            document.getElementById('network-dropdown').classList.remove('active');
+        }
+    });
 };
 
 if (document.readyState === 'loading') {
