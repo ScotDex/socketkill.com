@@ -71,6 +71,8 @@
 #network-dropdown {
     display: none;
     position: absolute;
+    bottom: calc(100% + 12px);
+    transform: translateX(-50%);
     bottom: 100%;
     left: 50%;
     pointer-events: auto;
@@ -104,6 +106,8 @@
 
 .footer-network-wrapper {
     position: relative;
+    align-items: center;
+    display: inline-flex;
     pointer-events: auto;
 }
 
