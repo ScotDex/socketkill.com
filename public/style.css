@@ -72,7 +72,9 @@
     display: none;
     position: absolute;
     bottom: 100%;
-    right: 0;
+    left: 50%;
+    pointer-events: auto;
+    right: unset;
     background: rgba(10, 12, 16, 0.98);
     border: 1px solid rgba(63, 185, 80, 0.4);
     padding: 6px 0;
@@ -98,6 +100,11 @@
 
 #network-toggle {
     cursor: pointer;
+}
+
+.footer-network-wrapper {
+    position: relative;
+    pointer-events: auto;
 }
 
 .network-link:hover {
