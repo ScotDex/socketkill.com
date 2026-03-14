@@ -10,7 +10,7 @@ const OFFICER_SHIP_IDS = new Set([
     // Blood Raiders
     13557, 13561, 13564, 13573,
     // Serpentis
-    13654, 13659, 13661, 13667
+    13654, 13659, 13661, 13667, 670
 ]);
 
 module.exports = { OFFICER_SHIP_IDS };
