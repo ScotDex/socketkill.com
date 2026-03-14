@@ -64,16 +64,18 @@ module.exports = (esi, io, statsManager) => {
                 attackerCount: attackerCount
             });
 
-            if (rawValue >= WHALE_THRESHOLD) {
+            
                 await handleWhale(killmail, zkb, {
                     shipName,
                     systemName,
                     charName,
                     corpName,
                     rawValue,
-                    regionName
+                    regionName,
+                    finalBlowCorp,
+                    attackerCount
                 });
-            }
+            
                 } catch (err) {
             console.error(`[PROCESSOR-ERR] Kill ${killID} failed: ${err.message}`);
         }

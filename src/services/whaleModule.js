@@ -2,10 +2,13 @@ const { TwitterService, BlueSkyService } = require("../network/twitterService");
 const CorpIntelFactory = require("../services/corpIntelFactory");
 const axios = require("../network/agent");
 const helpers = require("../core/helpers");
+const atOfficerFactory = require("./atOfficerFactory");
 
 const WHALE_THRESHOLD = 20000000000;
 
 module.exports = async (killmail, zkb, names) => {
+    await postOfficerIntel(killmail, zkb, names);
+    await new Promise(resolve => setTimeout(resolve, 2000));
     if (names.rawValue < WHALE_THRESHOLD) return;
     await Promise.all([
         postCorpIntel(killmail, zkb, names),
@@ -20,6 +23,16 @@ async function postCorpIntel(kill, zkb, names) {
         console.log(`[CORP INTEL] Kill ${kill.killmail_id} posted`);
     } catch (err) {
         console.error(`[CORP INTEL] Webhook failed: ${err.message}`);
+    }
+}
+
+async function postOfficerIntel(kill, zkb, names) {
+    const payload = atOfficerFactory.createKillEmbed(kill, zkb, names);
+    try {
+        await axios.post(process.env.INTEL_WEBHOOK_URL, payload);
+        console.log(`[OFFICER HOOK INTEL] Kill ${kill.killmail_id} posted`);
+    } catch (err) {
+        console.error(`[OFFICER HOOK INTEL] Webhook failed: ${err.message}`);
     }
 }
 

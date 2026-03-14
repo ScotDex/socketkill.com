@@ -1,28 +1,14 @@
 const helpers = require('../core/helpers')
 
-const LOSS_COMMENTS = [
-    "Another one bites the dust",
-    "Should have logged off",
-    "Reminder: undocking is optional.",
-    "Somewhere a spy is very pleased.",
-    "Another generous donation to the killboard.",
-    "That was a very loud mistake.",
-    "Aggressive asset re-distribution",
-    "Masterclass in decision making",
-    "Big brain energy detected",
-    "Ship died faster than his post-goon clarity",
-    "When the goon session lasts longer than your tank"
-]
-
-class corpIntelFactory {
+class atOfficerFactory {
     static createKillEmbed(kill, zkb, names) {
         const DOTLAN_BASE = 'https://evemaps.dotlan.net'
         const totalValue = helpers.formatIsk(zkb.totalValue)
-        const corpIcon = `https://edge.socketkill.com/taylr/logo.png`;
-        const title = LOSS_COMMENTS[Math.floor(Math.random() * LOSS_COMMENTS.length)];
+        const corpIcon = `https://edge.socketkill.com/favicon.png`;
+        const title = 'AT/Officer Kill Detected (TEST PHASE)';
 
         return {
-            username: "Wall of Shame Member",
+            username: "AT/Officer Monitor",
             avatar_url: corpIcon,
             embeds: [{
                 author: {
@@ -34,7 +20,7 @@ class corpIntelFactory {
                 thumbnail: { url: `https://images.evetech.net/types/${kill.victim.ship_type_id}/render?size=256` },
                 color: 0xf39c12,
                 fields: [
-                    { name: "System", value: `[${names.systemName}](${DOTLAN_BASE}/system/${names.systemName.replace(/ /g, '_')}), `, inline: false },
+                    { name: "System", value: `[${names.systemName}](${DOTLAN_BASE}/system/${names.systemName.replace(/ /g, '_')}) `, inline: false },
                     { name: "Region", value: names.regionName, inline: false },
                     { name: "Corporation", value: names.corpName, inline: false },
                     { name: "Final Blow", value: names.finalBlowCorp, inline: false },
@@ -50,4 +36,4 @@ class corpIntelFactory {
     }
 }
 
-module.exports = corpIntelFactory;
+module.exports = atOfficerFactory;
