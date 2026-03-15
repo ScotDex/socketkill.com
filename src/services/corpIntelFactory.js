@@ -31,7 +31,7 @@ class corpIntelFactory {
                 },
                 title: title,
                 url: `https://zkillboard.com/kill/${kill.killmail_id}/`,
-                thumbnail: { url: `https://api.socketkill.com/render/ship/${kill.victim.ship_type_id}/render?size=256` },
+                thumbnail: { url: `https://images.evetech.net/types/${kill.victim.ship_type_id}/render?size=256` },
                 color: 0xf39c12,
                 fields: [
                     { name: "System", value: `** [${names.systemName}](${DOTLAN_BASE}/system/${names.systemName.replace(/ /g, '_')}) ** `, inline: false },
