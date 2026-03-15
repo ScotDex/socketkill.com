@@ -385,7 +385,11 @@ div.innerHTML = `
         ease: 'steps(8)'
     }
 );
-    if (feed.children.length > MAX_FEED_SIZE) feed.lastChild.remove();
+    if (feed.children.length > MAX_FEED_SIZE) {
+    const lastRow = feed.lastChild;
+    lastRow.classList.add('removing');
+    setTimeout(() => lastRow.remove(), 400);
+}
 });
 
 const updateNPCTicker = async () => {
