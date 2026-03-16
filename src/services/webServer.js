@@ -9,7 +9,7 @@ const helmet = require('helmet');
 const fs = require('fs');
 
 
-function startWebServer() {
+function startWebServer(esi, statsManager, sharedState) {
     const app = express();
 
     const options = {
@@ -50,6 +50,49 @@ function startWebServer() {
         socket.on('disconnect', () => console.log('Client disconnected'));
 
     });
+
+    app.get('/api/character/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const name = await esi.getCharacterName(id);
+        res.json({
+            id,
+            name,
+            portraitUrl: `https://images.evetech.net/characters/${id}/portrait?size=256`
+        });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+app.get('/api/corporation/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const name = await esi.getCorporationName(id);
+        res.json({
+            id,
+            name,
+            logoUrl: `https://images.evetech.net/corporations/${id}/logo?size=128`
+        });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+app.get('/api/character/search/:name', async (req, res) => {
+    try {
+        const id = await esi.getCharacterID(req.params.name);
+        if (!id) return res.status(404).json({ error: 'Character not found' });
+        const name = await esi.getCharacterName(id);
+        res.json({
+            id,
+            name,
+            portraitUrl: `https://images.evetech.net/characters/${id}/portrait?size=256`
+        });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
 
     server.listen(PORT, () => {
         console.log(`Web Module Loaded on ${PORT}`);
