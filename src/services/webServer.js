@@ -52,6 +52,7 @@ function startWebServer(esi, statsManager, sharedState) {
     });
 
     app.get('/api/character/search/:name', async (req, res) => {
+        console.log(`[API] Character search: ${req.params.name}`);
     try {
         const id = await esi.getCharacterID(req.params.name);
         if (!id) return res.status(404).json({ error: 'Character not found' });
@@ -67,6 +68,7 @@ function startWebServer(esi, statsManager, sharedState) {
 });
 
     app.get('/api/character/:id', async (req, res) => {
+        console.log(`[API] Character lookup: ${req.params.id}`);
     try {
         const { id } = req.params;
         const name = await esi.getCharacterName(id);
