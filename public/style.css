@@ -25,6 +25,10 @@
     letter-spacing: 2px;
 }
 
+.type-target {
+    display: inline-block;
+}
+
 /* Creator Awards Banner */
 .creator-awards-banner {
     position: fixed;
