@@ -121,6 +121,15 @@ function type() {
 }
     type();
 };
+
+const renderShipName = (el, text) => {
+    el.innerText = text;
+    el.animate([
+        { opacity: 0, filter: 'brightness(3)' },
+        { opacity: 1, filter: 'brightness(1)' }
+    ], { duration: 200, easing: 'ease-out' });
+};
+
 const typeShipNameSurgical = (el, text) => {
     if (document.hidden) {
         el.innerText = text;
@@ -375,7 +384,7 @@ div.innerHTML = `
 
     feed.prepend(div);
     div.querySelector('.article-target').innerText = kill.article || "a";
-    typeShipNameSurgical(div.querySelector('.type-target'), kill.ship);
+    renderShipName(div.querySelector('.type-target'), kill.ship);
 
     gsap.fromTo(div,
     {
