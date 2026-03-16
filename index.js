@@ -6,7 +6,8 @@ const startWebServer = require("./src/services/webServer");
 const normalizer = require("./src/core/normalizer");
 const utils = require("./src/core/helpers");
 const statsManager = require("./src/services/statsManager");
-const ProcessorFactory = require("./src/core/processor");
+// const ProcessorFactory = require("./src/core/processor");
+const ProcessorFactory = require("./src/core/processor_v2");
 const esi = new ESIClient("Contact: @ScottishDex");
 
 

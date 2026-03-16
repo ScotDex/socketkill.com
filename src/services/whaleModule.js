@@ -26,10 +26,7 @@ module.exports = async (killmail, zkb, names) => {
 async function postCorpIntel(kill, zkb, names) {
     const payload = CorpIntelFactory.createKillEmbed(kill, zkb, names);
     try {
-        await Promise.all([
-        axios.post(process.env.BLANKSPACE_HOOK, payload),
-        axios.post(process.env.SECOND_HOOK, payload) // Zoey
-        ]);
+        await axios.post(process.env.BLANKSPACE_HOOK, payload),
         console.log(`[CORP INTEL] Kill ${kill.killmail_id} posted`);
     } catch (err) {
         console.error(`[CORP INTEL] Webhook failed: ${err.message}`);
@@ -39,7 +36,10 @@ async function postCorpIntel(kill, zkb, names) {
 async function postOfficerIntel(kill, zkb, names) {
     const payload = atOfficerFactory.createKillEmbed(kill, zkb, names);
     try {
-        await axios.post(process.env.INTEL_WEBHOOK_URL, payload);
+        await Promise.all([
+            axios.post(process.env.INTEL_WEBHOOK_URL, payload),
+            axios.post(process.env.SECOND_HOOK, payload)
+        ])
         console.log(`[OFFICER HOOK INTEL] Kill ${kill.killmail_id} posted`);
     } catch (err) {
         console.error(`[OFFICER HOOK INTEL] Webhook failed: ${err.message}`);
