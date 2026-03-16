@@ -352,6 +352,11 @@ socket.on('raw-kill', (kill) => {
 
     const now = new Date();
     const timestamp = `[${now.getUTCHours().toString().padStart(2, '0')}:${now.getUTCMinutes().toString().padStart(2, '0')}]`;
+    // Covering for NPC and Corp complications
+    const victimDisplay = kill.victimName === kill.corpName
+        ? kill.victimName
+        : `${kill.victimName} of ${kill.corpName}`;
+
 
 div.innerHTML = `
     <div class="d-flex align-items-center" style="flex: 1;">
@@ -361,7 +366,7 @@ div.innerHTML = `
         <div class="kill-info">
             <div><strong class="ship-name">
                 <span class="timestamp">${timestamp}</span>
-                ${kill.victimName || "Unknown"} of ${kill.corpName} lost
+                ${victimDisplay} lost
                 <span class="article-target"></span><span class="type-target ship-name-container"></span>
             </strong></div>
             <div class="small">
