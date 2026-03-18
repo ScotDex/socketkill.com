@@ -209,15 +209,15 @@ async function r2BackgroundWorker() {
   await esi.loadSystemCache("./data/systems.json");
   await esi.loadCache(path.join(__dirname, "data", "esi_cache.json"));
   await statsManager.recoverFromR2();
+  await loadMarketPrices();
+  await loadWars();
   refreshNebulaBackground();
   processor = ProcessorFactory(esi, io, statsManager);
   syncPlayerCount();
-  await loadWars();
+  pollWarKillmails(processor.processPackage, processedKills); // ADD
   syncWars();
   setInterval(syncWars, 60 * 60 * 1000);
-  pollWarKillmails(processor.processPackage, processedKills); // ADD
   setInterval(() => pollWarKillmails(processor.processPackage, processedKills), 60 * 60 * 1000); // ADD
-  await loadMarketPrices();
   setInterval(syncMarketPrices, 24 * 60 * 60 * 1000);
   setInterval(refreshNebulaBackground, ROTATION_SPEED);
   r2BackgroundWorker();
