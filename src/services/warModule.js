@@ -2,6 +2,7 @@ const r2 = require('../network/r2Writer');
 const talker = require('../network/agent');
 const ESI_BASE = 'https://esi.evetech.net/latest';
 const normalizer = require('../core/normalizer')
+const { calculateKillValue } = require('../services/priceService');
 
 let activeWars = [];
 
@@ -30,7 +31,7 @@ async function pollWarKillmails(processPackage, processedKills) {
                 
                 const killPackage = normalizer.fromESI(km.killmail_id, km.killmail_hash, esiRes.data); // FIX
                 if (!killPackage) continue;
-
+                killPackage.zkb.totalValue = calculateKillValue(esiRes.data);
                 processPackage(killPackage);
                 console.log(`[WARS] Kill ${km.killmail_id} processed from war ${war.id}`);
             }
