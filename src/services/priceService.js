@@ -21,7 +21,7 @@ async function loadMarketPrices() {
     try {
         const data = await r2.get('market_prices.json');
         if (data) {
-            priceMap = new Map(data.map(item => [item.type_id, item.adjusted_price]));
+            priceMap = new Map(data.map(item => [item.type_id, item.adjusted_price, item.average_price]));
             console.log(`[MARKET] Loaded ${priceMap.size} prices from R2`);
         } else {
             // Nothing in R2 yet, fetch live
@@ -33,7 +33,9 @@ async function loadMarketPrices() {
 }
 
 function getPrice(typeId) {
-    return priceMap.get(typeId) || 0;
+    return priceMap.get(typeId)?.adjusted_price 
+        || priceMap.get(typeId)?.average_price 
+        || 0;
 }
 
 function calculateKillValue(esiData) {
