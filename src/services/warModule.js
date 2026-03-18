@@ -31,7 +31,7 @@ async function pollWarKillmails(processPackage, processedKills) {
                 const killPackage = normalizer.fromESI(km.killmail_id, km.killmail_hash, esiRes.data); // FIX
                 if (!killPackage) continue;
 
-                processPackage(killpackage);
+                processPackage(killPackage);
             }
         } catch (err) {
             console.error(`[WARS] Poll failed for war ${war.id}: ${err.message}`);
