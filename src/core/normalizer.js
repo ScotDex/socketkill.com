@@ -21,5 +21,22 @@ module.exports = {
             sequence: data.sequence_id, // Good for tracking lag
             sequenceUpdated: data.sequence_updated || null 
         };
+    },
+
+        fromESI: (killmailId, killmailHash, esiData) => {
+        if (!esiData || !killmailId) return null;
+        return {
+            killID: killmailId,
+            zkb: {
+                totalValue: 0,
+                href: `https://esi.evetech.net/latest/killmails/${killmailId}/${killmailHash}/`,
+                isNPC: false,
+                labels: []
+            },
+            isR2: false,
+            esiData: esiData,
+            sequence: null,
+            sequenceUpdated: null
+        };
     }
 };

@@ -1,6 +1,7 @@
 const r2 = require('../network/r2Writer');
 const talker = require('../network/agent');
 const ESI_BASE = 'https://esi.evetech.net/latest';
+const normalizer = require('../core/normalizer')
 
 let activeWars = [];
 
@@ -14,29 +15,23 @@ async function loadWars() {
     }
 }
 
-async function pollWarKillmails(processPackage) {
-    const wars = await r2.get('wars.json');
-    if (!wars) return;
+async function pollWarKillmails(processPackage, processedKills) {
+    if (!activeWars.length) return;
 
-    for (const war of wars){
+    for (const war of activeWars){
         try {
             const res = await talker.get (`${ESI_BASE}/wars/${war.id}/killmails/`);
-            const killpackage = res.data;
+            const killmails = res.data;
 
-            for (const km of killpackage) {
+            for (const km of killmails) {
                 const esiRes = await talker.get(
                     `${ESI_BASE}/killmails/${km.killmail_id}/${km.killmail_hash}/`
                 );
                 
-                // Package in same format as R2 normalizer
-                const killpackage = {
-                    killID: km.killmail_id,
-                    isR2: false,
-                    esiData: esiRes.data,
-                    zkb: { totalValue: 0, href: null }
-                };
+                const killPackage = normalizer.fromESI(km.killmail_id, km.killmail_hash, esiRes.data); // FIX
+                if (!killPackage) continue;
 
-                processor.processPackage(package);
+                processPackage(killpackage);
             }
         } catch (err) {
             console.error(`[WARS] Poll failed for war ${war.id}: ${err.message}`);
@@ -62,6 +57,7 @@ async function syncWars() {
 
     const active = wars.filter(w => w && !w.finished);
     await r2.put('wars.json', active);
+    activeWars = active;
     console.log(`[WARS] Synced ${active.length} active wars to R2`);
 } catch (err) {
     console.error(`[WARS] Sync failed: ${err.message}`);

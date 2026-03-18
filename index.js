@@ -212,7 +212,8 @@ async function r2BackgroundWorker() {
   await loadWars();
   syncWars();
   setInterval(syncWars, 60 * 60 * 1000);
-  
+  pollWarKillmails(processor.processPackage, processedKills); // ADD
+  setInterval(() => pollWarKillmails(processor.processPackage, processedKills), 60 * 60 * 1000); // ADD
   setInterval(refreshNebulaBackground, ROTATION_SPEED);
   r2BackgroundWorker();
 })();
