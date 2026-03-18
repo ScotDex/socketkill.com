@@ -9,6 +9,7 @@ const statsManager = require("./src/services/statsManager");
 // const ProcessorFactory = require("./src/core/processor");
 const ProcessorFactory = require("./src/core/processor_v2");
 const esi = new ESIClient("Contact: @ScottishDex");
+const { syncWars } = require('./src/services/warModule');
 
 
 const ROTATION_SPEED = 10 * 60 * 1000;
@@ -208,6 +209,8 @@ async function r2BackgroundWorker() {
   refreshNebulaBackground();
   processor = ProcessorFactory(esi, io, statsManager);
   syncPlayerCount();
+  syncWars();
+  setInterval(syncWars, 60 * 60 * 1000);
   
   setInterval(refreshNebulaBackground, ROTATION_SPEED);
   r2BackgroundWorker();
