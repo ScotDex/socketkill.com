@@ -4,7 +4,7 @@ const axios = require("../network/agent");
 const helpers = require("../core/helpers");
 const atOfficerFactory = require("./atOfficerFactory");
 const { AT_SHIP_IDS, OFFICER_SHIP_IDS } = require('../core/shipIDs');
-const r2 = require("../network/r2");
+const r2 = require("../network/r2Writer");
 const NewsEmbedFactory = require("./genericFactory");
 
 let channels = {};
