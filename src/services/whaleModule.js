@@ -4,12 +4,44 @@ const axios = require("../network/agent");
 const helpers = require("../core/helpers");
 const atOfficerFactory = require("./atOfficerFactory");
 const { AT_SHIP_IDS, OFFICER_SHIP_IDS } = require('../core/shipIDs');
+const r2 = require("../network/r2");
+const NewsEmbedFactory = require("./genericFactory");
+
+let channels = {};
 
 const WHALE_THRESHOLD = 20000000000;
+
+async function loadChannels() {
+    try {
+        const config = await r2.get('channels.json');
+        if (config) channels = config;
+        console.log (`[NEWS] Loaded ${Object.keys(channels).length} channel categories`);
+    } catch (err) {
+        console.error(`[NEWS] Failed to load channels.json: ${err.message}`);
+    }
+}
+
+loadChannels();
+
+async function postNewsChannel(kill, zkb, names, category) {
+    const urls = channels[category];
+    if (!urls || urls.length === 0) return;
+    const urlList = Array.isArray(urls) ? urls : [urls];
+    const payload = NewsEmbedFactory.createEmbed(kill, zkb, names, category);
+    await Promise.all(
+        urlList.map(url => axios.post(url, payload).catch(err =>
+            console.error(`[NEWS] ${category} webhook failed: ${err.message}`)
+        ))
+    );
+    console.log(`[NEWS] Kill ${kill.killmail_id} posted to ${category} (${urlList.length} webhooks)`);
+}
 
 module.exports = async (killmail, zkb, names) => {
     const isOfficerKill = killmail.attackers?.some(a => OFFICER_SHIP_IDS.has(a.ship_type_id));
     const isATKill = killmail.attackers?.some(a => AT_SHIP_IDS.has(a.ship_type_id))
+
+    await postNewsChannel(killmail, zkb, names, 'test');
+    await new Promise (resolve => setTimeout(resolve, 2000))
 
     if (isOfficerKill || isATKill) {
     await postOfficerIntel(killmail, zkb, names);
