@@ -80,6 +80,8 @@ const POLLING_CONFIG = {
     PANIC_DELAY: 600000  
 };
 
+const processedKills = new Set();
+
 async function r2BackgroundWorker() {
     // 1. Priming Phase
     
@@ -101,7 +103,7 @@ async function r2BackgroundWorker() {
     // 2. The Centralized Recursive Tick
 
     let lastKnownSequence = sharedState.currentSequence;
-    const processedKills = new Set();
+    
 
     const MAX_AGE = 24 * 60 * 60 * 1000;
 
