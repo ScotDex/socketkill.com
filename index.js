@@ -9,8 +9,7 @@ const statsManager = require("./src/services/statsManager");
 const ProcessorFactory = require("./src/core/processor_v2");
 const esi = new ESIClient("Contact: @ScottishDex");
 const r2 = require('./src/network/r2Writer');
-//const { syncWars, loadWars, pollWarKillmails} = require('./src/services/warModule');
-//const { syncMarketPrices, loadMarketPrices, calculateKillValue } = require('./src/services/priceService');
+
 
 
 const ROTATION_SPEED = 10 * 60 * 1000;
@@ -82,24 +81,6 @@ const POLLING_CONFIG = {
 };
 
 const processedKills = new Set();
-
-// 
-//     // 1. Priming Phase
-    
-//     // try {
-//     //     const res = await talker.get(SEQUENCE_CACHE_URL, { timeout: 5000 });
-//     //     if (res.data?.sequence) {
-//     //         sharedState.currentSequence = parseInt(res.data.sequence) - 5;
-//     //     } else {
-//     //         throw new Error("Invalid sequence data");
-//     //     }
-//     // } catch (e) {
-//     //     const status = e.response?.status;
-//     //     lastErrorStatus = status;
-//     //     const wait = status === 429 ? POLLING_CONFIG.PANIC_DELAY : 10000;
-//     //     console.error(`Priming failed:`, e.response?.status, e.response?.data, e.message);
-//     //     return setTimeout(r2BackgroundWorker, wait);
-//     // }
 async function r2BackgroundWorker() {
     try {
       const savedState = await r2.get('worker_state.json')
@@ -126,6 +107,7 @@ async function r2BackgroundWorker() {
     // 2. The Centralized Recursive Tick
 
     let lastKnownSequence = sharedState.currentSequence;
+    const workerStart = Date.now(); 
     
 
     const MAX_AGE = 24 * 60 * 60 * 1000;
@@ -220,7 +202,10 @@ async function r2BackgroundWorker() {
           return r2BackgroundWorker();
         }
       }
-
+      if (Date.now() - workerStart >= 60000) {
+        console.log('[WORKER] Minute elapsed — restarting worker');
+        return r2BackgroundWorker();
+      }
       setTimeout(poll, nextTick);
     };
 
@@ -232,16 +217,21 @@ async function r2BackgroundWorker() {
   await esi.loadSystemCache("./data/systems.json");
   await esi.loadCache(path.join(__dirname, "data", "esi_cache.json"));
   await statsManager.recoverFromR2();
- // await loadMarketPrices();
-//  await loadWars();
   refreshNebulaBackground();
   processor = ProcessorFactory(esi, io, statsManager);
   syncPlayerCount();
+  setInterval(refreshNebulaBackground, ROTATION_SPEED);
+  r2BackgroundWorker();
+})();
+
+// Commented out code for re-implementation/consideration
+
  // pollWarKillmails(processor.processPackage, processedKills); // ADD
  // syncWars();
  // setInterval(syncWars, 60 * 60 * 1000);
  // setInterval(() => pollWarKillmails(processor.processPackage, processedKills), 60 * 60 * 1000); // ADD
  // setInterval(syncMarketPrices, 24 * 60 * 60 * 1000);
-  setInterval(refreshNebulaBackground, ROTATION_SPEED);
-  r2BackgroundWorker();
-})();
+ // await loadMarketPrices();
+//  await loadWars();
+//const { syncWars, loadWars, pollWarKillmails} = require('./src/services/warModule');
+//const { syncMarketPrices, loadMarketPrices, calculateKillValue } = require('./src/services/priceService');
