@@ -364,7 +364,7 @@ div.innerHTML = `
                 <span class="article-target"></span><span class="type-target ship-name-container"></span>
             </strong></div>
             <div class="small">
-                <span class="location-label">${kill.locationLabel}</span>
+                <span class="location-label ${kill.isTriglavian ? 'triglavian' : ''}">${kill.locationLabel}</span>
             </div>
         </div>
     </div>

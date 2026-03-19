@@ -1,6 +1,7 @@
 const helpers = require("./helpers");
 const handleWhale = require("../services/whaleModule");
 const { resolveKillmail, resolveFinalBlowCorp, resolveTriggerAttacker } = require('./processorHelpers');
+const { TRIGLAVIAN_SYSTEMS } = require('../core/shipIDs');
 
 module.exports = (esi, io, statsManager) => {
     async function processPackage(packageData) {
@@ -53,7 +54,8 @@ module.exports = (esi, io, statsManager) => {
                 shipImageUrl: `https://api.socketkill.com/render/ship/${killmail.victim.ship_type_id}`,
                 corpImageUrl: `https://api.socketkill.com/render/corp/${killmail.victim.corporation_id}`,
                 finalBlowCorp: finalBlowCorp,
-                attackerCount: attackerCount
+                attackerCount: attackerCount,
+                isTriglavian: TRIGLAVIAN_SYSTEMS.has(killmail.solar_system_id),
             });
 
             // Gated filter for web hooks
