@@ -142,7 +142,6 @@ async function r2BackgroundWorker() {
 
                 lastKnownSequence = sharedState.currentSequence;
                 sharedState.currentSequence++;
-                if (sharedState.currentSequence % 50 === 0) r2.put('worker_state.json', { sequence: sharedState.currentSequence });
                 consecutive404s = 0;
                 lastSuccessfulIngest = Date.now();
               lastErrorStatus = 200;
@@ -204,6 +203,7 @@ async function r2BackgroundWorker() {
       }
       if (Date.now() - workerStart >= 60000) {
         console.log('[WORKER] Minute elapsed — restarting worker');
+        await r2.put('worker_state.json', { sequence: sharedState.currentSequence });
         return r2BackgroundWorker();
       }
       setTimeout(poll, nextTick);
