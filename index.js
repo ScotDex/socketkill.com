@@ -83,7 +83,7 @@ const POLLING_CONFIG = {
 
 const processedKills = new Set();
 
-// async function r2BackgroundWorker() {
+// 
 //     // 1. Priming Phase
     
 //     // try {
@@ -100,9 +100,9 @@ const processedKills = new Set();
 //     //     console.error(`Priming failed:`, e.response?.status, e.response?.data, e.message);
 //     //     return setTimeout(r2BackgroundWorker, wait);
 //     // }
-
+async function r2BackgroundWorker() {
     try {
-      const savedState = await r2BackgroundWorker.get('worker_state.json')
+      const savedState = await r2.get('worker_state.json')
       if (savedState?.sequence) {
         sharedState.currentSequence = savedState.sequence;
         console.log(`[PRIME] Resumed from saved sequence ${savedState.sequence}`);
