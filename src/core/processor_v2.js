@@ -2,6 +2,7 @@ const helpers = require("./helpers");
 const handleWhale = require("../services/whaleModule");
 const { resolveKillmail, resolveFinalBlowCorp, resolveTriggerAttacker } = require('./processorHelpers');
 const { TRIGLAVIAN_SYSTEMS } = require('../core/shipIDs');
+const { calculateKillValue } = require('../services/priceService')
 
 module.exports = (esi, io, statsManager) => {
     async function processPackage(packageData) {
@@ -10,7 +11,9 @@ module.exports = (esi, io, statsManager) => {
 
         try {
             const killmail = await resolveKillmail(isR2, esiData, zkb);
-            const rawValue = Number(zkb.totalValue) || 0;
+            const rawValue = calculateKillValue(killmail);
+
+            //Number(zkb.totalValue) || 
 
             const [systemDetails, shipName, charName, corpName, finalBlowCorp] = await Promise.all([
                 esi.getSystemDetails(killmail.solar_system_id),

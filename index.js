@@ -9,7 +9,7 @@ const statsManager = require("./src/services/statsManager");
 const ProcessorFactory = require("./src/core/processor_v2");
 const esi = new ESIClient("Contact: @ScottishDex");
 const r2 = require('./src/network/r2Writer');
-
+const { syncMarketPrices, loadMarketPrices, calculateKillValue } = require('./src/services/priceService');
 
 
 const ROTATION_SPEED = 10 * 60 * 1000;
@@ -230,8 +230,8 @@ async function r2BackgroundWorker() {
  // syncWars();
  // setInterval(syncWars, 60 * 60 * 1000);
  // setInterval(() => pollWarKillmails(processor.processPackage, processedKills), 60 * 60 * 1000); // ADD
- // setInterval(syncMarketPrices, 24 * 60 * 60 * 1000);
- // await loadMarketPrices();
+ setInterval(syncMarketPrices, 24 * 60 * 60 * 1000);
+ await loadMarketPrices();
 //  await loadWars();
 //const { syncWars, loadWars, pollWarKillmails} = require('./src/services/warModule');
-//const { syncMarketPrices, loadMarketPrices, calculateKillValue } = require('./src/services/priceService');
+//
