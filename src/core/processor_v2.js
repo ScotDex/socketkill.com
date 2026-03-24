@@ -11,9 +11,9 @@ module.exports = (esi, io, statsManager) => {
 
         try {
             const killmail = await resolveKillmail(isR2, esiData, zkb);
-            const rawValue = calculateKillValue(killmail);
+            const rawValue = Number(zkb.totalValue) || calculateKillValue(killmail);
 
-            //Number(zkb.totalValue) || 
+            //
 
             const [systemDetails, shipName, charName, corpName, finalBlowCorp] = await Promise.all([
                 esi.getSystemDetails(killmail.solar_system_id),
