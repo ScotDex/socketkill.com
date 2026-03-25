@@ -82,35 +82,39 @@ const POLLING_CONFIG = {
 const processedKills = new Set();
 async function r2BackgroundWorker() {
   processedKills.clear();
-    try {
-      const savedState = await r2.get('worker_state.json')
-      if (savedState?.sequence) {
+  try {
+    const savedState = await r2.get('worker_state.json')
+    const liveRes = await talker.get(SEQUENCE_CACHE_URL, { timeout: 5000 });
+    const liveSeq = parseInt(liveRes.data?.sequence);
+
+    if (savedState?.sequence) {
+      const gap = liveSeq - savedState.sequence;
+      if (gap > 500) {
+        console.warn(`[PRIME] Saved sequence too stale (${gap} behind). Cold starting from live.`);
+        sharedState.currentSequence = liveSeq - 5;
+      } else {
+        console.log(`[PRIME] Resumed from saved sequence ${savedState.sequence} (${gap} behind live)`);
         sharedState.currentSequence = savedState.sequence;
-        console.log(`[PRIME] Resumed from saved sequence ${savedState.sequence}`);
-        } else {
-          const res = await talker.get(SEQUENCE_CACHE_URL, { timeout: 5000 });
-          if (res.data?.sequence) {
-            sharedState.currentSequence = parseInt(res.data.sequence) - 5;
-            console.log(`[PRIME] Cold start from sequence.json at ${sharedState.currentSequence}`);
-          } else {
-            throw new Error("Invalid sequence data");
-          }
       }
-    } catch (e) {
-      const status = e.response?.status;
-      lastErrorStatus = status;
-      const wait = status === 429 ? POLLING_CONFIG.PANIC_DELAY : 10000;
-      console.error(`Priming failed:`, e.response?.status, e.response?.data, e.message);
-      return setTimeout(r2BackgroundWorker, wait);
+    } else {
+      sharedState.currentSequence = liveSeq - 5;
+      console.log(`[PRIME] Cold start from sequence.json at ${sharedState.currentSequence}`);
     }
+  } catch (e) {
+    const status = e.response?.status;
+    lastErrorStatus = status;
+    const wait = status === 429 ? POLLING_CONFIG.PANIC_DELAY : 10000;
+    console.error(`Priming failed:`, e.response?.status, e.response?.data, e.message);
+    return setTimeout(r2BackgroundWorker, wait);
+  }
 
-    // 2. The Centralized Recursive Tick
+  // 2. The Centralized Recursive Tick
 
-    let lastKnownSequence = sharedState.currentSequence;
-    const workerStart = Date.now(); 
-    
+  let lastKnownSequence = sharedState.currentSequence;
+  const workerStart = Date.now();
 
-    const MAX_AGE = 24 * 60 * 60 * 1000;
+
+  const MAX_AGE = 24 * 60 * 60 * 1000;
 
     const poll = async () => {
       if (isThrottled) return;
