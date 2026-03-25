@@ -11,6 +11,7 @@ const esi = new ESIClient("Contact: @ScottishDex");
 const r2 = require('./src/network/r2Writer');
 
 
+
 const ROTATION_SPEED = 10 * 60 * 1000;
 const R2_BASE_URL = process.env.R2_BASE_URL
 const SEQUENCE_CACHE_URL = `${R2_BASE_URL}/sequence.json`;
@@ -81,45 +82,38 @@ const POLLING_CONFIG = {
 
 const processedKills = new Set();
 async function r2BackgroundWorker() {
-  processedKills.clear();
-  consecutive404s = 0;
-  try {
-    const savedState = await r2.get('worker_state.json')
-    const liveRes = await talker.get(SEQUENCE_CACHE_URL, { timeout: 5000 });
-    const liveSeq = parseInt(liveRes.data?.sequence);
-
-    if (savedState?.sequence) {
-      const gap = liveSeq - savedState.sequence;
-      if (gap > 500) {
-        console.warn(`[PRIME] Saved sequence too stale (${gap} behind). Cold starting from live.`);
-        sharedState.currentSequence = liveSeq - 5;
-      } else {
-        console.log(`[PRIME] Resumed from saved sequence ${savedState.sequence} (${gap} behind live)`);
+    try {
+      const savedState = await r2.get('worker_state.json')
+      if (savedState?.sequence) {
         sharedState.currentSequence = savedState.sequence;
+        console.log(`[PRIME] Resumed from saved sequence ${savedState.sequence}`);
+        } else {
+          const res = await talker.get(SEQUENCE_CACHE_URL, { timeout: 5000 });
+          if (res.data?.sequence) {
+            sharedState.currentSequence = parseInt(res.data.sequence) - 5;
+            console.log(`[PRIME] Cold start from sequence.json at ${sharedState.currentSequence}`);
+          } else {
+            throw new Error("Invalid sequence data");
+          }
       }
-    } else {
-      sharedState.currentSequence = liveSeq - 5;
-      console.log(`[PRIME] Cold start from sequence.json at ${sharedState.currentSequence}`);
+    } catch (e) {
+      const status = e.response?.status;
+      lastErrorStatus = status;
+      const wait = status === 429 ? POLLING_CONFIG.PANIC_DELAY : 10000;
+      console.error(`Priming failed:`, e.response?.status, e.response?.data, e.message);
+      return setTimeout(r2BackgroundWorker, wait);
     }
-  } catch (e) {
-    const status = e.response?.status;
-    lastErrorStatus = status;
-    const wait = status === 429 ? POLLING_CONFIG.PANIC_DELAY : 10000;
-    console.error(`Priming failed:`, e.response?.status, e.response?.data, e.message);
-    return setTimeout(r2BackgroundWorker, wait);
-  }
 
-  // 2. The Centralized Recursive Tick
+    // 2. The Centralized Recursive Tick
 
-  let lastKnownSequence = sharedState.currentSequence;
-  let workerStart = Date.now();
-  let isPolling = false;
+    let lastKnownSequence = sharedState.currentSequence;
+    const workerStart = Date.now(); 
+    
 
-  const MAX_AGE = 24 * 60 * 60 * 1000;
+    const MAX_AGE = 24 * 60 * 60 * 1000;
 
     const poll = async () => {
       if (isThrottled) return;
-      isPolling = true;
 
   
       const isNewSequence = sharedState.currentSequence > lastKnownSequence
@@ -147,7 +141,7 @@ async function r2BackgroundWorker() {
           }
 
                 lastKnownSequence = sharedState.currentSequence;
-                sharedState.currentSequence++
+                sharedState.currentSequence++;
                 consecutive404s = 0;
                 lastSuccessfulIngest = Date.now();
               lastErrorStatus = 200;
@@ -169,7 +163,7 @@ async function r2BackgroundWorker() {
             } else {
                 // DATA GAP: File exists but normalize failed or no kill data
                 consecutive404s++;
-                if (consecutive404s === 1) console.log(`[GAP] Potential ghost file at ${sharedState.currentSequence}. Retrying...`);
+                if (consecutive404s === 1) console.log(`[GAP] Potential ghost file at ${currentSequence}. Retrying...`);
                 nextTick = POLLING_CONFIG.STALL_DELAY;
                 
                 if (consecutive404s >= 5) {
@@ -190,53 +184,28 @@ async function r2BackgroundWorker() {
         }
 
         // AFTER
-// SURGICAL FIX: Handling 404/403 (Missing or Future Files)
-        if (status === 404 || status === 403) {
+        if (status === 404) {
           try {
             const liveRes = await talker.get(SEQUENCE_CACHE_URL, { timeout: 5000 });
-            const liveSeq = parseInt(liveRes.data?.sequence);
-            const behind = liveSeq - sharedState.currentSequence; 
-            
-            console.log(`[GAP] Current: ${sharedState.currentSequence} | Live: ${liveSeq} | Behind: ${behind} sequences`);
-            
-            if (behind > 2) {
-               
-                consecutive404s++; 
-                if (consecutive404s >= 10) {
-                    console.warn(`[SKIP] Seq ${sharedState.currentSequence} is a ghost. Skipping after 10 tries.`);
-                    sharedState.currentSequence++; // The only place we increment on failure
-                    consecutive404s = 0;
-                    nextTick = 0; 
-                } else {
-                    nextTick = 500;
-                }
-            } else {
-                // We are at the live tip. Be polite and wait.
-                consecutive404s = 0;
-                nextTick = 6000; 
-            }
-          } catch (_) { 
-            nextTick = 6000;
-          }
-          console.log(`[WAIT] Seq ${sharedState.currentSequence} unavailable. Next poll in ${nextTick/1000}s.`);
+            const liveSeq = liveRes.data?.sequence;
+            console.log(`[GAP] Current: ${sharedState.currentSequence} | Live: ${liveSeq} | Behind: ${liveSeq - sharedState.currentSequence} sequences`);
+          } catch (_) { }
+          sharedState.currentSequence = lastKnownSequence;
+          nextTick = 6000;
+        } else {
+          nextTick = POLLING_CONFIG.ERROR_BACKOFF;
+        }
+
+        if (status === 404 && consecutive404s >= 30) {
+          console.warn("[RE-SYNC] 404 limit reached. Re-priming...");
+          return r2BackgroundWorker();
         }
       }
       if (Date.now() - workerStart >= 60000) {
-        const liveRes = await talker.get (SEQUENCE_CACHE_URL, { timeout: 5000 });
-        const liveSeq = parseInt(liveRes.data?.sequence);
-        const gap = liveSeq - sharedState.currentSequence;
-        if (gap < 10) {
-          console.log('[WORKER] Minute elapsed — restarting worker');
-          await r2.put('worker_state.json', { sequence: sharedState.currentSequence });
-          return r2BackgroundWorker();
-        } else {
-          console.log(`[WORKER] Minute elapsed but ${gap} behind — continuing without restart`);
-          workerStart = Date.now();
-        }
-        
+        console.log('[WORKER] Minute elapsed — restarting worker');
+        await r2.put('worker_state.json', { sequence: sharedState.currentSequence });
+        return r2BackgroundWorker();
       }
-      console.log(`[POLL] nextTick: ${nextTick} | sequence: ${sharedState.currentSequence}`);
-      isPolling = false;
       setTimeout(poll, nextTick);
     };
 
@@ -250,9 +219,19 @@ async function r2BackgroundWorker() {
   await statsManager.recoverFromR2();
   refreshNebulaBackground();
   processor = ProcessorFactory(esi, io, statsManager);
-  r2BackgroundWorker();
   syncPlayerCount();
   setInterval(refreshNebulaBackground, ROTATION_SPEED);
-  
+  r2BackgroundWorker();
 })();
 
+// Commented out code for re-implementation/consideration
+
+ // pollWarKillmails(processor.processPackage, processedKills); // ADD
+ // syncWars();
+ // setInterval(syncWars, 60 * 60 * 1000);
+ // setInterval(() => pollWarKillmails(processor.processPackage, processedKills), 60 * 60 * 1000); // ADD
+ // setInterval(syncMarketPrices, 24 * 60 * 60 * 1000);
+ // await loadMarketPrices();
+//  await loadWars();
+//const { syncWars, loadWars, pollWarKillmails} = require('./src/services/warModule');
+//const { syncMarketPrices, loadMarketPrices, calculateKillValue } = require('./src/services/priceService');
