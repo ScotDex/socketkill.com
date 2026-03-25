@@ -194,6 +194,7 @@ async function r2BackgroundWorker() {
             const liveRes = await talker.get(SEQUENCE_CACHE_URL, { timeout: 5000 });
             const liveSeq = liveRes.data?.sequence;
             console.log(`[GAP] Current: ${sharedState.currentSequence} | Live: ${liveSeq} | Behind: ${liveSeq - sharedState.currentSequence} sequences`);
+            nextTick = behind > 20 ? 500 : 6000;
           } catch (_) { }
           sharedState.currentSequence++;
           nextTick = 6000;
