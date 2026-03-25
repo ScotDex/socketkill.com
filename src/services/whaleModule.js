@@ -73,9 +73,9 @@ async function postOfficerIntel(kill, zkb, names) {
             axios.post(process.env.INTEL_WEBHOOK_URL, payload),
             axios.post(process.env.SECOND_HOOK, payload)
         ])
-        console.log(`[OFFICER HOOK INTEL] Kill ${kill.killmail_id} posted`);
+        console.log(`[SHIP TRACKER HOOK INTEL] Kill ${kill.killmail_id} posted`);
     } catch (err) {
-        console.error(`[OFFICER HOOK INTEL] Webhook failed: ${err.message}`);
+        console.error(`[SHIP TRACKER HOOK INTEL] Webhook failed: ${err.message}`);
     }
 }
 
