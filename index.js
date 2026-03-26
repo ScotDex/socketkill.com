@@ -301,33 +301,19 @@ async function startPoller() {
 
   processor = ProcessorFactory(esi, io, statsManager);
 
-    // Refire endpoint
-    app.get('/api/refire/:killId', async (req, res) => {
-      try {
-          const killId = req.params.killId;
-          const zkillRes = await talker.get(
-              `https://zkillboard.com/api/killID/${killId}/`,
-              { headers: { 'User-Agent': 'Socket.Kill - dev@socketkill.com' } }
-          );
-          const zkillData = zkillRes.data[0];
-          if (!zkillData) return res.status(404).json({ error: 'Kill not found' });
-          const hash = zkillData.zkb?.hash;
-          const totalValue = zkillData.zkb?.totalValue || 0;
-          const esiRes = await talker.get(
-              `https://esi.evetech.net/latest/killmails/${killId}/${hash}/`
-          );
-          const r2Package = {
-              killID: parseInt(killId),
-              zkb: { totalValue, href: null },
-              isR2: false,
-              esiData: esiRes.data
-          };
-          processor.processPackage(r2Package);
-          res.json({ success: true, killId, totalValue });
-      } catch (err) {
-          res.status(500).json({ error: err.message });
-      }
-    });
+  // REFIRE — remove after use
+const killId = 134257055;
+const hash = '770e2ef8a4bb493e4673270b4ab9108d85d5df29';
+const totalValue = 161508980156.35;
+
+const esiRes = await talker.get(`https://esi.evetech.net/latest/killmails/${killId}/${hash}/`);
+const r2Package = {
+    killID: killId,
+    zkb: { totalValue, href: null },
+    isR2: false,
+    esiData: esiRes.data
+};
+processor.processPackage(r2Package);
 
   refreshNebulaBackground();
   syncPlayerCount();

@@ -41,9 +41,6 @@ module.exports = async (killmail, zkb, names) => {
     const isATKill = killmail.attackers?.some(a => AT_SHIP_IDS.has(a.ship_type_id))
     const isRorqual = killmail.attackers?.some(a => RORQUAL_SHIP_IDS.has(a.ship_type_id))
 
-    await postNewsChannel(killmail, zkb, names, 'test');
-    await new Promise (resolve => setTimeout(resolve, 3000))
-
     if (isOfficerKill || isATKill || isRorqual) {
     await postOfficerIntel(killmail, zkb, names);
     await new Promise(resolve => setTimeout(resolve, 2000));
@@ -51,6 +48,7 @@ module.exports = async (killmail, zkb, names) => {
 
     if (names.rawValue < WHALE_THRESHOLD) return;
     await Promise.all([
+        postNewsChannel(killmail, zkb, names, 'test'),
         postCorpIntel(killmail, zkb, names),
         postSocial(names, helpers.formatIsk(names.rawValue), killmail.killmail_id)
     ]);
