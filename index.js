@@ -38,7 +38,7 @@ const state = {
 
 // --- Web Server & Socket ---
 
-const { io } = startWebServer(esi, statsManager, state);
+const { io, app } = startWebServer(esi, statsManager, state);
 
 const startMonitor = require("./src/network/monitor");
 startMonitor(750);
