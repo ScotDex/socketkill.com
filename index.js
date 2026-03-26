@@ -38,7 +38,7 @@ const state = {
 
 // --- Web Server & Socket ---
 
-const { io, app } = startWebServer(esi, statsManager, state);
+const { io, app } = startWebServer(esi, statsManager, state, () => processor);
 
 const startMonitor = require("./src/network/monitor");
 startMonitor(750);
@@ -243,56 +243,8 @@ async function startPoller() {
   }
 }
 
-//--- Test Data ---
 
-
-const testKillmail = {
-  killmail_id: 134257055,
-  solar_system_id: 30000142,
-  attackers: [{ final_blow: true, corporation_id: 1000033, ship_type_id: 587 }],
-  victim: {
-      character_id: 2117274740,
-      corporation_id: 98750082,
-      ship_type_id: 45649,
-      items: []
-  }
-};
-
-const testZkb = {
-  totalValue: 161508980156.35,
-  href: 'https://esi.evetech.net/latest/killmails/134257055/770e2ef8a4bb493e4673270b4ab9108d85d5df29/'
-};
-
-const testNames = {
-  shipName: 'Erebus',
-  systemName: 'Jita',
-  charName: 'Dexomus Viliana',
-  corpName: 'Akavhi Guard',
-  rawValue: 161508980156.35,
-  regionName: 'The Forge',
-  finalBlowCorp: 'Test Corp',
-  attackerCount: 1,
-  triggerShipName: null,
-  triggerCharName: null,
-  triggerCorpName: null,
-  triggerShipId: null,
-  finalVictimName: 'Dexomus Viliana'
-};
-
-const handleWhale = require('./src/services/whaleModule');
-handleWhale(testKillmail, testZkb, testNames);
-
-
-
-
-
-
-
-
-
-
-// --- Boot ---
-
+// --- Boot -
 (async () => {
   console.log("Initializing Socket.Kill...");
   await esi.loadSystemCache("./data/systems.json");
