@@ -243,44 +243,44 @@ async function startPoller() {
   }
 }
 
-// --- Test Data ---
+//--- Test Data ---
 
-// // TEMP TEST — remove after confirming whale threshold works
-// const testKillmail = {
-//   killmail_id: 999999999,
-//   solar_system_id: 30000142,
-//   attackers: [{ final_blow: true, corporation_id: 1000033, ship_type_id: 587 }],
-//   victim: {
-//       character_id: 2117274740,
-//       corporation_id: 98750082,
-//       ship_type_id: 45649,
-//       items: []
-//   }
-// };
 
-// const testZkb = {
-//   totalValue: 25000000000, // 25B — above whale threshold
-//   href: null
-// };
+const testKillmail = {
+  killmail_id: 134257055,
+  solar_system_id: 30000142,
+  attackers: [{ final_blow: true, corporation_id: 1000033, ship_type_id: 587 }],
+  victim: {
+      character_id: 2117274740,
+      corporation_id: 98750082,
+      ship_type_id: 45649,
+      items: []
+  }
+};
 
-// const testNames = {
-//   shipName: 'Erebus',
-//   systemName: 'Jita',
-//   charName: 'Dexomus Viliana',
-//   corpName: 'Akavhi Guard',
-//   rawValue: 25000000000,
-//   regionName: 'The Forge',
-//   finalBlowCorp: 'Test Corp',
-//   attackerCount: 1,
-//   triggerShipName: null,
-//   triggerCharName: null,
-//   triggerCorpName: null,
-//   triggerShipId: null,
-//   finalVictimName: 'Dexomus Viliana'
-// };
+const testZkb = {
+  totalValue: 161508980156.35,
+  href: 'https://esi.evetech.net/latest/killmails/134257055/770e2ef8a4bb493e4673270b4ab9108d85d5df29/'
+};
 
-// const handleWhale = require('./src/services/whaleModule');
-// handleWhale(testKillmail, testZkb, testNames);
+const testNames = {
+  shipName: 'Erebus',
+  systemName: 'Jita',
+  charName: 'Dexomus Viliana',
+  corpName: 'Akavhi Guard',
+  rawValue: 161508980156.35,
+  regionName: 'The Forge',
+  finalBlowCorp: 'Test Corp',
+  attackerCount: 1,
+  triggerShipName: null,
+  triggerCharName: null,
+  triggerCorpName: null,
+  triggerShipId: null,
+  finalVictimName: 'Dexomus Viliana'
+};
+
+const handleWhale = require('./src/services/whaleModule');
+handleWhale(testKillmail, testZkb, testNames);
 
 
 
@@ -301,19 +301,19 @@ async function startPoller() {
 
   processor = ProcessorFactory(esi, io, statsManager);
 
-  // REFIRE — remove after use
-const killId = 134257055;
-const hash = '770e2ef8a4bb493e4673270b4ab9108d85d5df29';
-const totalValue = 161508980156.35;
+//   // REFIRE — remove after use
+// const killId = 134257055;
+// const hash = '770e2ef8a4bb493e4673270b4ab9108d85d5df29';
+// const totalValue = 161508980156.35;
 
-const esiRes = await talker.get(`https://esi.evetech.net/killmails/${killId}/${hash}`);
-const r2Package = {
-    killID: killId,
-    zkb: { totalValue, href: null },
-    isR2: false,
-    esiData: esiRes.data
-};
-processor.processPackage(r2Package);
+// const esiRes = await talker.get(`https://esi.evetech.net/killmails/${killId}/${hash}`);
+// const r2Package = {
+//     killID: killId,
+//     zkb: { totalValue, href: null },
+//     isR2: false,
+//     esiData: esiRes.data
+// };
+// processor.processPackage(r2Package);
 
   refreshNebulaBackground();
   syncPlayerCount();
