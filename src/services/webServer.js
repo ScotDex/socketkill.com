@@ -6,6 +6,7 @@ const cors = require("cors");
 const path = require("path");
 const helmet = require("helmet");
 const fs = require("fs");
+const axios = require("../network/agent");
 
 function startWebServer(esi, statsManager, sharedState, getProcessor) {
   const app = express();
@@ -48,7 +49,7 @@ function startWebServer(esi, statsManager, sharedState, getProcessor) {
 
   app.use(cors());
   app.use(express.json());
-  app.use(express.static(path.join(__dirname, "..", "..", "public")));
+  
 
  app.get("/", (req, res) => {
    res.sendFile(path.join(publicPath, "index.html"));
@@ -170,6 +171,8 @@ function startWebServer(esi, statsManager, sharedState, getProcessor) {
 
     });
 });
+
+app.use(express.static(path.join(__dirname, "..", "..", "public")));
 
   server
     .listen(PORT, () => {
