@@ -76,6 +76,35 @@ function startWebServer(esi, statsManager, sharedState) {
     }
   });
 
+  app.get('/api/refire/:killId', async (req, res) => {
+    try {
+        const killId = req.params.killId;
+        // Fetch from zkill to get the hash
+        const zkillRes = await esi.api.get(`https://zkillboard.com/api/kills/killID/${killId}/`);
+        const zkillData = zkillRes.data[0];
+        
+        const hash = zkillData?.zkb?.hash;
+        if (!hash) return res.status(404).json({ error: 'Kill not found on zkill' });
+
+        const esiRes = await esi.api.get(`https://esi.evetech.net/latest/killmails/${killId}/${hash}/`);
+        
+        const r2Package = {
+            killID: parseInt(killId),
+            zkb: {
+                totalValue: zkillData.zkb.totalValue || 0,
+                href: `https://esi.evetech.net/latest/killmails/${killId}/${hash}/`
+            },
+            isR2: false,
+            esiData: esiRes.data
+        };
+
+        processor.processPackage(r2Package);
+        res.json({ success: true, killId });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
   app.get("/api/character/:id", async (req, res) => {
     console.log(`[API] Character lookup: ${req.params.id}`);
     try {
