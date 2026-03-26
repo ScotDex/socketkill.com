@@ -63,7 +63,7 @@ module.exports = (esi, io, statsManager) => {
 
             // Gated filter for web hooks
 
-            await handleWhale(killmail, zkb, {
+            handleWhale(killmail, zkb, {
                 shipName,
                 systemName,
                 charName,
