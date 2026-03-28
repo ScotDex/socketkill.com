@@ -40,7 +40,8 @@ function startWebServer(esi, statsManager, sharedState, getProcessor) {
         "https://pf.darkventure.space",
         "https://eveapex.com",
         "https://front-end-test.pages.dev",
-        "https://ws.socketkill.com"
+        "https://ws.socketkill.com",
+        "https://heatmap.socketkill.com"
       ], // Web Socket whitelist
       methods: ["GET", "POST"],
     },
