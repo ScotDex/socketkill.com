@@ -48,7 +48,7 @@ const OFFICER_SHIP_IDS = new Set([
 ]);
 
 const RORQUAL_SHIP_IDS = new Set([
-    28352
+    42241 // Molok
 ]);
 
 
