@@ -33,6 +33,7 @@ function set(killID, hash) {
     if (cache.has(killID)) return;  // dedupe — hashes are immutable
     cache.set(killID, hash);
     addedSinceFlush++;
+    console.log(`[HASH-DEBUG] count now ${addedSinceFlush}/${FLUSH_INTERVAL}`);
     if (addedSinceFlush >= FLUSH_INTERVAL) {
         flush();  // fire and forget
     }
@@ -47,6 +48,7 @@ async function flush() {
     const snapshot = Object.fromEntries(cache);
     addedSinceFlush = 0;
     const ok = await r2.put(shardKey(currentDate), snapshot);
+    console.log(`[HASH-DEBUG] flush result ok=${ok}`);
     if (ok) {
         console.log(`[HASH] Flushed ${cache.size} hashes to ${shardKey(currentDate)}`);
     }
