@@ -1,6 +1,9 @@
+const { sharedPromise } = require("twitter-api-v2/dist/esm/helpers");
 const r2 = require("../network/r2Writer");
 
 const FLUSH_INTERVAL = 50;
+const shardCache = new Map();
+const SHARD_CACHE_MAX = 30;
 
 const cache = new Map();
 let currentDate = todayUTC();
@@ -65,4 +68,19 @@ async function rotateIfNeeded() {
     console.log(`[HASH] New day started: ${currentDate}`);
 }
 
-module.exports = { prime, set, get, flush, rotateIfNeeded };
+async function getHashFromShard(date, killID) {
+    if (date === todayUTC()) return get(killID)
+    let shard = shardCache.get(date);
+    if(!shard) {
+        shard = await r2.get(shardKey(date));
+        if (!shard) return null;
+        shardCache.set(date, shard);
+        if(shardCache.size > SHARD_CACHE_MAX) {
+            const oldest = shardCache.keys().next().value;
+            shardCache.delete(oldest);
+        }        
+    }
+    return shard[killID] || shard[String(killID)] || null;
+}
+
+module.exports = { prime, set, get, flush, rotateIfNeeded, getHashFromShard };

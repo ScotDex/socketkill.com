@@ -7,6 +7,10 @@ const path = require("path");
 const helmet = require("helmet");
 const fs = require("fs");
 const axios = require("../network/agent");
+const axios = require("../network/agent");
+const hashCache = require("../state/hashCache");
+const killmailCache = require("../state/killmailCache");
+const { renderKillPage } = require("./killPageRenderer");
 
 function startWebServer(esi, statsManager, sharedState, getProcessor) {
   const app = express();
@@ -162,6 +166,93 @@ function startWebServer(esi, statsManager, sharedState, getProcessor) {
     } catch (err) {
         console.error(`[REFIRE] Failed for kill ${req.params.killId}: ${err.message}`);
         res.status(500).json({ error: err.message });
+    }
+});
+
+// Kill detail page — date-dispatched hash lookup, ESI fetch, HTML render
+app.get('/kill/:date/:killID', async (req, res) => {
+    const { date, killID } = req.params;
+
+    // Input validation
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) {
+        return res.status(400).send('Invalid date format. Expected YYYY-MM-DD.');
+    }
+    const id = parseInt(killID);
+    if (!Number.isFinite(id) || id <= 0) {
+        return res.status(400).send('Invalid killID.');
+    }
+
+    try {
+        // 1. Hash lookup — date dispatches the source (memory for today, R2 shard for older)
+        const hash = await hashCache.getHashFromShard(date, id);
+        if (!hash) {
+            console.warn(`[KILLPAGE] No hash found for ${date}/${id}`);
+            return res.status(404).send(`Kill ${id} not found in Socket.Kill archive for ${date}.`);
+        }
+
+        // 2. Killmail fetch (LRU + dedup handled inside)
+        const killmail = await killmailCache.get(id, hash);
+        if (!killmail) {
+            return res.status(502).send('Failed to fetch killmail from ESI.');
+        }
+
+        // 3. Resolve names via existing ESIClient (mostly cache hits)
+        const victim = killmail.victim;
+        const finalBlow = killmail.attackers.find(a => a.final_blow) || killmail.attackers[0];
+        const systemDetails = esi.getSystemDetails(killmail.solar_system_id);
+
+        const [
+            victimName, victimCorp, victimShip,
+            finalBlowName, finalBlowCorp, finalBlowShip,
+            regionName,
+            ...attackerData
+        ] = await Promise.all([
+            esi.getCharacterName(victim.character_id),
+            esi.getCorporationName(victim.corporation_id),
+            esi.getTypeName(victim.ship_type_id),
+            esi.getCharacterName(finalBlow.character_id),
+            esi.getCorporationName(finalBlow.corporation_id),
+            esi.getTypeName(finalBlow.ship_type_id),
+            systemDetails?.region_id ? esi.getRegionName(systemDetails.region_id) : Promise.resolve('K-Space'),
+            ...killmail.attackers.flatMap(a => [
+                esi.getCharacterName(a.character_id),
+                esi.getCorporationName(a.corporation_id),
+                esi.getTypeName(a.ship_type_id),
+            ])
+        ]);
+
+        const attackers = killmail.attackers.map((a, i) => ({
+            name: attackerData[i * 3],
+            corp: attackerData[i * 3 + 1],
+            ship: attackerData[i * 3 + 2],
+            damage: a.damage_done,
+        }));
+
+        // 4. Render HTML
+        const html = renderKillPage({
+            killID: id,
+            killmail,
+            resolved: {
+                victimName, victimCorp, victimShip,
+                systemName: systemDetails?.name || 'Unknown System',
+                regionName,
+                security: systemDetails?.security_status,
+                finalBlowName, finalBlowCorp, finalBlowShip,
+                attackers,
+            },
+        });
+
+        // 5. Cache headers — sealed days are immutable, today is short-lived
+        const isToday = date === new Date().toISOString().slice(0, 10);
+        res.set('Cache-Control', isToday
+            ? 'public, max-age=60'
+            : 'public, max-age=31536000, immutable');
+        res.set('Content-Type', 'text/html; charset=utf-8');
+        res.send(html);
+
+    } catch (err) {
+        console.error(`[KILLPAGE] Error rendering ${date}/${id}: ${err.message}`);
+        res.status(500).send('Internal error rendering kill page.');
     }
 });
 
