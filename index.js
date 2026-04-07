@@ -35,6 +35,7 @@ const utils = require("./src/core/helpers");
 const statsManager = require("./src/services/statsManager");
 const ProcessorFactory = require("./src/core/processor_v2");
 const r2 = require("./src/network/r2Writer");
+const hashCache = require("./src/state/hashCache")
 
 // --- Constants ---
 
@@ -296,6 +297,8 @@ async function startPoller() {
   await esi.loadCache(path.join(__dirname, "data", "esi_cache.json"));
   await statsManager.recoverFromR2();
   processor = ProcessorFactory(esi, io, statsManager);
+  await hashCache.prime();                                  // <-- ADD
+  setInterval(() => hashCache.rotateIfNeeded(), 60_000);   
   refreshNebulaBackground();
   syncPlayerCount();
   setInterval(refreshNebulaBackground, NEBULA_ROTATION_MS);
