@@ -57,6 +57,7 @@ module.exports = async (killmail, zkb, names) => {
     if (isOfficerKill) categoryPosts.push(postNewsChannel(killmail, zkb, names, 'officer'));
     if (isATKill) categoryPosts.push(postNewsChannel(killmail, zkb, names, 'at_ships'));
     if (isRorqual) categoryPosts.push(postNewsChannel(killmail, zkb, names, 'rorqual_activity'));
+    if (names.rawValue >= VALUE_1B) categoryPosts.push(postNewsChannel(killmail, zkb, names, 'value_1b'));
     if (categoryPosts.length) await Promise.all(categoryPosts);
 
     if (names.rawValue < WHALE_THRESHOLD) return;
