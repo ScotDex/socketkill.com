@@ -8,11 +8,7 @@ class NewsEmbedFactoryV2 {
         const article = helpers.getArticle(names.shipName);
         const zkillUrl = `https://zkillboard.com/kill/${kill.killmail_id}/`;
 
-        // Use an existing background asset if available from helpers
-        const nebulaBackground = 'https://edge.socketkill.com/nebula-bg.png'; // Example asset
-
-        // Dynamic Colors
-        let accentColor = 0x3fb950; // Socket.Kill Green
+        let accentColor = 0x3fb950;
         if (names.rawValue >= 10_000_000_000) accentColor = 0xf1c40f;
         if (category === 'officer' || category === 'at_ships') accentColor = 0xa335ee;
 
@@ -22,45 +18,40 @@ class NewsEmbedFactoryV2 {
             flags: IS_COMPONENTS_V2,
             components: [
                 {
-                    type: 17, // Primary Container
+                    type: 17,
                     accent_color: accentColor,
-                    // Use a nebula background from your asset library
-                    background_media: { url: nebulaBackground },
                     components: [
-
-                        // SECTION 1: Upgraded Victim & Corp Profile
+                        // SECTION 1: Victim Name & Portrait
                         {
                             type: 9,
                             components: [
                                 {
                                     type: 10,
                                     content: `## ${names.finalVictimName} lost ${article} ${names.shipName}`
-                                },
-                                // Compact Corp Section: Multi-column grid with image
-                                {
-                                    type: 9,
-                                    components: [
-                                        {
-                                            type: 10,
-                                            content: `**Corp:** ${names.corpName}`
-                                        }
-                                    ],
-                                    // Use type: 11 for the Corporation Logo
-                                    accessory: {
-                                        type: 11,
-                                        media: { url: names.victimCorpImageUrl || `https://images.evetech.net/corporations/${kill.victim.corporation_id}/logo?size=64` }
-                                    }
                                 }
                             ],
-                            // Character Portrait on the main right-side accessory
                             accessory: {
                                 type: 11,
                                 media: { url: `https://images.evetech.net/characters/${kill.victim.character_id}/portrait?size=128` }
                             }
                         },
+                        // SECTION 2: Corp Name & Logo (The fix for the 400 error)
+                        {
+                            type: 9,
+                            components: [
+                                {
+                                    type: 10,
+                                    content: `**Corp:** ${names.corpName}`
+                                }
+                            ],
+                            accessory: {
+                                type: 11,
+                                media: { url: `https://images.evetech.net/corporations/${kill.victim.corporation_id}/logo?size=64` }
+                            }
+                        },
                         { type: 14, spacing: 1, divider: true },
 
-                        // SECTION 2: Tactical Grid
+                        // SECTION 3: Tactical Grid
                         {
                             type: 9,
                             components: [
@@ -84,25 +75,17 @@ class NewsEmbedFactoryV2 {
                             type: 10,
                             content: `**Engagement:** ${names.attackerCount} Attackers | **Final Blow:** ${names.finalBlowCorp}`
                         },
-
-                        // FOOTER
                         {
                             type: 10,
                             content: `-# socketkill.com | Real-time EVE Intel · <t:${Math.floor(Date.now() / 1000)}:R>`
                         }
                     ]
                 },
-                // ACTION ROW: Buttons
                 {
                     type: 1,
                     components: [
                         { type: 2, style: 5, label: "View on zKillboard", url: zkillUrl },
-                        {
-                            type: 2,
-                            style: 5,
-                            label: "Socket.Kill Analysis",
-                            url: `https://socketkill.com/kill/${kill.killmail_id}` // Integrated Link
-                        }
+                        { type: 2, style: 5, label: "Socket.Kill Analysis", url: `https://socketkill.com/kill/${kill.killmail_id}` }
                     ]
                 }
             ]
