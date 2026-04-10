@@ -9,7 +9,8 @@ const CATEGORY_CONFIG = {
     value_10b:          { label: 'Serious Loss Mail Detected',    color: 0x5dade2 },
     value_20b:          { label: 'Very Serious Loss Mail Detected',    color: 0x5dade2 },
     titan_loss:         { label: 'Titan Destroyed',    color: 0x5dade2 },
-    super_loss:         { label: 'Super Cap Destroyed',    color: 0x5dade2 }
+    super_loss:         { label: 'Super Cap Destroyed',    color: 0x5dade2 },
+    pochven:            { label: 'Loss Mail Detected',    color: 0x5dade2 },
 };
 
 const DOTLAN_BASE = 'https://evemaps.dotlan.net';
