@@ -41,12 +41,12 @@ class NewsEmbedFactory {
                    // url: `https://images.evetech.net/types/${kill.victim.ship_type_id}/render?size=64`
                 //},
                 fields: [
-                    { name: "Ship", value: names.shipName, inline: false },
+                    { name: "Ship", value: names.shipName, inline: true },
                     { name: "Corporation", value: names.corpName, inline: false},
                     { name: "Value", value: `**${totalValue} ISK**`, inline: true },
                     { name: "System", value: `**[${names.systemName}](${DOTLAN_BASE}/system/${names.systemName.replace(/ /g, '_')})**`, inline: true },
                     { name: "Region", value: `**[${names.regionName}](${DOTLAN_BASE}/map/${names.regionName.replace(/ /g, '_')})**`, inline: false },
-                    { name: "Final Blow", value: names.finalBlowCorp, inline: false },
+                    { name: "Final Blow", value: names.finalBlowCorp, inline: true },
                 ],
                 footer: {
                     text: "Socket.Kill | Real-time EVE Intel",
