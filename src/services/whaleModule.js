@@ -26,6 +26,8 @@ async function loadChannels() {
 
 loadChannels();
 
+
+
 async function postNewsChannel(kill, zkb, names, category) {
     const urls = channels[category];
     if (!urls || urls.length === 0) return;
@@ -48,6 +50,8 @@ module.exports = async (killmail, zkb, names) => {
     await postOfficerIntel(killmail, zkb, names);
     await new Promise(resolve => setTimeout(resolve, 2000));
     }
+
+    await postNewsChannel(killmail, zkb, names, 'all_kills');
 // Relay posts
     const categoryPosts = [];
     if (isOfficerKill) categoryPosts.push(postNewsChannel(killmail, zkb, names, 'officer'));

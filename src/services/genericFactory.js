@@ -1,13 +1,13 @@
 const helpers = require('../core/helpers');
 
 const CATEGORY_CONFIG = {
-    value_1b:       { label: 'KILL DETECTED',       color: 0x3fb950 },
-    value_10b:      { label: 'MAJOR KILL',          color: 0xf39c12 },
-    value_100b:     { label: 'CATASTROPHIC KILL',   color: 0xe74c3c },
+    at_ships:       { label: 'KILL DETECTED',       color: 0x3fb950 },
+    rorqual_activity:      { label: 'MAJOR KILL',          color: 0xf39c12 },
+    all_kills:     { label: 'CATASTROPHIC KILL',   color: 0xe74c3c },
     capitals:       { label: 'CAPITAL KILL',        color: 0x3498db },
     supercapitals:  { label: 'SUPERCAPITAL KILL',   color: 0x9b59b6 },
     at_ships:       { label: 'AT SHIP SIGHTING',    color: 0xe74c3c },
-    officer:        { label: 'OFFICER ACTIVITY',        color: 0xf39c12 },
+    officer:        { label: 'OFFICER ACTIVITY',    color: 0xf39c12 },
     rorqual:        { label: 'RORQUAL SPOTTED',     color: 0xf39c12 },
     titan_loss:     { label: 'TITAN DESTROYED',     color: 0xf39c12 },
 };
