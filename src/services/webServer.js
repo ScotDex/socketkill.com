@@ -42,7 +42,6 @@ function startWebServer(esi, statsManager, sharedState, getProcessor) {
         "https://pf.darkventure.space",
         "https://eveapex.com",
         "https://ws.socketkill.com",
-        "https://heatmap.socketkill.com",
         "https://incursions-dev.nesbit.solutions",
         "https://incursions.nesbit.solutions",
         "https://socketkill.com/map/",
@@ -85,6 +84,107 @@ function startWebServer(esi, statsManager, sharedState, getProcessor) {
       });
     } catch (err) {
       res.status(500).json({ error: err.message });
+    }
+  });
+
+  // Kill detail JSON API — returns resolved killmail data for the static frontend
+  app.get('/api/kill/:date/:killID', async (req, res) => {
+    const { date, killID } = req.params;
+
+    // Input validation
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) {
+      return res.status(400).json({ error: 'Invalid date format. Expected YYYY-MM-DD.' });
+    }
+    const id = parseInt(killID);
+    if (!Number.isFinite(id) || id <= 0) {
+      return res.status(400).json({ error: 'Invalid killID.' });
+    }
+
+    try {
+      // 1. Hash lookup
+      const hash = await hashCache.getHashFromShard(date, id);
+      if (!hash) {
+        return res.status(404).json({ error: `Kill ${id} not found in archive for ${date}.` });
+      }
+
+      // 2. Killmail fetch
+      const killmail = await killmailCache.get(id, hash);
+      if (!killmail) {
+        return res.status(502).json({ error: 'Failed to fetch killmail from ESI.' });
+      }
+
+      // 3. Resolve names
+      const victim = killmail.victim;
+      const finalBlow = killmail.attackers.find(a => a.final_blow) || killmail.attackers[0];
+      const systemDetails = esi.getSystemDetails(killmail.solar_system_id);
+
+      const [
+        victimName, victimCorp, victimShip,
+        finalBlowName, finalBlowCorp, finalBlowShip,
+        regionName,
+        ...attackerData
+      ] = await Promise.all([
+        esi.getCharacterName(victim.character_id),
+        esi.getCorporationName(victim.corporation_id),
+        esi.getTypeName(victim.ship_type_id),
+        esi.getCharacterName(finalBlow.character_id),
+        esi.getCorporationName(finalBlow.corporation_id),
+        esi.getTypeName(finalBlow.ship_type_id),
+        systemDetails?.region_id ? esi.getRegionName(systemDetails.region_id) : Promise.resolve('K-Space'),
+        ...killmail.attackers.flatMap(a => [
+          esi.getCharacterName(a.character_id),
+          esi.getCorporationName(a.corporation_id),
+          esi.getTypeName(a.ship_type_id),
+        ])
+      ]);
+
+      const attackers = killmail.attackers.map((a, i) => ({
+        name: attackerData[i * 3],
+        corp: attackerData[i * 3 + 1],
+        ship: attackerData[i * 3 + 2],
+        damage: a.damage_done,
+        finalBlow: !!a.final_blow
+      }));
+
+      // 4. Build response
+      const payload = {
+        killID: id,
+        killmailTime: killmail.killmail_time,
+        victim: {
+          name: victimName,
+          characterID: victim.character_id,
+          corp: victimCorp,
+          corporationID: victim.corporation_id,
+          ship: victimShip,
+          shipTypeID: victim.ship_type_id,
+          damageTaken: victim.damage_taken
+        },
+        system: {
+          id: killmail.solar_system_id,
+          name: systemDetails?.name || 'Unknown System',
+          region: regionName,
+          regionID: systemDetails?.region_id,
+          security: systemDetails?.security_status
+        },
+        finalBlow: {
+          name: finalBlowName,
+          corp: finalBlowCorp,
+          ship: finalBlowShip
+        },
+        attackers,
+        attackerCount: attackers.length
+      };
+
+      // 5. Cache headers — sealed days are immutable, today short-lived
+      const isToday = date === new Date().toISOString().slice(0, 10);
+      res.set('Cache-Control', isToday
+        ? 'public, max-age=60'
+        : 'public, max-age=31536000, immutable');
+      res.json(payload);
+
+    } catch (err) {
+      console.error(`[KILL API] Error resolving ${date}/${id}: ${err.message}`);
+      res.status(500).json({ error: 'Internal error resolving killmail.' });
     }
   });
 
@@ -166,93 +266,6 @@ function startWebServer(esi, statsManager, sharedState, getProcessor) {
     } catch (err) {
       console.error(`[REFIRE] Failed for kill ${req.params.killId}: ${err.message}`);
       res.status(500).json({ error: err.message });
-    }
-  });
-
-  // Kill detail page — date-dispatched hash lookup, ESI fetch, HTML render
-  app.get('/kill/:date/:killID', async (req, res) => {
-    const { date, killID } = req.params;
-
-    // Input validation
-    if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) {
-      return res.status(400).send('Invalid date format. Expected YYYY-MM-DD.');
-    }
-    const id = parseInt(killID);
-    if (!Number.isFinite(id) || id <= 0) {
-      return res.status(400).send('Invalid killID.');
-    }
-
-    try {
-      // 1. Hash lookup — date dispatches the source (memory for today, R2 shard for older)
-      const hash = await hashCache.getHashFromShard(date, id);
-      if (!hash) {
-        console.warn(`[KILLPAGE] No hash found for ${date}/${id}`);
-        return res.status(404).send(`Kill ${id} not found in Socket.Kill archive for ${date}.`);
-      }
-
-      // 2. Killmail fetch (LRU + dedup handled inside)
-      const killmail = await killmailCache.get(id, hash);
-      if (!killmail) {
-        return res.status(502).send('Failed to fetch killmail from ESI.');
-      }
-
-      // 3. Resolve names via existing ESIClient (mostly cache hits)
-      const victim = killmail.victim;
-      const finalBlow = killmail.attackers.find(a => a.final_blow) || killmail.attackers[0];
-      const systemDetails = esi.getSystemDetails(killmail.solar_system_id);
-
-      const [
-        victimName, victimCorp, victimShip,
-        finalBlowName, finalBlowCorp, finalBlowShip,
-        regionName,
-        ...attackerData
-      ] = await Promise.all([
-        esi.getCharacterName(victim.character_id),
-        esi.getCorporationName(victim.corporation_id),
-        esi.getTypeName(victim.ship_type_id),
-        esi.getCharacterName(finalBlow.character_id),
-        esi.getCorporationName(finalBlow.corporation_id),
-        esi.getTypeName(finalBlow.ship_type_id),
-        systemDetails?.region_id ? esi.getRegionName(systemDetails.region_id) : Promise.resolve('K-Space'),
-        ...killmail.attackers.flatMap(a => [
-          esi.getCharacterName(a.character_id),
-          esi.getCorporationName(a.corporation_id),
-          esi.getTypeName(a.ship_type_id),
-        ])
-      ]);
-
-      const attackers = killmail.attackers.map((a, i) => ({
-        name: attackerData[i * 3],
-        corp: attackerData[i * 3 + 1],
-        ship: attackerData[i * 3 + 2],
-        damage: a.damage_done,
-      }));
-
-      // 4. Render HTML
-      const html = renderKillPage({
-        killID: id,
-        killmail,
-        resolved: {
-          victimName, victimCorp, victimShip,
-          systemName: systemDetails?.name || 'Unknown System',
-          regionName,
-          security: systemDetails?.security_status,
-          finalBlowName, finalBlowCorp, finalBlowShip,
-          attackers,
-        },
-      });
-
-      // 5. Cache headers — sealed days are immutable, today is short-lived
-      const isToday = date === new Date().toISOString().slice(0, 10);
-      res.set('Cache-Control', isToday
-        ? 'public, max-age=60'
-        : 'public, max-age=31536000, immutable');
-      res.set('Content-Type', 'text/html; charset=utf-8');
-      res.send(html);
-
-    } catch (err) {
-      console.error(`[KILLPAGE] Error rendering ${date}/${id}: ${err.message}`);
-      res.status(500).send('Internal error rendering kill page.');
     }
   });
 
