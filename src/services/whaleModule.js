@@ -27,6 +27,16 @@ async function loadChannels() {
 loadChannels();
 
 
+const MIN_WEBHOOK_INTERVAL_MS = 300;
+let lastWebhookAt = 0;
+
+async function webhookSpacer() {
+    const now = Date.now();
+    const wait = lastWebhookAt + MIN_WEBHOOK_INTERVAL_MS - now;
+    if (wait > 0) await new Promise(r => setTimeout(r, wait));
+    lastWebhookAt = Date.now();
+}
+
 
 async function postNewsChannel(kill, zkb, names, category) {
     const urls = channels[category];
@@ -34,7 +44,8 @@ async function postNewsChannel(kill, zkb, names, category) {
     const urlList = Array.isArray(urls) ? urls : [urls];
     const payload = NewsEmbedFactory.createEmbed(kill, zkb, names, category);
     await Promise.all(
-        urlList.map(url => {
+        urlList.map(async url => {
+            await webhookSpacer();
             const finalUrl = payload.flags === 32768 ? `${url}?with_components=true` : url;
             return axios.post(finalUrl, payload).catch(err =>
                 console.error(`[NEWS] ${category} webhook failed: ${err.message}`)
