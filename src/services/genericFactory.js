@@ -14,7 +14,6 @@ const CATEGORY_CONFIG = {
 };
 
 const DOTLAN_BASE = 'https://evemaps.dotlan.net';
-const LOSS_MAIL_BASE = ``
 
 class NewsEmbedFactory {
     static createEmbed(kill, zkb, names, category) {
@@ -30,7 +29,6 @@ class NewsEmbedFactory {
                     icon_url: `https://images.evetech.net/characters/${kill.victim.character_id}/portrait?size=64`,
                     url: `https://zkillboard.com/character/${kill.victim.character_id}/`
                 },
-                url: `/${kill.killmail_id}/`,
                 color: config.color,
                 thumbnail: {
                     url: `https://images.evetech.net/types/${kill.victim.ship_type_id}/render?size=128`
