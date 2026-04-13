@@ -25,6 +25,7 @@ class atOfficerFactory {
                     { name: "Region", value: `**[${names.regionName}](${DOTLAN_BASE}/region/${names.regionName.replace(/ /g, '_')})** `, inline: false },
                     { name: "Pilot", value: names.triggerCharName || 'Unknown', inline: false },
                     { name: "Corporation", value: names.triggerCorpName || 'Unknown', inline: false },
+                    { name: "Alliance", value: names.allianceName, inline: false},
                 ],
                 footer: {
                     text: `Powered by socketkill.com`,
