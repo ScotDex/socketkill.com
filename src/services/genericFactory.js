@@ -59,7 +59,7 @@ class NewsEmbedFactory {
                     { name: "Value", value: `**${totalValue} ISK**`, inline: false },
                 ],
                 footer: {
-                    text: "Socket.Kill | Real-time EVE Intel",
+                    text: "Powered by Socketkill.com",
                     icon_url: "https://edge.socketkill.com/favicon.png"
                 },
                 timestamp: new Date().toISOString()
