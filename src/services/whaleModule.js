@@ -37,7 +37,7 @@ async function webhookSpacer() {
     lastWebhookAt = Date.now();
 }
 
-const TRACKER_CATEGORIES = new set(['officer', 'at_ships', 'rorqual_activity']);
+const TRACKER_CATEGORIES = new Set(['officer', 'at_ships', 'rorqual_activity']);
 
 async function postNewsChannel(kill, zkb, names, category) {
     const urls = channels[category];
