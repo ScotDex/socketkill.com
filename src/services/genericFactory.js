@@ -39,7 +39,7 @@ class NewsEmbedFactory {
                     { name: "Region", value: `**[${names.regionName}](${DOTLAN_BASE}/region/${names.regionName.replace(/ /g, '_')})** `, inline: false },
                     {
                         name: "Killmail Details",
-                        value: `[Final blow: ${names.finalBlowCorp || 'Unknown'} · ${names.attackerCount} ${names.attackerCount === 1 ? 'attacker' : 'attackers'}](${KILLMAIL_BASE}kill/${kill.killmail_id}/)`,
+                        value: `**[Final blow: ${names.finalBlowCorp || 'Unknown'} · ${names.attackerCount} ${names.attackerCount === 1 ? 'attacker' : 'attackers'}](${KILLMAIL_BASE}kill/${kill.killmail_id}/)**`,
                         inline: false
                     },
                     {
