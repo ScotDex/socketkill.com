@@ -18,11 +18,14 @@ module.exports = (esi, io, statsManager) => {
 
             //
 
-            const [systemDetails, shipName, charName, corpName, finalBlowCorp] = await Promise.all([
+            const [systemDetails, shipName, charName, corpName, finalBlowCorp, allianceName] = await Promise.all([
                 esi.getSystemDetails(killmail.solar_system_id),
                 esi.getTypeName(killmail.victim.ship_type_id),
                 esi.getCharacterName(killmail.victim?.character_id),
                 esi.getCorporationName(killmail.victim?.corporation_id),
+                killmail.victim?.alliance_id
+                    ? esi.getAllianceName(killmail.victim.alliance_id)
+                    : Promise.resolve(null),
                 resolveFinalBlowCorp(killmail, esi)
             ]);
 
@@ -73,6 +76,7 @@ module.exports = (esi, io, statsManager) => {
                 corpName,
                 rawValue,
                 regionName,
+                allianceName,
                 finalBlowCorp,
                 attackerCount,
                 triggerShipName,

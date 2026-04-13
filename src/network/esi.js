@@ -13,7 +13,8 @@ class ESIClient {
             corporations: new Map(),
             types: new Map(),
             systems: new Map(),
-            regions: new Map()
+            regions: new Map(),
+            alliances: new Map()
         };
 
         this.staticSystemData = {};
@@ -52,7 +53,8 @@ class ESIClient {
                 characters: Object.fromEntries(this.cache.characters),
                 corporations: Object.fromEntries(this.cache.corporations),
                 types: Object.fromEntries(this.cache.types),
-                regions: Object.fromEntries(this.cache.regions)
+                regions: Object.fromEntries(this.cache.regions),
+                alliances: Object.fromEntries(this.cache.alliances)
             };
             const json = JSON.stringify(persistData, null, 2);
             await fs.writeFile(filePath, json);
@@ -95,10 +97,12 @@ class ESIClient {
             this.cache.corporations = new Map(Object.entries(json.corporations || {}));
             this.cache.types = new Map(Object.entries(json.types || {}));
             this.cache.regions = new Map(Object.entries(json.regions || {}));
+            this.cache.alliances = new Map(Object.entries(json.alliances || {}));
             console.log(`Persistent cache loaded. Regions cached: ${this.cache.regions.size}`);
             console.log(`Characters cached: ${this.cache.characters.size}`);
             console.log(`Corporations cached: ${this.cache.corporations.size}`);
             console.log(`Types cached: ${this.cache.types.size}`);
+            console.log(`Alliances cached: ${this.cache.alliances.size}`);
         } catch (err) {
             console.warn("No cache file found, starting fresh.");
         }
@@ -124,6 +128,10 @@ class ESIClient {
 
     async getTypeName(id) {
         return this.fetchAndCache(id, 'types', '/universe/types');
+    }
+
+    async getAllianceName(id) {
+        return this.fetchAndCache(id, 'alliances', '/alliances');
     }
 
 

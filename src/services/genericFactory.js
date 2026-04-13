@@ -38,7 +38,7 @@ class NewsEmbedFactory {
                     { name: "Region", value: `**[${names.regionName}](${DOTLAN_BASE}/region/${names.regionName.replace(/ /g, '_')})** `, inline: false },
                     { name: "Report", value: `Final blow: ${names.finalBlowCorp} · ${names.attackerCount} attackers`, inline: false },
                     { name: "Corporation", value: names.corpName, inline: false },
-                   // { name: "Alliance", value: names.corpName, inline: false },
+                    { name: "Alliance", value: names.allianceName, inline: false },
                     { name: "Value", value: `**${totalValue} ISK**`, inline: false },
                 ],
                 footer: {
