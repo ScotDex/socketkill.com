@@ -33,14 +33,14 @@ class corpIntelFactory {
                     icon_url: `https://images.evetech.net/characters/${kill.victim.character_id}/portrait?size=128`
                 },
                 title: title,
-                url: `https://zkillboard.com/kill/${kill.killmail_id}/`,
+                url: `https://socketkill.com/kill/?id=${kill.killmail_id}&date=${kill.killmail_time.slice(0, 10)}`,
                 thumbnail: { url: `https://images.evetech.net/types/${kill.victim.ship_type_id}/render?size=256` },
                 color: 0xf39c12,
                 fields: [
                     { name: "System", value: `**[${names.systemName}](${DOTLAN_BASE}/system/${names.systemName.replace(/ /g, '_')})** `, inline: false },
                     { name: "Region", value: `**[${names.regionName}](${DOTLAN_BASE}/region/${names.regionName.replace(/ /g, '_')})** `, inline: false },
                     { name: "Corporation", value: names.corpName, inline: false },
-                    { name: "Alliance", value: names.allianceName, inline: false},
+                    { name: "Alliance", value: names.allianceName, inline: false },
                     { name: "Final Blow", value: names.finalBlowCorp, inline: false },
                     { name: "Total Value", value: `**${totalValue} ISK**`, inline: false },
                 ],

@@ -2,7 +2,7 @@ const helpers = require("./helpers");
 const handleWhale = require("../services/whaleModule");
 const { resolveKillmail, resolveFinalBlowCorp, resolveTriggerAttacker } = require('./processorHelpers');
 const { TRIGLAVIAN_SYSTEMS } = require('../core/shipIDs');
-const hashCache = require ('../state/hashCache')
+const hashCache = require('../state/hashCache')
 
 module.exports = (esi, io, statsManager) => {
     async function processPackage(packageData) {
@@ -27,7 +27,7 @@ module.exports = (esi, io, statsManager) => {
                 killmail.victim?.alliance_id
                     ? esi.getAllianceName(killmail.victim.alliance_id)
                     : Promise.resolve(null),
-                
+
             ]);
             console.log('[DEBUG] finalBlowCorp:', finalBlowCorp);
 
@@ -60,7 +60,7 @@ module.exports = (esi, io, statsManager) => {
                 shipId: killmail.victim.ship_type_id,
                 href: zkb.href,
                 locationLabel: `System: ${systemName} | Region: ${regionName} | Final Blow: ${finalBlowCorp}`,
-                zkillUrl: `https://zkillboard.com/kill/${killID}/`,
+                zkillUrl: `https://socketkill.com/kill/?id=${killID}&date=${killmail.killmail_time.slice(0, 10)}`,
                 victimName: finalVictimName,
                 shipImageUrl: `https://api.socketkill.com/render/ship/${killmail.victim.ship_type_id}`,
                 corpImageUrl: `https://api.socketkill.com/render/corp/${killmail.victim.corporation_id}`,

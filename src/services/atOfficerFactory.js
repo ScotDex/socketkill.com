@@ -5,8 +5,8 @@ class atOfficerFactory {
         const corpIcon = `https://edge.socketkill.com/taylr/logo.png`;
         const title = 'Activity Detected';
 
-        const triggerAttacker = kill.attackers?.find(a => 
-            AT_SHIP_IDS.has(a.ship_type_id) || OFFICER_SHIP_IDS.has(a.ship_type_id) || RORQUAL_SHIP_IDS.has(a.ship_type_id) 
+        const triggerAttacker = kill.attackers?.find(a =>
+            AT_SHIP_IDS.has(a.ship_type_id) || OFFICER_SHIP_IDS.has(a.ship_type_id) || RORQUAL_SHIP_IDS.has(a.ship_type_id)
         );
         return {
             username: "Target Ship Tracker",
@@ -17,7 +17,7 @@ class atOfficerFactory {
                     icon_url: `https://images.evetech.net/corporations/${triggerAttacker?.corporation_id}/logo?size=64`
                 },
                 title: title,
-                url: `https://zkillboard.com/kill/${kill.killmail_id}/`,
+                url: `https://socketkill.com/kill/?id=${kill.killmail_id}&date=${kill.killmail_time.slice(0, 10)}`,
                 thumbnail: { url: `https://images.evetech.net/types/${names.triggerShipId}/render?size=256` },
                 color: 0xf39c12,
                 fields: [
@@ -25,7 +25,7 @@ class atOfficerFactory {
                     { name: "Region", value: `**[${names.regionName}](${DOTLAN_BASE}/region/${names.regionName.replace(/ /g, '_')})** `, inline: false },
                     { name: "Pilot", value: names.triggerCharName || 'Unknown', inline: false },
                     { name: "Corporation", value: names.triggerCorpName || 'Unknown', inline: false },
-                    { name: "Alliance", value: names.allianceName, inline: false},
+                    { name: "Alliance", value: names.allianceName, inline: false },
                 ],
                 footer: {
                     text: `Powered by socketkill.com`,
