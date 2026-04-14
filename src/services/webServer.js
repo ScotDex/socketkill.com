@@ -9,6 +9,7 @@ const fs = require("fs");
 const axios = require("../network/agent");
 const hashCache = require("../state/hashCache");
 const killmailCache = require("../state/killmailCache");
+const helpers = require("../core/helpers");
 
 function startWebServer(esi, statsManager, sharedState, getProcessor) {
   const app = express();
@@ -135,7 +136,7 @@ function startWebServer(esi, statsManager, sharedState, getProcessor) {
       const [
         victimName, victimCorp, victimAlliance, victimShip,
         finalBlowName, finalBlowCorp, finalBlowShip,
-        regionName,
+        regionName, zkb,
         ...attackerData
       ] = await Promise.all([
         esi.getCharacterName(victim.character_id),
