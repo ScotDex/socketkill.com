@@ -10,7 +10,7 @@ const axios = require("../network/agent");
 const hashCache = require("../state/hashCache");
 const killmailCache = require("../state/killmailCache");
 const helpers = require("../core/helpers");
-const { resolveItems } = require('./core/itemResolver');
+const { resolveItems } = require('../core/itemResolver');
 
 function startWebServer(esi, statsManager, sharedState, getProcessor) {
   const app = express();
