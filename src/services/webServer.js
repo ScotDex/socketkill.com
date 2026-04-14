@@ -10,6 +10,7 @@ const axios = require("../network/agent");
 const hashCache = require("../state/hashCache");
 const killmailCache = require("../state/killmailCache");
 const helpers = require("../core/helpers");
+const { resolveItems } = require('./core/itemResolver');
 
 function startWebServer(esi, statsManager, sharedState, getProcessor) {
   const app = express();
@@ -136,7 +137,7 @@ function startWebServer(esi, statsManager, sharedState, getProcessor) {
       const [
         victimName, victimCorp, victimAlliance, victimShip,
         finalBlowName, finalBlowCorp, finalBlowShip,
-        regionName, zkb,
+        regionName, zkb, items,
         ...attackerData
       ] = await Promise.all([
         esi.getCharacterName(victim.character_id),
@@ -147,7 +148,8 @@ function startWebServer(esi, statsManager, sharedState, getProcessor) {
         esi.getCorporationName(finalBlow.corporation_id),
         esi.getTypeName(finalBlow.ship_type_id),
         systemDetails?.region_id ? esi.getRegionName(systemDetails.region_id) : Promise.resolve('K-Space'),
-        fetchZkbMeta(id),     
+        fetchZkbMeta(id),
+        resolveItems(victim.items, esi),  
         ...killmail.attackers.flatMap(a => [
           esi.getCharacterName(a.character_id),
           esi.getCorporationName(a.corporation_id),
@@ -178,6 +180,7 @@ function startWebServer(esi, statsManager, sharedState, getProcessor) {
         killmailTime: killmail.killmail_time,
         rawValue: zkb?.totalValue || 0,                   // ← new
         totalValue: zkb?.totalValue ? helpers.formatIsk(zkb.totalValue) : null,
+        items,
         victim: {
           name: victimName,
           characterID: victim.character_id,
