@@ -59,17 +59,17 @@ function startWebServer(esi, statsManager, sharedState, getProcessor) {
 
   async function fetchZkbMeta(killID) {
     try {
-        const res = await axios.get(`https://zkillboard.com/api/killID/${killID}/`, {
-            timeout: 3000,
-            headers: { 'User-Agent': 'Socket.Kill / Dexomus Viliana' }
-        });
-        const entry = res.data?.[0];
-        return entry?.zkb || null;
+      const res = await axios.get(`https://zkillboard.com/api/killID/${killID}/`, {
+        timeout: 3000,
+        headers: { 'User-Agent': 'Socket.Kill / Dexomus Viliana' }
+      });
+      const entry = res.data?.[0];
+      return entry?.zkb || null;
     } catch (err) {
-        console.warn(`[ZKB FETCH] ${killID} failed: ${err.message}`);
-        return null;
+      console.warn(`[ZKB FETCH] ${killID} failed: ${err.message}`);
+      return null;
     }
-}
+  }
 
   // 2. API ROUTES (Must be defined before Static/Catch-all)
   app.get("/api/character/search/:name", async (req, res) => {
@@ -149,7 +149,7 @@ function startWebServer(esi, statsManager, sharedState, getProcessor) {
         esi.getTypeName(finalBlow.ship_type_id),
         systemDetails?.region_id ? esi.getRegionName(systemDetails.region_id) : Promise.resolve('K-Space'),
         fetchZkbMeta(id),
-        resolveItems(victim.items, esi),  
+        resolveItems(victim.items, esi),
         ...killmail.attackers.flatMap(a => [
           esi.getCharacterName(a.character_id),
           esi.getCorporationName(a.corporation_id),
@@ -168,9 +168,9 @@ function startWebServer(esi, statsManager, sharedState, getProcessor) {
         ship: attackerData[i * 3 + 2],
         shipTypeID: a.ship_type_id || null,
         damage: a.damage_done,
-        damagePercent: damageTaken > 0                            
-                ? Math.round((a.damage_done / damageTaken) * 1000) / 10
-                : 0,
+        damagePercent: damageTaken > 0
+          ? Math.round((a.damage_done / damageTaken) * 1000) / 10
+          : 0,
         finalBlow: !!a.final_blow
       }));
 
@@ -180,6 +180,9 @@ function startWebServer(esi, statsManager, sharedState, getProcessor) {
         killmailTime: killmail.killmail_time,
         rawValue: zkb?.totalValue || 0,                   // ← new
         totalValue: zkb?.totalValue ? helpers.formatIsk(zkb.totalValue) : null,
+        droppedValue: zkb?.droppedValue ? helpers.formatIsk(zkb.droppedValue) : null,        // ← new
+        destroyedValue: zkb?.destroyedValue ? helpers.formatIsk(zkb.destroyedValue) : null,  // ← new
+        fittedValue: zkb?.fittedValue ? helpers.formatIsk(zkb.fittedValue) : null,
         items,
         victim: {
           name: victimName,
@@ -203,7 +206,7 @@ function startWebServer(esi, statsManager, sharedState, getProcessor) {
           name: finalBlowName,
           characterID: finalBlow.character_id || null,
           corp: finalBlowCorp,
-          corporationID:finalBlow.corporation_id || null,
+          corporationID: finalBlow.corporation_id || null,
           ship: finalBlowShip,
           shipTypeID: finalBlow.ship_type_id || null,
         },
