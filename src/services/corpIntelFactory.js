@@ -45,7 +45,7 @@ class corpIntelFactory {
                     { name: "Total Value", value: `**${totalValue} ISK**`, inline: false },
                 ],
                 footer: {
-                    text: `SocketKill.com — Recording your mistakes since 2025`,
+                    text: `Powered by SocketKill.com`,
                     icon_url: "https://edge.socketkill.com/favicon.png"
                 },
                 timestamp: new Date().toISOString()
