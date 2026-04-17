@@ -40,11 +40,6 @@ class NewsEmbedFactory {
                     { name: "System", value: `**[${names.systemName}](${DOTLAN_BASE}/system/${names.systemName.replace(/ /g, '_')})** `, inline: false },
                     { name: "Region", value: `**[${names.regionName}](${DOTLAN_BASE}/region/${names.regionName.replace(/ /g, '_')})** `, inline: false },
                     {
-                        name: "Killmail Details",
-                        value: `**[Final blow: ${names.finalBlowCorp || 'Unknown'} · ${names.attackerCount} ${names.attackerCount === 1 ? 'attacker' : 'attackers'}](${helpers.getSocketKillLink(kill.killmail_id, kill.killmail_time.slice(0, 10))})**`,
-                        inline: false
-                    },
-                    {
                         name: "Corporation",
                         value: kill.victim.corporation_id
                             ? `**[${names.corpName}](${KILLMAIL_BASE}corporation/${kill.victim.corporation_id}/)**`
@@ -58,6 +53,7 @@ class NewsEmbedFactory {
                             : "—",
                         inline: false
                     },
+                    { name: "Final Blow", value: `${names.finalBlowCorp} · ${names.attackerCount} ${names.attackerCount === 1 ? 'attacker' : 'attackers'}`, inline: false },
                     { name: "Value", value: `**${totalValue} ISK**`, inline: false },
                 ],
                 footer: {
