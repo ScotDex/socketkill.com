@@ -104,14 +104,23 @@ function startWebServer(esi, statsManager, sharedState, getProcessor) {
   });
 
   // Kill detail JSON API — returns resolved killmail data for the static frontend
-  app.get('/api/kill/:date/:killID', async (req, res) => {
-    const { date, killID } = req.params;
-
-    // Input validation
-    if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) {
-      return res.status(400).json({ error: 'Invalid date format. Expected YYYY-MM-DD.' });
+  app.get('/api/kill/:first/:second?', async (req, res) => {
+    console.log('[KILL ROUTE]', req.params);
+    if (req.params.second) {
+      date = req.params.first;
+      id = parseInt(req.params.second);
+    } else {
+      id = parseInt(req.params.first);
+      const now = new Date();
+      for (let i = 0; i < 30; i++) {
+        const d = new Date(now.getTime() - i * 86400000).toISOString().slice(0, 10);
+        if (await hashCache.getHashFromShard(d, id)) {
+          date = d;
+          break;
+        }
+      }
+      if (!date) return res.status(404).json({ error: 'Kill not found' });
     }
-    const id = parseInt(killID);
     if (!Number.isFinite(id) || id <= 0) {
       return res.status(400).json({ error: 'Invalid killID.' });
     }
