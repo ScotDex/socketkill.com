@@ -35,17 +35,17 @@ class corpIntelFactory {
                 title: title,
                 url: helpers.getSocketKillLink(kill.killmail_id, kill.killmail_time.slice(0, 10)),
                 thumbnail: { url: `https://images.evetech.net/types/${kill.victim.ship_type_id}/render?size=256` },
-                color: 0xf39c12,
+                color: 0xff6b6b,
                 fields: [
                     { name: "System", value: `**[${names.systemName}](${DOTLAN_BASE}/system/${names.systemName.replace(/ /g, '_')})** `, inline: false },
                     { name: "Region", value: `**[${names.regionName}](${DOTLAN_BASE}/region/${names.regionName.replace(/ /g, '_')})** `, inline: false },
-                    { name: "Corporation", value: names.corpName, inline: false },
-                    { name: "Alliance", value: names.allianceName, inline: false },
-                    { name: "Final Blow", value: names.finalBlowCorp, inline: false },
+                    { name: "Corporation", value: `**[${names.corpName}](https://zkillboard.com/corporation/${kill.victim.corporation_id}/)**`, inline: false },
+                    { name: "Alliance", value: names.allianceName ? `**[${names.allianceName}](https://zkillboard.com/alliance/${kill.victim.alliance_id}/)**` : "Unaffiliated ", inline: false },
+                    { name: "Final Blow", value: `${names.finalBlowCorp} · ${names.attackerCount} ${names.attackerCount === 1 ? 'attacker' : 'attackers'}`, inline: false },
                     { name: "Total Value", value: `**${totalValue} ISK**`, inline: false },
                 ],
                 footer: {
-                    text: `Powered by SocketKill.com`,
+                    text: `SocketKill.com — Recording your mistakes since 2025`,
                     icon_url: "https://edge.socketkill.com/favicon.png"
                 },
                 timestamp: new Date().toISOString()
