@@ -16,7 +16,7 @@ class atOfficerFactory {
                 author: {
                     name: `${names.triggerShipName || 'Unknown'} spotted in ${names.systemName}`,
                     icon_url: `https://images.evetech.net/corporations/${triggerAttacker?.corporation_id}/logo?size=64`,
-                    url: helpers.getSocketKillLink(kill.killmail_id, kill.killmail_time.slice(0, 10)),
+                    url: helpers.getSocketKillLink(kill.killmail_id),
                 },
                 thumbnail: { url: `https://images.evetech.net/types/${names.triggerShipId}/render?size=256` },
                 color: 0xf39c12,

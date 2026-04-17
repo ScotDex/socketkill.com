@@ -30,7 +30,7 @@ class NewsEmbedFactory {
                 author: {
                     name: `${names.finalVictimName} lost a ${names.shipName}`,
                     icon_url: `https://images.evetech.net/characters/${kill.victim.character_id}/portrait?size=64`,
-                    url: helpers.getSocketKillLink(kill.killmail_id, kill.killmail_time.slice(0, 10))
+                    url: helpers.getSocketKillLink(kill.killmail_id)
                 },
                 color: config.color,
                 thumbnail: {
@@ -78,7 +78,7 @@ class NewsEmbedFactory {
                 author: {
                     name: `${names.triggerShipName || 'Unknown'} spotted in ${names.systemName}`,
                     icon_url: `https://images.evetech.net/corporations/${triggerAttacker?.corporation_id}/logo?size=64`,
-                    url: helpers.getSocketKillLink(kill.killmail_id, kill.killmail_time.slice(0, 10))
+                    url: helpers.getSocketKillLink(kill.killmail_id)
                 },
 
                 thumbnail: { url: `https://images.evetech.net/types/${names.triggerShipId}/render?size=256` },

@@ -25,8 +25,8 @@ class utils {
     return `https://zkillboard.com/kill/${killId}/`;
   }
 
-  static getSocketKillLink(killId, date) {
-    return `https://socketkill.com/kill/${date}/${killId}`;
+  static getSocketKillLink(killId) {
+    return `https://socketkill.com/kill/${killId}`;
   }
 
   static async getPlayerCount() {
