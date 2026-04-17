@@ -4,7 +4,7 @@ const { AT_SHIP_IDS, OFFICER_SHIP_IDS, RORQUAL_SHIP_IDS } = require('../core/shi
 const CATEGORY_CONFIG = {
     at_ships: { color: 0xf39c12 },
     rorqual_activity: { color: 0xf39c12 },
-    all_kills: { color: 0x4a4a52 },
+    all_kills: { color: 0xff6b6b },
     officer: { color: 0xff6b6b },
     value_1b: { color: 0xff6b6b },
     value_10b: { color: 0xff6b6b },
