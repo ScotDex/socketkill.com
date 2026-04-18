@@ -11,7 +11,7 @@ async function syncMarketPrices() {
             headers: { 'X-Compatibility-Date': '2025-12-16' }
         });
         await r2.put('market_prices.json', res.data);
-        priceMap = new Map(res.data.map(item => [item_type_id, {
+        priceMap = new Map(data.map(item => [item.type_id, {
             average_price: item.average_price,
             adjusted_price: item.adjusted_price,
         }]));
@@ -25,7 +25,7 @@ async function loadMarketPrices() {
     try {
         const data = await r2.get('market_prices.json');
         if (data) {
-            priceMap = new Map(data.map(item => [item_type_id, { adjusted_price: item.adjusted_price, average_price: item.average_price }]));
+            priceMap = new Map(data.map(item => [item.type_id, { adjusted_price: item.adjusted_price, average_price: item.average_price }]));
             console.log(`[MARKET] Loaded ${priceMap.size} prices from R2`);
         } else {
             // Nothing in R2 yet, fetch live
