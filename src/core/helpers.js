@@ -28,8 +28,8 @@ class utils {
     if (value >= 1_000) {
       return `${(value / 1_000).toFixed(2)}K`;
     }
+    return value.toFixed(2);
 
-    return value.toString();
   }
 
   static getZkillLink(killId) {

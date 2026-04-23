@@ -197,7 +197,7 @@ function startWebServer(esi, statsManager, sharedState, getProcessor) {
         fittedValue: zkb?.fittedValue ? helpers.formatIsk(zkb.fittedValue) : null,
         items,
         victim: {
-          name: victimName,
+          name: victimName ? victimName : victimCorp,
           characterID: victim.character_id,
           corp: victimCorp,
           corporationID: victim.corporation_id,
