@@ -71,23 +71,6 @@ function startWebServer(esi, statsManager, sharedState, getProcessor) {
     }
   }
 
-  // 2. API ROUTES (Must be defined before Static/Catch-all)
-  app.get("/api/character/search/:name", async (req, res) => {
-    console.log(`[API] Character search: ${req.params.name}`);
-    try {
-      const id = await esi.getCharacterID(req.params.name);
-      if (!id) return res.status(404).json({ error: "Character not found" });
-      const name = await esi.getCharacterName(id);
-      res.json({
-        id,
-        name,
-        portraitUrl: `https://images.evetech.net/characters/${id}/portrait?size=256`,
-      });
-    } catch (err) {
-      res.status(500).json({ error: err.message });
-    }
-  });
-
   app.get("/api/character/:id", async (req, res) => {
     console.log(`[API] Character lookup: ${req.params.id}`);
     try {
@@ -131,13 +114,13 @@ function startWebServer(esi, statsManager, sharedState, getProcessor) {
       // 1. Hash lookup
       const hash = await hashCache.getHashFromShard(date, id);
       if (!hash) {
-        return res.status(404).json({ error: `Kill ${id} not found in archive for ${date}.` });
+        return res.status(404).json({ error: `Kill ${id} not found in archive - CTRL + F5 incase not cached yet - for ${date}.` });
       }
 
       // 2. Killmail fetch
       const killmail = await killmailCache.get(id, hash);
       if (!killmail) {
-        return res.status(502).json({ error: 'Failed to fetch killmail from ESI.' });
+        return res.status(502).json({ error: 'Failed to fetch killmail - CTRL + F5 incase not cached yet.' });
       }
 
       // 3. Resolve names
@@ -242,19 +225,6 @@ function startWebServer(esi, statsManager, sharedState, getProcessor) {
   app.get('/api/kill/:killID', handleKillDetail);
   app.get('/api/kill/:date/:killID', handleKillDetail);
 
-  app.get("/api/corporation/:id", async (req, res) => {
-    try {
-      const { id } = req.params;
-      const name = await esi.getCorporationName(id);
-      res.json({
-        id,
-        name,
-        logoUrl: `https://images.evetech.net/corporations/${id}/logo?size=128`,
-      });
-    } catch (err) {
-      res.status(500).json({ error: err.message });
-    }
-  });
 
   app.get('/api/stats', (req, res) => {
     const mem = process.memoryUsage();
@@ -332,7 +302,7 @@ function startWebServer(esi, statsManager, sharedState, getProcessor) {
 
   // 4. SOCKET LOGIC
   io.on("connection", (socket) => {
-    console.log(`Client connected to Intel Stream: ${socket.id}`);
+    console.log(`Client connected to Web Socket Stream: ${socket.id}`);
     socket.on("disconnect", () => console.log("Client disconnected"));
   });
 

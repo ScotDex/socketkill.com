@@ -17,15 +17,17 @@ const CATEGORY_CONFIG = {
 
 const DOTLAN_BASE = 'https://evemaps.dotlan.net';
 const KILLMAIL_BASE = `https://zkillboard.com/`;
+const siteIcon = `https://edge.socketkill.com/favicon.png`;
 
 class NewsEmbedFactory {
     static createEmbed(kill, zkb, names, category) {
         const config = CATEGORY_CONFIG[category] || { color: 0x3fb950 }
         const totalValue = helpers.formatIsk(zkb.totalValue);
+        
 
         return {
             username: "Socketkill.com",
-            avatar_url: "https://edge.socketkill.com/favicon.png",
+            avatar_url: siteIcon,
             embeds: [{
                 author: {
                     name: `${names.finalVictimName} lost a ${names.shipName}`,
@@ -58,7 +60,7 @@ class NewsEmbedFactory {
                 ],
                 footer: {
                     text: "Powered by Socketkill.com",
-                    icon_url: "https://edge.socketkill.com/favicon.png"
+                    icon_url: siteIcon
                 },
                 timestamp: new Date().toISOString()
             }]
@@ -73,7 +75,7 @@ class NewsEmbedFactory {
         );
         return {
             username: "Socketkill.com",
-            avatar_url: "https://edge.socketkill.com/favicon.png",
+            avatar_url: siteIcon,
             embeds: [{
                 author: {
                     name: `${names.triggerShipName || 'Unknown'} spotted in ${names.systemName}`,
@@ -99,7 +101,7 @@ class NewsEmbedFactory {
                 ],
                 footer: {
                     text: `Powered by Socketkill.com`,
-                    icon_url: "https://edge.socketkill.com/favicon.png"
+                    icon_url: siteIcon
                 },
                 timestamp: new Date().toISOString()
             }]
