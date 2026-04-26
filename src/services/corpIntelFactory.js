@@ -1,3 +1,4 @@
+
 const helpers = require('../core/helpers')
 
 const LOSS_COMMENTS = [
@@ -23,6 +24,7 @@ class corpIntelFactory {
         const totalValue = helpers.formatIsk(zkb.totalValue)
         const corpIcon = `https://edge.socketkill.com/taylr/logo.png`;
         const title = LOSS_COMMENTS[Math.floor(Math.random() * LOSS_COMMENTS.length)];
+        const API_BASE = `https://api.socketkill.com/render/`;
 
         return {
             username: "The Shame Bell",
@@ -34,7 +36,7 @@ class corpIntelFactory {
                 },
                 title: title,
                 url: helpers.getSocketKillLink(kill.killmail_id),
-                thumbnail: { url: `https://images.evetech.net/types/${kill.victim.ship_type_id}/render?size=256` },
+                thumbnail: { url: `${API_BASE}ship/${names.triggerShipId}?size=256` },
                 color: 0xff6b6b,
                 fields: [
                     { name: "System", value: `**[${names.systemName}](${DOTLAN_BASE}/system/${names.systemName.replace(/ /g, '_')})** `, inline: false },

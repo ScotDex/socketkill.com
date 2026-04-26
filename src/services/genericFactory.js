@@ -80,11 +80,11 @@ class NewsEmbedFactory {
             embeds: [{
                 author: {
                     name: `${names.triggerShipName || 'Unknown'} spotted in ${names.systemName}`,
-                    icon_url: `https://images.evetech.net/corporations/${triggerAttacker?.corporation_id}/logo?size=64`,
+                    icon_url: `${API_BASE}corp/${triggerAttacker?.corporation_id}`,
                     url: helpers.getSocketKillLink(kill.killmail_id)
                 },
 
-                thumbnail: { url: `https://images.evetech.net/types/${names.triggerShipId}/render?size=256` },
+                thumbnail: { url: `${API_BASE}ship/${names.triggerShipId}?size=256` },
                 color: 0xf39c12,
                 fields: [
                     { name: "System", value: `**[${names.systemName}](${DOTLAN_BASE}/system/${names.systemName.replace(/ /g, '_')})** `, inline: false },
