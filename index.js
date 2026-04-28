@@ -95,7 +95,7 @@ const processedKills = new Set();
 function processKill(r2Package) {
   const killTime = new Date(r2Package.esiData?.killmail_time).getTime();
 
-  if (Date.now() - killTime > MAX_KILL_AGE_MS) { // 24h old limit
+  if (Date.now() - killTime > MAX_KILL_AGE_MS) { // 24h old limit for duplication prevention
     console.warn(`[OLD_MAIL] Discarding ${r2Package.killID} — age ${((Date.now() - killTime) / 1000).toFixed(0)}s`);
     return;
   }
@@ -271,7 +271,7 @@ async function startPoller() {
   await loadMarketPrices();
   setInterval(syncMarketPrices, 60_000);
   processor = ProcessorFactory(esi, io, statsManager);
-  await hashCache.prime();                                  // <-- ADD
+  await hashCache.prime();                                 
   setInterval(() => hashCache.rotateIfNeeded(), 60_000);
   refreshNebulaBackground();
   syncPlayerCount();
