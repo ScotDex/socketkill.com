@@ -1,31 +1,4 @@
 require("dotenv").config({ quiet: true });
-
-// --- Axiom Logging ---
-const { Axiom } = require('@axiomhq/js');
-const axiom = new Axiom({ token: process.env.AXIOM_TOKEN });
-
-const originalLog = console.log;
-const originalError = console.error;
-const originalWarn = console.warn;
-
-console.log = (...args) => {
-  originalLog(...args);
-  axiom.ingest('socketkill', [{ level: 'info', message: args.join(' '), ts: new Date().toISOString() }]);
-};
-
-console.error = (...args) => {
-  originalError(...args);
-  axiom.ingest('socketkill', [{ level: 'error', message: args.join(' '), ts: new Date().toISOString() }]);
-};
-
-console.warn = (...args) => {
-  originalWarn(...args);
-  axiom.ingest('socketkill', [{ level: 'warn', message: args.join(' '), ts: new Date().toISOString() }]);
-};
-
-setInterval(() => axiom.flush(), 10000);
-
-
 const talker = require("./src/network/agent");
 const path = require("path");
 const ESIClient = require("./src/network/esi");
