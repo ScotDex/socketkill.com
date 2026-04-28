@@ -13,6 +13,7 @@ const SLOT_GROUPS = {
 };
 
 function groupForFlag(flag) {
+    if (flag === 0) return 'cargo';
     for (const [group, flags] of Object.entries(SLOT_GROUPS)) {
         if (flags.includes(flag)) return group;
     }
